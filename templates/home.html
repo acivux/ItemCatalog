@@ -4,7 +4,7 @@
 {%block navbar_brand%}Catalog{%endblock%}
 {%block navbar%}
     <ul class="nav navbar-nav navbar-right">
-        <li><a href="">New</a></li>
+        <li><a href="">New</a></li><!-- TODO: Add link to new something -->
     </ul>
 {%endblock%}
 {%block body%}
@@ -20,7 +20,7 @@
           <div class="col-md-9">
             <ul class="list-group">
             {% for category in categories %}
-                <a href="" class="list-group-item">{{category.name}}</a>
+                <a href="" class="list-group-item">{{category.name}}</a><!-- TODO: Add link to category -->
             {% endfor %}
             </ul>
           </div>
