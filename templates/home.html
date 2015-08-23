@@ -1,29 +1,31 @@
 {% extends "base.html" %}
 {%block title%}Catalog{%endblock%}
 {%block navbar_brand_url%}catalog{%endblock%}
-{%block navbar_brand%}Catalog{%endblock%}
+{%block navbar_brand%}Wine Sharing Catalog{%endblock%}
 {%block navbar%}
     <ul class="nav navbar-nav navbar-right">
         <li><a href="">New</a></li><!-- TODO: Add link to new something -->
     </ul>
 {%endblock%}
 {%block body%}
+
     <div class="container-fluid">
       <div class="row">
           <div class="col-md-3">
             <ul class="list-group">
-            {% for category in categories %}
-                <a href="" class="list-group-item">{{category.name}}<span class="badge">{{category.items|length}}</span></a>
+            {% for winetype in winetypes %}
+                <a href="" class="list-group-item">{{winetype.name}}<span class="badge">{{winetype.items|length}}</span></a>
             {% endfor %}
             </ul>
           </div>
           <div class="col-md-9">
             <ul class="list-group">
-            {% for category in categories %}
-                <a href="" class="list-group-item">{{category.name}}</a><!-- TODO: Add link to category -->
+            {% for winetype in winetypes %}
+                <a href="" class="list-group-item">{{winetype.name}}</a><!-- TODO: Add link to category -->
             {% endfor %}
             </ul>
           </div>
       </div>
     </div>
 {%endblock%}
+

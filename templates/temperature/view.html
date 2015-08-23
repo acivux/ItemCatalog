@@ -1,0 +1,23 @@
+{% extends "temperature/temperature_base.html" %}
+{%block navbar%}
+    <ul class="nav navbar-nav navbar-right">
+        <li><a href="{{url_for('.new')}}">New</a></li><!-- TODO: Add link to new something -->
+    </ul>
+{%endblock%}
+{%block body%}
+
+    <div class="container-fluid">
+      <div class="row">
+          <div class="col-md-4 col-sm-4 col-sx-4"></div>
+          <div class="col-md-4 col-sm-4 col-sx-4">
+            <ul class="list-group">
+            {% for item in items %}
+                <a href="{{url_for('.edit',item_id = item.id)}}" class="list-group-item" >{{item.name}}<div class="pull-right" style="font-size:9pt">{{item.temp}}</div></a>
+            {% endfor %}
+            </ul>
+          </div>
+          <div class="col-md-4 col-sm-4 col-sx-4"></div>
+      </div>
+    </div>
+{%endblock%}
+

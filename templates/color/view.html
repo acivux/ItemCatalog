@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{%block title%}Wine Colors{%endblock%}
+{%block navbar_brand_url%}{%endblock%}
+{%block navbar_brand%}Wine Colors{%endblock%}
+{%block navbar%}
+    <ul class="nav navbar-nav navbar-right">
+        <li><a href="{{url_for('.new')}}">New</a></li><!-- TODO: Add link to new something -->
+    </ul>
+{%endblock%}
+{%block body%}
+
+    <div class="container-fluid">
+      <div class="row">
+          <div class="col-md-4 col-sm-4 col-sx-4"></div>
+          <div class="col-md-4 col-sm-4 col-sx-4">
+            <ul class="list-group">
+            {% for colortype in colortypes %}
+                <a href="{{url_for('.edit', color_id=colortype.id)}}" class="list-group-item" ><span class="glyphicon glyphicon-tint" aria-hidden="true" style="color:#{{colortype.value}}"></span>  {{colortype.name}}</a>
+            {% endfor %}
+            </ul>
+          </div>
+          <div class="col-md-4 col-sm-4 col-sx-4"></div>
+      </div>
+    </div>
+{%endblock%}
+
