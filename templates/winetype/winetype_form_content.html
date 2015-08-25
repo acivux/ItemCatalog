@@ -1,0 +1,74 @@
+        <div class="form-group">
+            <label for="itemname" class="col-sm-2 control-label">Name</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="itemname" name="itemname" placeholder="Name" value="{{winetype.name}}">
+            </div>
+        </div>
+      <!-- Color -->
+        <div class="form-group">
+            <label for="colorvalue" class="col-sm-2 col-sx-2 control-label">Color</label>
+            <div class="col-md-5">
+                <div class="input-group">
+                    <select class="form-control" id="colorvalue" onChange="setColorDrop(this)" name="colorvalue">
+                        {% for winecolor in winecolors %}
+                            <option value="{{winecolor.id}}" data-color="#{{winecolor.value}}"{% if winecolor.id == winetype.color_id%} selected{% endif %}>{{winecolor.name}}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="input-group-addon"><span class="glyphicon glyphicon-tint" aria-hidden="true" id="colorshower" style="color:#{{winetype.color.value}}; text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;"></span></div>
+                </div>
+            </div>
+        </div>
+      <!-- Glass -->
+        <div class="form-group">
+            <label for="glassvalue" class="col-sm-2 col-sx-2 control-label">Glass</label>
+            <div class="col-md-5">
+                <select class="form-control" id="glassvalue" name="glassvalue">
+                    <option value="">----</option>
+                    {% for glass in glasses %}
+                        <option value="{{glass.id}}"{% if glass.id == winetype.glass_type_id%} selected{% endif %}>{{glass.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+      <!-- Calories -->
+        <div class="form-group">
+            <label for="calorievalue" class="col-sm-2 col-sx-2 control-label">Calorie(s)</label>
+            <div class="col-md-5">
+                <select class="form-control" id="calorievalue" name="calorievalue">
+                    <option value="">----</option>
+                    {% for calorie in calories %}
+                        <option value="{{calorie.id}}"{% if calorie.id == winetype.calorie_id%} selected{% endif %}>{{calorie.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+      <!-- ABV -->
+        <div class="form-group">
+            <label for="abvvalue" class="col-sm-2 col-sx-2 control-label">Alcohol by Volume</label>
+            <div class="col-md-5">
+                <select class="form-control" id="abvvalue" name="abvvalue">
+                    <option value="">----</option>
+                    {% for abv in abvs %}
+                        <option value="{{abv.id}}"{% if abv.id == winetype.abv_id%} selected{% endif %}>{{abv.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+      <!-- Temperature -->
+        <div class="form-group">
+            <label for="temperaturevalue" class="col-sm-2 col-sx-2 control-label">Temperature</label>
+            <div class="col-md-5">
+                <select class="form-control" id="temperaturevalue" name="temperaturevalue">
+                    <option value="">----</option>
+                    {% for temp in temps %}
+                        <option value="{{temp.id}}"{% if temp.id == winetype.temperature_id%} selected{% endif %}>{{temp.name}} ({{temp.temp}}&deg;F)</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-default">Save</button>
+                <a class="btn btn-default" href="{{url_for('.show')}}" role="button">Cancel</a>
+            </div>
+        </div>

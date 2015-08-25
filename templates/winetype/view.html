@@ -1,10 +1,7 @@
-{% extends "base.html" %}
-{%block title%}Catalog{%endblock%}
-{%block navbar_brand_url%}catalog{%endblock%}
-{%block navbar_brand%}Wine Sharing Catalog{%endblock%}
+{% extends "winetype/type_base.html" %}
 {%block navbar%}
     <ul class="nav navbar-nav navbar-right">
-        <li><a href="">New</a></li><!-- TODO: Add link to new something -->
+        <li><a href="{{url_for('.new')}}">New</a></li>
     </ul>
 {%endblock%}
 {%block body%}
@@ -14,8 +11,8 @@
           <div class="col-md-4 col-sm-4 col-sx-4"></div>
           <div class="col-md-4 col-sm-4 col-sx-4">
             <ul class="list-group">
-            {% for winename, count in winetypes %}
-                <a href="" class="list-group-item">{{winename}}<span class="badge">{{count}}</span></a>
+            {% for winetype in winetypes %}
+                <a href="{{url_for('.edit', item_id=winetype.0)}}" class="list-group-item">{{winetype.1}}</a>
             {% endfor %}
             </ul>
           </div>

@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from database import Base, User, WineType, WineCharacter, Temperature
-from database import GlassType, WineCalories, WineColor, WineABV
+from database import GlassType, WineCalories, WineColor, WineABV, WineStock
 
 engine = create_engine('sqlite:///catalog.db')
 # Bind the engine to the metadata of the Base class so that the
@@ -19,6 +19,10 @@ DBSession = sessionmaker(bind=engine)
 # revert all of them back to the last commit by calling
 # session.rollback()
 session = DBSession()
+
+
+session.add(User(id=1, name="admin", email="admin@myurl.com"))
+session.add(User(id=2, name="admin2", email="admin2@myurl.com"))
 
 session.add(GlassType(id=1, name="Sparkling Wine Flute"))
 session.add(GlassType(id=2, name="White Wine Glass"))
@@ -48,7 +52,7 @@ session.add(WineColor(id=1, name="Almost Clear", value="F2F5A9"))
 session.add(WineColor(id=2, name="Green Yellow", value="D8F781"))
 session.add(WineColor(id=3, name="Pale Gold", value="E4DE8A"))
 session.add(WineColor(id=4, name="Pale Yellow", value="ECE8A8"))
-session.add(WineColor(id=5, name="Pale Gold", value="E9D775"))
+session.add(WineColor(id=5, name="Pale Gold (Dark)", value="E9D775"))
 session.add(WineColor(id=6, name="Deep Gold", value="EDBD3B"))
 session.add(WineColor(id=7, name="Pale Salmon", value="F8E0F7"))
 session.add(WineColor(id=8, name="Deep Pink", value="F475B7"))
@@ -68,78 +72,101 @@ session.add(WineType(id=1,
                      color_id=1,
                      glass_type_id=1,
                      calorie_id=1,
-                     abv_id=1))
+                     abv_id=1,
+                     temperature_id=2))
 session.add(WineType(id=2,
                      name=u"Sauvignon Blanc",
                      color_id=2,
                      glass_type_id=2,
                      calorie_id=2,
-                     abv_id=1))
+                     abv_id=1,
+                     temperature_id=3))
 session.add(WineType(id=3,
                      name=u"Albariño",
                      color_id=3,
                      glass_type_id=2,
                      calorie_id=2,
-                     abv_id=1))
+                     abv_id=1,
+                     temperature_id=3))
 session.add(WineType(id=4,
                      name=u"Chenin Blanc",
                      color_id=4,
                      glass_type_id=2,
                      calorie_id=2,
-                     abv_id=1))
+                     abv_id=1,
+                     temperature_id=3))
 session.add(WineType(id=5,
                      name=u"Chardonnay",
                      color_id=5,
                      glass_type_id=2,
                      calorie_id=2,
-                     abv_id=1))
+                     abv_id=1,
+                     temperature_id=3))
 session.add(WineType(id=6,
                      name=u"Noble Rot",
                      color_id=6,
                      glass_type_id=2,
                      calorie_id=2,
-                     abv_id=1))
+                     abv_id=1,
+                     temperature_id=3))
 session.add(WineType(id=7,
                      name=u"Rosé of Pinot Noir",
                      color_id=7,
                      glass_type_id=3,
                      calorie_id=2,
-                     abv_id=1))
+                     abv_id=1,
+                     temperature_id=2))
 session.add(WineType(id=8,
                      name=u"Rosé of Merlot",
                      color_id=8,
                      glass_type_id=3,
                      calorie_id=2,
-                     abv_id=1))
+                     abv_id=1,
+                     temperature_id=2))
 session.add(WineType(id=9,
                      name=u"Rosé of Tempranillo",
                      color_id=9,
                      glass_type_id=3,
                      calorie_id=2,
-                     abv_id=1))
+                     abv_id=1,
+                     temperature_id=2))
 session.add(WineType(id=10,
                      name=u"Pinot Noir",
                      color_id=10,
                      glass_type_id=4,
                      calorie_id=3,
-                     abv_id=2))
+                     abv_id=2,
+                     temperature_id=3))
 session.add(WineType(id=11,
                      name=u"Sangiovese",
                      color_id=11,
                      glass_type_id=5,
                      calorie_id=4,
-                     abv_id=3))
+                     abv_id=3,
+                     temperature_id=4))
 session.add(WineType(id=12,
                      name=u"Cabernet Sauvignon",
                      color_id=12,
                      glass_type_id=5,
                      calorie_id=4,
-                     abv_id=3))
+                     abv_id=3,
+                     temperature_id=4))
 session.add(WineType(id=13,
                      name=u"Sherry",
                      color_id=13,
                      glass_type_id=6,
                      calorie_id=5,
-                     abv_id=4))
+                     abv_id=4,
+                     temperature_id=5))
+
+session.add(WineStock(id=1,
+                      brand_name="Testin123",
+                      winetype_id=13,
+                      on_hand=12))
+
+session.add(WineStock(id=2,
+                      brand_name="werfasdf",
+                      winetype_id=12,
+                      on_hand=1))
 
 session.commit()

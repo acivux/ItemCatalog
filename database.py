@@ -15,7 +15,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
     email = Column(String(250), nullable=False)
-    picture = Column(String(250))
+    picture = Column(String(250), nullable=True)
 
 
 class GlassType(Base):
@@ -138,13 +138,20 @@ class WineType(Base):
     __tablename__ = 'wine_type'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(250, convert_unicode=True), nullable=False)
+    name = Column(String(250, convert_unicode=True), nullable=False, unique=True)
     color_id = Column(Integer, ForeignKey('wine_color.id'), nullable=False)
     color = relationship(WineColor)
     glass_type_id = Column(Integer, ForeignKey('glasstype.id'), nullable=False)
+    glass = relationship(GlassType)
     calorie_id = Column(Integer, ForeignKey('wine_calories.id'), nullable=False)
+    calorie = relationship(WineCalories)
     abv_id = Column(Integer, ForeignKey('wine_abv.id'), nullable=False)
+    abv = relationship(WineABV)
+    temperature_id = Column(Integer, ForeignKey('temperature.id'), nullable=False)
+    temperature = relationship(Temperature)
+    filename = Column(String, nullable=True)
 
+    # TODO: Add image
     # TODO: Add wikipedia link explaining wine type
 
     @property
@@ -156,17 +163,23 @@ class WineType(Base):
         }
 
 
-class WineBottle(Base):
-    __tablename__ = 'wine_bottle'
+class WineStock(Base):
+    __tablename__ = 'wine_stock'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
+    brand_name = Column(String(250), nullable=False)
+    winetype_id = Column(Integer, ForeignKey('wine_type.id'), nullable=False)
+    winetype = relationship(WineType)
+    on_hand = Column(Integer, nullable=False)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship(User)
 
     @property
     def serialize(self):
         """Return object data in easily serializeable format"""
         return {
-            'name': self.name,
+            'brand': self.brand,
+            'on_hand': self.on_hand,
             'id': self.id,
         }
 

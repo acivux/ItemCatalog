@@ -1,0 +1,32 @@
+{% extends "winetype/type_base.html" %}
+{%block navbar%}
+    <ul class="nav navbar-nav navbar-right">
+        <li><a href="{{url_for('.delete', item_id=winetype.id)}}"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a></li>
+    </ul>
+{%endblock%}
+{%block body%}
+
+    <div class="container-fluid">
+      <div class="row">
+          <div class="col-md-4 col-sm-4 col-sx-4"></div>
+          <div class="col-md-4 col-sm-4 col-sx-4">
+            <form class="form-horizontal" method='POST' enctype='multipart/form-data' action='{{url_for('.edit', item_id=winetype.id)}}'>
+                {% include 'winetype/winetype_form_content.html' %}
+            </form>
+          </div>
+          <div class="col-md-4 col-sm-4 col-sx-4"></div>
+      </div>
+    </div>
+<script>
+function setColorDrop(sel) {
+    var value = sel.options[sel.selectedIndex].dataset.color;
+    var f =document.getElementById("colorshower");
+    f.style.color = value;
+}
+
+window.onload = function (){
+    setColorDrop(document.getElementById("colorvalue"));
+    };
+
+</script>
+{%endblock%}

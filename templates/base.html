@@ -5,6 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+{%block scripts%}{%endblock%}
 <title>{%block title%}{%endblock%}</title>
 </head>
 <body>
@@ -12,9 +13,18 @@
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
-      <a class="navbar-brand" href="{%block navbar_brand_url%}{%endblock%}">{%block navbar_brand%}{%endblock%}</a>
+    <a class="navbar-brand" href="{%block navbar_brand_url%}{%endblock%}">{%block navbar_brand%}{%endblock%}</a>
     </div>
-{%block navbar%}{%endblock%}
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        {% if not session.logged_in %}
+            <form class= navbar-form" action="{{ url_for('show_login') }}">
+                <button type="button" class="btn btn-default navbar-btn">Sign in</button>
+            </form>
+        {% else %}
+            <p class="navbar-text">Signed in as <a href="#" class="navbar-link">aabb</a></p>
+        {% endif %}
+    {%block navbar%}{%endblock%}
+    </div>
   </div>
 </nav>
 <div class="container-fluid">
