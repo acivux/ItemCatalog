@@ -15,11 +15,18 @@ def show():
     return render_template(template_prefix+'topview.html', wines=wines)
 
 
-@winestock_api.route('/<int:winetype_id>/', methods=["GET", "POST"])
-def show_stock(winetype_id):
+@winestock_api.route('/<int:winetype_id>/', methods=["GET"])
+def show_brand(winetype_id):
     session = current_app.config['db']
     wines = session.query(WineStock).filter_by(winetype_id=winetype_id).order_by(WineStock.brand_name)
     return render_template(template_prefix+'brandview.html', wines=wines)
+
+
+@winestock_api.route('/stockitem/<int:stockitem_id>/', methods=["GET"])
+def show_stockitem(stockitem_id):
+    session = current_app.config['db']
+    item = session.query(WineStock).filter_by(id=stockitem_id).one()
+    return render_template(template_prefix+"stockview.html", item=item)
 
 @winestock_api.route('/new', methods=["GET", "POST"])
 def new():

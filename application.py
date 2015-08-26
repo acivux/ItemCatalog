@@ -34,7 +34,7 @@ app.register_blueprint(abv_api, url_prefix='/abv')
 app.register_blueprint(glass_api, url_prefix='/glass')
 app.register_blueprint(character_api, url_prefix='/character')
 app.register_blueprint(winetype_api, url_prefix='/winetype')
-app.register_blueprint(winestock_api, url_prefix='/winestock')
+app.register_blueprint(winestock_api)#, url_prefix='/winestock')
 
 
 # UPLOADED_PHOTOS_DEST = 'photolog'
@@ -61,9 +61,9 @@ def show_login():
 
 @app.route('/')
 def show_home():
-    session = app.config['db']
-    winetypes = session.query(WineType.name, func.count(WineType.name)).group_by(WineType.name).order_by(asc(WineType.name))
-    return render_template('home.html', winetypes=winetypes)
+    #session = app.config['db']
+    return redirect(url_for('winestock_api.show'))
+    #return render_template('home.html', winetypes=winetypes)
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'

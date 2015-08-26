@@ -1,32 +1,55 @@
 {% extends "base.html" %}
 {%block scripts%}
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-    <script src="https://apis.google.com/js/client:platform.js?onload=start" async defer></script>
+    <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script> -->
+    <!-- <script src="https://apis.google.com/js/client:platform.js?onload=start" async defer></script> -->
+    <meta name="google-signin-scope" content="profile email">
+    <meta name="google-signin-client_id" content="1040143561424-o1c38jt6hot2bj3sc5fdnbmk1etdtpb0.apps.googleusercontent.com">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+
 {%endblock%}
 {%block title%}Catalog{%endblock%}
 {%block navbar_brand_url%}catalog{%endblock%}
 {%block navbar_brand%}Wine Sharing Catalog{%endblock%}
-{%block navbar%}
-    <ul class="nav navbar-nav navbar-right">
-        <li><a href="">New</a></li><!-- TODO: Add link to new something -->
-    </ul>
-{%endblock%}
+{%block navbar%}{%endblock%}
 {%block body%}
-
-          <div id="signInButton">
-          <span class="g-signin"
-            data-scope="openid email"
-            data-clientid="1040143561424-o1c38jt6hot2bj3sc5fdnbmk1etdtpb0.apps.googleusercontent.com"
-            data-redirecturi="postmessage"
-            data-accesstype="offline"
-            data-cookiepolicy="single_host_origin"
-            data-callback="signInCallback"
-            data-approvalprompt="force">
-          </span>
-        </div>
-<div id="result"></div>
+<div class="container">
+    <div class="jumbotron">
+            <h1>Hello, world!</h1>
+            <p>Never go without that needed bottle of wine. Share your wine here with friends.</p>
+            <div class="container-fluid">
+              <div class="row">
+                  <div class="col-md-4 col-sm-4 col-sx-4">
+                      <div class="g-signin2 pull-right" data-onsuccess="onSignIn"></div>
+                    <!-- <div id="signInButton">
+                        <span class="g-signin"
+                        data-scope="openid email"
+                        data-clientid="1040143561424-o1c38jt6hot2bj3sc5fdnbmk1etdtpb0.apps.googleusercontent.com"
+                        data-redirecturi="postmessage"
+                        data-accesstype="offline"
+                        data-cookiepolicy="single_host_origin"
+                        data-callback="signInCallback"
+                        data-approvalprompt="force">
+                        </span>
+                        </div> -->
+                  </div>
+                  <div class="col-md-4 col-sm-4 col-sx-4">
+                      <fb:login-button size="xlarge" scope="public_profile,email" onlogin="testAPI();"></fb:login-button>
+                  </div>
+              </div>
+            </div>
+    </div>
+</div>
 
 <script>
+
+function onSignIn(googleUser) {
+  var profile = googleUser.getBasicProfile();
+  console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+  console.log('Name: ' + profile.getName());
+  console.log('Image URL: ' + profile.getImageUrl());
+  console.log('Email: ' + profile.getEmail());
+}
+
 function signInCallback(authResult) {
   if (authResult['code']) {
     // Hide the sign-in button now that the user is authorized
@@ -43,7 +66,7 @@ function signInCallback(authResult) {
         if (result) {
           $('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...')
          setTimeout(function() {
-          window.location.href = "/restaurant";
+          window.location.href = "/";
          }, 4000);
 
       } else if (authResult['error']) {
@@ -87,16 +110,6 @@ function signInCallback(authResult) {
 
 </script>
 
-
-<button>
-
-
-<fb:login-button scope="public_profile,email" onlogin="testAPI();"><a href='javascript:testAPI()'>Login with Facebook</a></fb:login-button>
-
-
-        </button>
-<!--END FACEBOOK SIGN IN -->
-</script>
 
 {%endblock%}
 

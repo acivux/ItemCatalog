@@ -1,8 +1,10 @@
 {% extends "winestock/stock_base.html" %}
 {%block navbar%}
+    {% if session.logged_in %}
     <ul class="nav navbar-nav navbar-right">
         <li><a href="{{url_for('.new')}}">New</a></li>
     </ul>
+    {% endif %}
 {%endblock%}
 {%block body%}
 
@@ -12,7 +14,7 @@
           <div class="col-md-4 col-sm-4 col-sx-4">
             <ul class="list-group">
             {% for winetype in wines %}
-                <a href="" class="list-group-item">{{winetype.0.name}}<span class="badge">{{winetype.1}}</span></a>
+                <a href="{{url_for('.show_brand', winetype_id=winetype.0.id)}}" class="list-group-item">{{winetype.0.name}}<span class="badge">{{winetype.1}}</span></a>
             {% endfor %}
             </ul>
           </div>

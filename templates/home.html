@@ -3,9 +3,11 @@
 {%block navbar_brand_url%}catalog{%endblock%}
 {%block navbar_brand%}Wine Sharing Catalog{%endblock%}
 {%block navbar%}
+    {% if session.logged_in %}
     <ul class="nav navbar-nav navbar-right">
         <li><a href="">New</a></li><!-- TODO: Add link to new something -->
     </ul>
+    {% endif%}
 {%endblock%}
 {%block body%}
 

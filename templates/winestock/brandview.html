@@ -1,8 +1,10 @@
 {% extends "winestock/stock_base.html" %}
 {%block navbar%}
-    <ul class="nav navbar-nav navbar-right">
-        <li><a href="{{url_for('.new')}}">New</a></li>
-    </ul>
+    {% if session.logged_in %}
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="{{url_for('.new')}}">New</a></li>
+        </ul>
+    {% endif %}
 {%endblock%}
 {%block body%}
 
@@ -12,7 +14,7 @@
           <div class="col-md-4 col-sm-4 col-sx-4">
             <ul class="list-group">
             {% for winestock in wines %}
-                <a href="" class="list-group-item">{{winestock.brandname}}<span class="badge">{{winestock.on_hand}}</span></a>
+                <a href="{{url_for('.show_stockitem',stockitem_id=winestock.id)}}" class="list-group-item">{{winestock.brand_name}}<span class="badge">{{winestock.on_hand}}</span></a>
             {% endfor %}
             </ul>
           </div>
