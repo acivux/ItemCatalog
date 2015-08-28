@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script src="https://apis.google.com/js/client:platform.js?onload=start" async defer></script>
+<title></title>
+</head>
+<body>
+<div class="container">
+    <div class="jumbotron">
+        <div class="text-center">
+          <h1>Hello, world!</h1>
+          <p>Log in with your favourite social website</p>
+        <div id="signInButton">
+            <span class="g-signin"
+            data-scope="openid email"
+            data-clientid="1040143561424-o1c38jt6hot2bj3sc5fdnbmk1etdtpb0.apps.googleusercontent.com"
+            data-redirecturi="postmessage"
+            data-accesstype="offline"
+            data-cookiepolicy="single_host_origin"
+            data-callback="signInCallback"
+            data-approvalprompt="force">
+            </span>
+        </div>
+        <button><fb:login-button scope="public_profile,email" onlogin="testAPI();"><a href='javascript:testAPI()'>Login with Facebook</a></fb:login-button></button>
+        <div id="result" class="alert alert-success" role="alert" style="display:none"></div>
+            </div>
+    </div>
+</div>
+<script>
+function signInCallback(authResult) {
+  if (authResult['code']) {
+    // Hide the sign-in button now that the user is authorized
+    $('#signinButton').attr('style', 'display: none');
+    // Send the one-time-use code to the server, if the server responds, write a 'login successful' message to the web page and then redirect back to the main restaurants page
+    $.ajax({
+      type: 'POST',
+      url: '/auth/gconnect?state={{STATE}}',
+      processData: false,
+      data: authResult['code'],
+      contentType: 'application/octet-stream; charset=utf-8',
+      success: function(result) {
+        // Handle or verify the server response if necessary.
+        if (result) {
+          $('#result').html('Login Successful! Redirecting...').show()
+         setTimeout(function() {
+          window.location.href = "/winestock";
+         }, 4000);
+
+      } else if (authResult['error']) {
+    console.log('There was an error: ' + authResult['error']);
+  } else {
+        $('#result').html('Failed to make a server-side call. Check your configuration and console.');
+         }
+      }
+
+  }); } }
+
+<!--END GOOGLE PLUS SIGN IN -->
+
+<!--FACEBOOK SIGN IN -->
+
+    window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1468863403429165',
+      xfbml      : true,
+      cookie     : true,
+      version    : 'v2.4'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+
+  function testAPI() {
+    console.log('Welcome!  Fetching your information.... ');
+    FB.api('/me', function(response) {
+      console.log('Successful login for: ' + response.name);
+      $('#result').html('Login Successful! Redirecting...').show()
+    });
+  }
+
+</script>
+
+
+
+<!--END FACEBOOK SIGN IN -->
+
+</body>
+</html>

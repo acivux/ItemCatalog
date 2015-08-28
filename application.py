@@ -7,7 +7,7 @@ from flask import session as login_session
 from flaskext.uploads import UploadSet, configure_uploads, IMAGES
 from sqlalchemy import create_engine, asc, func
 from sqlalchemy.orm import sessionmaker
-
+from flask import session as login_session
 from database import Base, WineType
 from wine_color_api.wine_color_api import wine_color_api
 from temperature_api.temperature_api import temperature_api
@@ -17,6 +17,7 @@ from glass_api.glass_api import glass_api
 from character_api.character_api import character_api
 from type_api.winetype_api import winetype_api
 from winestock_api.winestock_api import winestock_api
+from login_api.login_api import login_api
 
 # Database setup
 engine = create_engine('sqlite:///catalog.db')
@@ -25,6 +26,7 @@ Session = sessionmaker(bind=engine)
 
 app = Flask(__name__)
 app.config['db'] = Session()
+
 app.config['UPLOADS_DEFAULT_DEST'] = None
 app.config['UPLOADS_DEFAULT_URL'] = None
 app.register_blueprint(temperature_api, url_prefix='/temperature')
@@ -34,7 +36,8 @@ app.register_blueprint(abv_api, url_prefix='/abv')
 app.register_blueprint(glass_api, url_prefix='/glass')
 app.register_blueprint(character_api, url_prefix='/character')
 app.register_blueprint(winetype_api, url_prefix='/winetype')
-app.register_blueprint(winestock_api)#, url_prefix='/winestock')
+app.register_blueprint(winestock_api, url_prefix='/winestock')
+app.register_blueprint(login_api, url_prefix='/auth')
 
 
 # UPLOADED_PHOTOS_DEST = 'photolog'
@@ -48,15 +51,6 @@ def get_hsv(hexrgb):
     """
     r, g, b = (int(hexrgb[i:i+2], 16) / 255.0 for i in xrange(0, 5, 2))
     return colorsys.rgb_to_hsv(r, g, b)
-
-
-@app.route('/login')
-def show_login():
-    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
-                    for x in xrange(32))
-    login_session['state'] = state
-    # return "The current session state is %s" % login_session['state']
-    return render_template('login.html', STATE=state)
 
 
 @app.route('/')
