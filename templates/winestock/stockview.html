@@ -7,35 +7,41 @@
     {% endif %}
 {%endblock%}
 {%block body%}
-
+<ol class="breadcrumb">
+    <li><a href="{{url_for('winestock_api.show')}}">Wine Types</a></li>
+    <li><a href="{{url_for('.show_brand', winetype_id=item.winetype_id)}}">{{item.winetype.name}} Stock</a></li>
+    <li>Stock Item</li>
+</ol>
     <div class="container-fluid">
       <div class="row">
           <div class="col-md-4 col-sm-4 col-sx-4"></div>
           <div class="col-md-4 col-sm-4 col-sx-4">
             <form class="form-horizontal">
                 <div class="form-group">
-                    <label for="itemname" class="col-sm-2 control-label">Name</label>
+                    <label for="itemname" class="col-sm-2 col-xs-12 control-label">Name</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="itemname" name="itemname" placeholder="Name" value="{{item.brand_name}}">
                     </div>
                 </div>
                 <!-- wine type -->
                 <div class="form-group">
-                    <label for="winetypevalue" class="col-sm-2 col-sx-2 control-label">Wine Type</label>
+                    <label for="winetypevalue" class="col-sm-2 col-xs-12 control-label">Wine Type</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="winetypevalue" name="winetypevalue" placeholder="Name" value="{{item.winetype.name}}">
                     </div>
                 </div>
                 <!-- stock count -->
                 <div class="form-group">
-                    <label for="onhandvalue" class="col-sm-2 col-sx-2 control-label">In Stock</label>
-                    <input type="text" value="{{item.on_hand}}" class="form-control" id="onhandvalue" name="onhandvalue">
-                </div>
-                <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
-                        <a class="btn btn-default" href="{{url_for('.show_brand', winetype_id=item.winetype_id)}}" role="button">Cancel</a>
+                    <label for="vintagevalue" class="col-sm-2 col-xs-12 control-label">Vintage</label>
+                    <div class="col-sm-5 col-xs-5">
+                        <input type="text" value="{{item.vintage}}" class="form-control" id="vintagevalue" name="vintagevalue">
                     </div>
                 </div>
+                <!--<div class="form-group">-->
+                    <!--<div class="col-sm-offset-2 col-sm-10">-->
+                        <!--<a class="btn btn-default" href="{{url_for('.show_brand', winetype_id=item.winetype_id)}}" role="button">Cancel</a>-->
+                    <!--</div>-->
+                <!--</div>-->
             </form>
           </div>
           </div>

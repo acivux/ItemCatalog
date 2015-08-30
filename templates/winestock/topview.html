@@ -1,25 +1,32 @@
 {% extends "winestock/stock_base.html" %}
 {%block navbar%}
-    {% if session.logged_in %}
-    <ul class="nav navbar-nav navbar-right">
-        <li><a href="{{url_for('.new')}}">New</a></li>
-    </ul>
+    {% if session.user_id %}
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">New <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="{{url_for('.new')}}">Stock Item</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">Wine Type</a></li>
+          </ul>
+        </li>
     {% endif %}
 {%endblock%}
 {%block body%}
-
-    <div class="container-fluid">
-      <div class="row">
-          <div class="col-md-4 col-sm-4 col-sx-4"></div>
-          <div class="col-md-4 col-sm-4 col-sx-4">
-            <ul class="list-group">
-            {% for winetype in wines %}
-                <a href="{{url_for('.show_brand', winetype_id=winetype.0.id)}}" class="list-group-item">{{winetype.0.name}}<span class="badge">{{winetype.1}}</span></a>
-            {% endfor %}
-            </ul>
-          </div>
-          <div class="col-md-4 col-sm-4 col-sx-4"></div>
+<ol class="breadcrumb">
+    <li>Wine Types</li>
+</ol>
+<div class="container-fluid">
+  <div class="row">
+      <div class="col-md-4 col-sm-4 col-sx-4"></div>
+      <div class="col-md-4 col-sm-4 col-sx-4">
+        <ul class="list-group">
+        {% for winetype in wines %}
+            <a href="{{url_for('.show_brand', winetype_id=winetype.id)}}" class="list-group-item">{{winetype.name}}</a>
+        {% endfor %}
+        </ul>
       </div>
-    </div>
+      <div class="col-md-4 col-sm-4 col-sx-4"></div>
+  </div>
+</div>
 {%endblock%}
 

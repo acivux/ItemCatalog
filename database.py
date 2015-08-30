@@ -1,5 +1,6 @@
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import Column, ForeignKey, Integer, Float, String, DateTime
+from sqlalchemy import Text
 from sqlalchemy import Table
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -14,8 +15,9 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
-    email = Column(String(250), nullable=False)
+    email = Column(String(250), nullable=False, unique=True)
     picture = Column(String(250), nullable=True)
+    nickname = Column(String(250), nullable=True, unique=True)
 
 
 class GlassType(Base):
@@ -119,6 +121,7 @@ class WineColor(Base):
             'id': self.id,
         }
 
+
 class Category(Base):
     __tablename__ = 'category'
 
@@ -170,13 +173,16 @@ class WineStock(Base):
     brand_name = Column(String(250), nullable=False)
     winetype_id = Column(Integer, ForeignKey('wine_type.id'), nullable=False)
     winetype = relationship(WineType)
-    on_hand = Column(Integer, nullable=False)
+    vintage = Column(Integer, nullable=False)
+    date_created = Column(DateTime, nullable=False)
+    date_edited = Column(DateTime, nullable=True)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 
     @property
     def serialize(self):
         """Return object data in easily serializeable format"""
+        # TODO: Fix this!
         return {
             'brand': self.brand,
             'on_hand': self.on_hand,
@@ -184,6 +190,29 @@ class WineStock(Base):
         }
 
 
+class WineRating(Base):
+    __tablename__ = 'wine_rating'
+
+    id = Column(Integer, primary_key=True)
+    winestock_id = Column(Integer, ForeignKey('wine_stock.id'), nullable=False)
+    winestock = relationship(WineStock)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    user = relationship(User)
+    comment = Column(Text, nullable=True)
+    rating = Column(Integer, nullable=False)
+    date_created = Column(DateTime, nullable=False)
+
+    @property
+    def serialize(self):
+        """Return object data in easily serializeable format"""
+        return {
+            'user': self.user_id,
+            'comment': self.commnet,
+            'id': self.id,
+        }
+
+
+# TODO: Remove this
 class Item(Base):
     __tablename__ = 'item'
 

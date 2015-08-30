@@ -1,8 +1,8 @@
 from flask import current_app, Blueprint
 from flask import render_template, request, redirect, url_for, flash
 from sqlalchemy import asc, exc, func
-from database import WineStock, WineType
-
+from database import WineStock, WineType, WineRating
+import datetime
 
 winestock_api = Blueprint('winestock_api', __name__)
 template_prefix = "winestock/"
@@ -11,15 +11,30 @@ template_prefix = "winestock/"
 @winestock_api.route('/')
 def show():
     session = current_app.config['db']
-    wines = session.query(WineType, func.sum(WineStock.on_hand)).join(WineStock).group_by(WineType.name).order_by(asc(WineType.name))
+    wines = session.query(WineType).order_by(asc(WineType.name))
     return render_template(template_prefix+'topview.html', wines=wines)
 
 
 @winestock_api.route('/<int:winetype_id>/', methods=["GET"])
 def show_brand(winetype_id):
     session = current_app.config['db']
-    wines = session.query(WineStock).filter_by(winetype_id=winetype_id).order_by(WineStock.brand_name)
-    return render_template(template_prefix+'brandview.html', wines=wines)
+
+    winetype = session.query(
+        WineType
+    ).filter_by(
+        id=winetype_id
+    ).one()
+
+    wines = session.query(
+        WineStock
+    ).filter_by(
+        winetype_id=winetype_id
+    ).order_by(
+        WineStock.brand_name
+    )
+    return render_template(template_prefix+'brandview.html',
+                           winetype=winetype,
+                           wines=wines)
 
 
 @winestock_api.route('/stockitem/<int:stockitem_id>/', methods=["GET"])
@@ -31,11 +46,13 @@ def show_stockitem(stockitem_id):
 @winestock_api.route('/new', methods=["GET", "POST"])
 def new():
     session = current_app.config['db']
-    item = WineStock(brand_name="", on_hand=0)
+    item = WineStock(brand_name="", vintage=1980)
+    maxyear = datetime.date.today().year
     if request.method == "POST":
         item.brand_name = request.form['itemname']
         item.winetype_id = request.form.get('winetypevalue', None)
-        item.on_hand = request.form.get('onhandvalue', 0)
+        item.vintage = request.form.get('vintagevalue', None)
+        item.date_created = datetime.datetime.now()
         session.add(item)
         session.commit()
 
@@ -47,4 +64,5 @@ def new():
         winetypes = session.query(WineType).order_by(asc(WineType.name)).all()
         return render_template(template_prefix+'new_form.html',
                                item=item,
-                               winetypes=winetypes)
+                               winetypes=winetypes,
+                               maxyear=maxyear)

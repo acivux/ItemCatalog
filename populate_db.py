@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker
 
 from database import Base, User, WineType, WineCharacter, Temperature
 from database import GlassType, WineCalories, WineColor, WineABV, WineStock
+import datetime
 
 engine = create_engine('sqlite:///catalog.db')
 # Bind the engine to the metadata of the Base class so that the
@@ -23,6 +24,7 @@ session = DBSession()
 
 session.add(User(id=1, name="admin", email="admin@myurl.com"))
 session.add(User(id=2, name="admin2", email="admin2@myurl.com"))
+session.add(User(id=3, name="Jannie van Niekerk", email="acivux@gmail.com"))
 
 session.add(GlassType(id=1, name="Sparkling Wine Flute"))
 session.add(GlassType(id=2, name="White Wine Glass"))
@@ -161,12 +163,16 @@ session.add(WineType(id=13,
 
 session.add(WineStock(id=1,
                       brand_name="Testin123",
+                      vintage=1990,
                       winetype_id=13,
-                      on_hand=12))
+                      date_created=datetime.datetime(2015, 1, 1),
+                      user_id=1))
 
 session.add(WineStock(id=2,
                       brand_name="werfasdf",
+                      vintage=2000,
                       winetype_id=12,
-                      on_hand=1))
+                      date_created=datetime.datetime(2015, 2, 2),
+                      user_id=1))
 
 session.commit()

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script src="https://apis.google.com/js/client:platform.js?onload=start" async defer></script>
+<title></title>
+</head>
+<body>
+<div class="container">
+    <div class="jumbotron">
+        <div class="text-center">
+          <h1>Hello, world!</h1>
+          <p>Log in with your favourite social website</p>
+            <div id="signInButton">
+                <span class="g-signin"
+                data-scope="openid email"
+                data-clientid="1040143561424-o1c38jt6hot2bj3sc5fdnbmk1etdtpb0.apps.googleusercontent.com"
+                data-redirecturi="postmessage"
+                data-accesstype="offline"
+                data-cookiepolicy="single_host_origin"
+                data-callback="googleSignInCallback"
+                data-approvalprompt="force">
+                </span>
+            </div>
+        <button><fb:login-button scope="public_profile,email" onlogin="facebookSignInCallback();"><a href='javascript:facebookSignInCallback()'>Login with Facebook</a></fb:login-button></button>
+        <div id="result" class="alert" role="alert" style="display:none"></div>
+        </div>
+    </div>
+</div>
+<script>
+<!-- GOOGLE PLUS SIGN IN -->
+function googleSignInCallback(authResult)
+{
+    if (authResult['code'])
+    {
+        $('#signinButton').attr('style', 'display: none');
+
+        $.ajax({
+          type: 'POST',
+          url: '{{url_for('.gconnect')}}?state={{STATE}}',
+          processData: false,
+          data: authResult['code'],
+          contentType: 'application/octet-stream; charset=utf-8',
+          success: function(result) {
+                  if (result)
+                  {
+                      $('#result').addClass("alert-success")
+                                  .html('Login Successful! Redirecting...')
+                                  .show();
+                      window.location.href = "/winestock";
+                  }
+                  else if (authResult['error'])
+                  {
+                    $('#result').addClass("alert-danger")
+                          .html('Authentication error: ' + authResult['error'])
+                          .show();
+                  }
+                  else
+                  {
+                    $('#result').addClass("alert-danger")
+                          .html('Failed to make a server-side call. Check your configuration.')
+                          .show();
+                  }
+                }
+          });
+  }
+}
+<!--END GOOGLE PLUS SIGN IN -->
+
+<!--FACEBOOK SIGN IN -->
+
+window.fbAsyncInit = function() {
+FB.init({
+  appId      : '1468863403429165',
+  xfbml      : true,
+  version    : 'v2.4'
+});
+};
+
+(function(d, s, id){
+ var js, fjs = d.getElementsByTagName(s)[0];
+ if (d.getElementById(id)) {return;}
+ js = d.createElement(s); js.id = id;
+ js.src = "//connect.facebook.net/en_US/sdk.js";
+ fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
+
+function facebookSignInCallback()
+{
+    var access_token = FB.getAuthResponse()['accessToken'];
+    FB.api('/me', function(response)
+    {
+         $.ajax({
+                  type: 'POST',
+                  url: '{{url_for('.fbconnect')}}?state={{STATE}}',
+                  processData: false,
+                  data: access_token,
+                  contentType: 'application/octet-stream; charset=utf-8',
+                  success: function(result)
+                    {
+                        if (result)
+                        {
+                          $('#result').addClass("alert-success")
+                                      .html('Login Successful! Redirecting...')
+                                      .show();
+                          window.location.href = "/winestock";
+                        }
+                        else
+                        {
+                            $('#result').addClass("alert-danger")
+                                  .html('Failed to make a server-side call. Check your configuration.')
+                                  .show();
+                        }
+                  }
+                }); // ajax
+    }); // FBapi
+}
+</script>
+
+
+
+<!--END FACEBOOK SIGN IN -->
+
+</body>
+</html>
