@@ -22,9 +22,9 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
-session.add(User(id=1, name="admin", email="admin@myurl.com"))
-session.add(User(id=2, name="admin2", email="admin2@myurl.com"))
-session.add(User(id=3, name="Jannie van Niekerk", email="acivux@gmail.com"))
+session.add(User(id=1, name="admin", email="admin@myurl.com", nickname="zztop", admin=False))
+session.add(User(id=2, name="admin2", email="admin2@myurl.com", nickname="formatc", admin=False))
+session.add(User(id=3, name="Jannie van Niekerk", email="acivux@gmail.com", admin=True))
 
 session.add(GlassType(id=1, name="Sparkling Wine Flute"))
 session.add(GlassType(id=2, name="White Wine Glass"))
@@ -162,17 +162,17 @@ session.add(WineType(id=13,
                      temperature_id=5))
 
 session.add(WineStock(id=1,
-                      brand_name="Testin123",
+                      brand_name="Testing 123",
                       vintage=1990,
                       winetype_id=13,
                       date_created=datetime.datetime(2015, 1, 1),
                       user_id=1))
 
 session.add(WineStock(id=2,
-                      brand_name="werfasdf",
+                      brand_name="More Testing 123",
                       vintage=2000,
                       winetype_id=12,
                       date_created=datetime.datetime(2015, 2, 2),
-                      user_id=1))
+                      user_id=2))
 
 session.commit()

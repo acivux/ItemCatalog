@@ -1,5 +1,5 @@
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy import Column, ForeignKey, Integer, Float, String, DateTime
+from sqlalchemy import Column, ForeignKey, Integer, Float, String, DateTime, Boolean
 from sqlalchemy import Text
 from sqlalchemy import Table
 from sqlalchemy.ext.declarative import declarative_base
@@ -18,6 +18,7 @@ class User(Base):
     email = Column(String(250), nullable=False, unique=True)
     picture = Column(String(250), nullable=True)
     nickname = Column(String(250), nullable=True, unique=True)
+    admin = Column(Boolean)
 
 
 class GlassType(Base):

@@ -2,11 +2,13 @@
 {%block navbar%}
 
 {%endblock%}
-{%block body%}
-<ol class="breadcrumb">
-    <li><a href="{{url_for('winestock_api.show')}}">Wine Types</a></li>
+
+{%block breadcrumbs%}
+    {% include 'partial_templates/breadcrumb_linked_winetype.html' %}
     <li>User</li>
-</ol>
+{%endblock%}
+
+{%block body%}
     <div class="container-fluid">
       <div class="row">
           <div class="col-md-4 col-sm-4 col-sx-4"></div>
@@ -16,7 +18,13 @@
                 <div class="form-group">
                     <label for="username" class="col-sm-2 control-label">Name</label>
                     <div class="col-sm-10">
-                        <p id="username">{{user.name}}</p>
+                        <p class="form-control-static" id="username">{{user.name}}</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="email" class="col-sm-2 control-label">e-mail</label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static" id="email">{{user.email}}</p>
                     </div>
                 </div>
                 <div class="form-group">

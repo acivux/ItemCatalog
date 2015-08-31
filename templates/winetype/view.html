@@ -1,11 +1,16 @@
 {% extends "winetype/type_base.html" %}
 {%block navbar%}
-    <ul class="nav navbar-nav navbar-right">
-        <li><a href="{{url_for('.new')}}">New</a></li>
-    </ul>
+    {% if session.user_id %}
+        <li><a href="{{url_for('.new')}}"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
+    {% endif %}
 {%endblock%}
-{%block body%}
 
+{%block breadcrumbs%}
+    {% include 'partial_templates/breadcrumb_linked_home.html' %}
+    {% include 'partial_templates/breadcrumb_unlinked_winetype.html' %}
+{%endblock%}
+
+{%block body%}
     <div class="container-fluid">
       <div class="row">
           <div class="col-md-4 col-sm-4 col-sx-4"></div>

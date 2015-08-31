@@ -1,23 +1,23 @@
 {% extends "winestock/stock_base.html" %}
 {%block navbar%}
-    {% if session.logged_in %}
-        <ul class="nav navbar-nav navbar-right">
-            <li><a href="{{url_for('.new')}}">New</a></li>
-        </ul>
+    {% if session.user_id %}
+        <li><a href="{{url_for('.new')}}"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
     {% endif %}
 {%endblock%}
+
+{%block breadcrumbs%}
+    {% include 'partial_templates/breadcrumb_linked_home.html' %}
+    {% include 'partial_templates/breadcrumb_unlinked_winestock.html' %}
+{%endblock%}
+
 {%block body%}
-<ol class="breadcrumb">
-    <li><a href="{{url_for('winestock_api.show')}}">Wine Types</a></li>
-    <li>{{winetype.name}} Stock</li>
-</ol>
     <div class="container-fluid">
       <div class="row">
           <div class="col-md-4 col-sm-4 col-sx-4"></div>
           <div class="col-md-4 col-sm-4 col-sx-4">
             <ul class="list-group">
             {% for winestock in wines %}
-                <a href="{{url_for('.show_stockitem',stockitem_id=winestock.id)}}" class="list-group-item">{{winestock.brand_name}}<span class="badge">{{winestock.on_hand}}</span></a>
+                <a href="{{url_for('.show_stockitem',stockitem_id=winestock.id)}}" class="list-group-item">{{winestock.brand_name}}<span class="label label-info pull-right">{{winestock.vintage}}</span></a>
             {% endfor %}
             </ul>
           </div>

@@ -27,9 +27,21 @@ def show_login():
 @auth_api.route('/user', methods=["GET", "POST"])
 def user_edit():
     if login_session.get('user_id', None):
-        session = current_app.config['db']
-        user = get_user_info(login_session['user_id'])
-        return render_template(template_prefix+'user_edit.html', user=user)
+        if request.method == "POST":
+            session = current_app.config['db']
+            user = session.query(User).filter_by(id=login_session['user_id']).one()
+            user.nickname = request.form.get('usernickname')
+            session.commit()
+            flash("User nickname changed", 'success')
+            return redirect(url_for('winestock_api.show'))
+        else:
+            user = get_user_info(login_session['user_id'])
+            return render_template(template_prefix+'user_edit.html', user=user)
+    else:
+        response = make_response(
+            json.dumps('User mismatch.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
 
 
 @auth_api.route('/signout')

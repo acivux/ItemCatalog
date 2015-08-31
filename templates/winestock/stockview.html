@@ -1,17 +1,55 @@
 {% extends "winestock/stock_base.html" %}
+{% block scripts%}
+<style>
+div.stars {
+  width: 100%;
+  display: inline-block;
+}
+
+input.star { display: none; }
+
+label.star {
+  float: right;
+  padding: 5px;
+  font-size: 15px;
+  color: #444;
+  transition: all .2s;
+}
+
+input.star:checked ~ label.star:before {
+  content: '\e006';
+  color: #FD4;
+  transition: all .25s;
+}
+
+input.star-5:checked ~ label.star:before {
+  color: #FE7;
+  text-shadow: 0 0 20px #952;
+}
+
+input.star-1:checked ~ label.star:before { color: #F62; }
+
+label.star:hover { transform: rotate(-15deg) scale(1.3); }
+
+label.star:before {
+  content: "\e006";
+  font-family: 'Glyphicons Halflings';
+}
+</style>
+{% endblock%}
 {%block navbar%}
-    {% if session.logged_in %}
-        <ul class="nav navbar-nav navbar-right">
-            <li><a href="{{url_for('.new')}}">New</a></li>
-        </ul>
+    {% if session.user_id %}
+        <li><a href="{{url_for('.new')}}"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
     {% endif %}
 {%endblock%}
-{%block body%}
-<ol class="breadcrumb">
-    <li><a href="{{url_for('winestock_api.show')}}">Wine Types</a></li>
-    <li><a href="{{url_for('.show_brand', winetype_id=item.winetype_id)}}">{{item.winetype.name}} Stock</a></li>
+
+{%block breadcrumbs%}
+    {% include 'partial_templates/breadcrumb_linked_home.html' %}
+    {% include 'partial_templates/breadcrumb_linked_winestock.html' %}
     <li>Stock Item</li>
-</ol>
+{%endblock%}
+
+{%block body%}
     <div class="container-fluid">
       <div class="row">
           <div class="col-md-4 col-sm-4 col-sx-4"></div>
@@ -20,29 +58,65 @@
                 <div class="form-group">
                     <label for="itemname" class="col-sm-2 col-xs-12 control-label">Name</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="itemname" name="itemname" placeholder="Name" value="{{item.brand_name}}">
+                        <p class="form-control-static" id="itemname" name="itemname">{{item.brand_name}}</p>
                     </div>
                 </div>
                 <!-- wine type -->
                 <div class="form-group">
                     <label for="winetypevalue" class="col-sm-2 col-xs-12 control-label">Wine Type</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="winetypevalue" name="winetypevalue" placeholder="Name" value="{{item.winetype.name}}">
+                        <p class="form-control-static" id="winetypevalue" name="winetypevalue">{{item.winetype.name}}</p>
                     </div>
                 </div>
-                <!-- stock count -->
+                <!-- stock vintage -->
                 <div class="form-group">
                     <label for="vintagevalue" class="col-sm-2 col-xs-12 control-label">Vintage</label>
                     <div class="col-sm-5 col-xs-5">
-                        <input type="text" value="{{item.vintage}}" class="form-control" id="vintagevalue" name="vintagevalue">
+                        <p class="form-control-static" id="vintagevalue" name="vintagevalue">{{item.vintage}}</p>
                     </div>
                 </div>
-                <!--<div class="form-group">-->
-                    <!--<div class="col-sm-offset-2 col-sm-10">-->
-                        <!--<a class="btn btn-default" href="{{url_for('.show_brand', winetype_id=item.winetype_id)}}" role="button">Cancel</a>-->
-                    <!--</div>-->
-                <!--</div>-->
+                <!-- date added
+                    TODO: Link to user activity page
+                 -->
+                <p class="text-right text-muted"><small>{% if item.user_id %}<span class="glyphicon glyphicon-user" aria-hidden="true"></span> <a href="">{{item.user.nickname or item.user.name}}</a>{%endif%}    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> {{item.date_created.strftime('%Y-%m-%d')}}</small></p>
             </form>
+            <!-- Add Review -->
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <form class="form" method='POST' enctype='multipart/form-data' action="{{url_for('.new_review', stockitem_id=item.id)}}">
+                        <div class="form-group">
+                            <label for="reviewtext" class="col-sm-2 col-xs-12 control-label">Review</label>
+                            <textarea id="reviewtext" class="form-control" rows="3" name="reviewtext"></textarea>
+                        </div>
+                        <div id="rating">
+                            <input class="star star-5" id="star-5" type="radio" name="star" value="5"/>
+                            <label class="star star-5" for="star-5"></label>
+                            <input class="star star-4" id="star-4" type="radio" name="star" value="4"/>
+                            <label class="star star-4" for="star-4"></label>
+                            <input class="star star-3" id="star-3" type="radio" name="star" value="3"/>
+                            <label class="star star-3" for="star-3"></label>
+                            <input class="star star-2" id="star-2" type="radio" name="star" value="2"/>
+                            <label class="star star-2" for="star-2"></label>
+                            <input class="star star-1" id="star-1" type="radio" name="star" value="1"/>
+                            <label class="star star-1" for="star-1"></label>
+                        </div>
+                        <div class="form-group">
+                                <button type="submit" class="btn btn-default">Post</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- -->
+              {% for review in reviews %}
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <p style="white-space: pre-wrap;">{{review.comment|safe}}</p>
+                    </div>
+                    <div class="panel-footer">
+                        <p class="text-muted"><span class="pull-left">{% for x in range(0,review.rating)%}<span class="glyphicon glyphicon-star" aria-hidden="true"></span>{%endfor%}</span> <span class="pull-right"><small>{% if review.user_id %}<span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{review.user.nickname or review.user.name}}{%endif%}    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> {{review.date_created.strftime('%Y-%m-%d')}}</small></span></p>
+                    </div>
+                </div>
+              {% endfor%}
           </div>
           </div>
           <div class="col-md-4 col-sm-4 col-sx-4"></div>
