@@ -1,0 +1,42 @@
+{% extends "winestock/stock_base.html" %}
+{% block scripts%}
+
+{% endblock%}
+{%block navbar%}
+    {% if session.user_id %}
+        <li><a href="{{url_for('.new')}}"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
+    {% endif %}
+{%endblock%}
+
+{%block breadcrumbs%}
+    {% include 'partial_templates/breadcrumb_linked_home.html' %}
+    <li>User Reviews</li>
+{%endblock%}
+
+{%block body%}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4 col-sm-4 col-sx-4"></div>
+        <div class="col-md-4 col-sm-4 col-sx-4">
+
+            {% for review in reviews %}
+                <div class="media well">
+                  <div class="media-left">
+                    <a href="#">
+                      <img class="media-object img-circle" src="{{session.picture}}" alt="{{url_for('static', filename='generic_person.png')}}" style="width:64px; height: 64px">
+                    </a>
+                  </div>
+                  <div class="media-body">
+                    <h5 class="media-heading">{{review.winestock.brand_name}} ({{review.winestock.vintage}} {{review.winestock.winetype.name}})</h5>
+                    <h4 class="media-heading"><br/>{{review.summary}}</h4>
+                    <p style="white-space: pre-wrap;">{{review.comment|e}}</p>
+                    <p><small>{% for x in range(0,review.rating)%}<span class="glyphicon glyphicon-star" aria-hidden="true"></span>{%endfor%} <span class="pull-right"><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> {{review.date_created.strftime('%Y-%m-%d')}}</span></small></p>
+                  </div>
+                </div>
+            {% endfor%}
+        </div>
+        <div class="col-md-4 col-sm-4 col-sx-4"></div>
+    </div>
+</div>
+{%endblock%}
+

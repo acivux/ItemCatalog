@@ -85,7 +85,11 @@ label.star:before {
                 <div class="panel-body">
                     <form class="form" method='POST' enctype='multipart/form-data' action="{{url_for('.new_review', stockitem_id=item.id)}}">
                         <div class="form-group">
-                            <label for="reviewtext" class="col-sm-2 col-xs-12 control-label">Review</label>
+                            <label for="summary" class="control-label">Short Summary</label>
+                            <input type="text" class="form-control" id="summary" name="summary" placeholder="Summary" maxlength="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="reviewtext" class="control-label">Review</label>
                             <textarea id="reviewtext" class="form-control" rows="3" name="reviewtext"></textarea>
                         </div>
                         <div id="rating">
@@ -108,13 +112,17 @@ label.star:before {
             </div>
             <!-- -->
               {% for review in reviews %}
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <p style="white-space: pre-wrap;">{{review.comment|safe}}</p>
-                    </div>
-                    <div class="panel-footer">
-                        <p class="text-muted"><span class="pull-left">{% for x in range(0,review.rating)%}<span class="glyphicon glyphicon-star" aria-hidden="true"></span>{%endfor%}</span> <span class="pull-right"><small>{% if review.user_id %}<span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{review.user.nickname or review.user.name}}{%endif%}    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> {{review.date_created.strftime('%Y-%m-%d')}}</small></span></p>
-                    </div>
+                <div class="media well">
+                  <div class="media-left">
+                    <a href="#">
+                      <img class="media-object img-circle" src="{{session.picture}}" alt="{{url_for('static', filename='generic_person.png')}}" style="width:64px; height: 64px">
+                    </a>
+                  </div>
+                  <div class="media-body">
+                    <h4 class="media-heading">{{review.summary|e}}</h4>
+                    <p style="white-space: pre-wrap;">{{review.comment|e}}</p>
+                    <p><small>{% for x in range(0,review.rating)%}<span class="glyphicon glyphicon-star" aria-hidden="true"></span>{%endfor%}  <span class="pull-right"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <a href="{{url_for('.list_user_reviews', user_id=review.user_id)}}">{{review.user.nickname or review.user.name}}</a>  <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> {{review.date_created.strftime('%Y-%m-%d')}}</span></small></p>
+                  </div>
                 </div>
               {% endfor%}
           </div>

@@ -199,6 +199,7 @@ class WineRating(Base):
     winestock = relationship(WineStock)
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     user = relationship(User)
+    summary = Column(String(250), nullable=False)
     comment = Column(Text, nullable=True)
     rating = Column(Integer, nullable=False)
     date_created = Column(DateTime, nullable=False)
