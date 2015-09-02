@@ -12,7 +12,7 @@
           <div class="col-md-4 col-sm-4 col-sx-4">
             <ul class="list-group">
             {% for item in items %}
-                <a href="{{url_for('.edit',item_id = item.id)}}" class="list-group-item" >{{item.name}}</a>
+                <a href="{{url_for('.edit',item_id = item.id)}}" class="list-group-item" ><img style="max-width:10px;" src="/_uploads/glassphotos/{{item.filename}}" alt="{{url_for('static', filename='generic_glass.png')}}"/>  {{item.name}}</a>
             {% endfor %}
             </ul>
           </div>

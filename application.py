@@ -1,14 +1,9 @@
-import random
-import string
-import colorsys
-
-from flask import Flask, render_template, request, redirect, url_for, flash
-from flask import session as login_session
+import os
+from flask import Flask, redirect, url_for
 from flaskext.uploads import UploadSet, configure_uploads, IMAGES
-from sqlalchemy import create_engine, asc, func
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from flask import session as login_session
-from database import Base, WineType
+from database import Base
 from wine_color_api.wine_color_api import wine_color_api
 from temperature_api.temperature_api import temperature_api
 from calories_api.calories_api import calories_api
@@ -26,8 +21,7 @@ Session = sessionmaker(bind=engine)
 
 app = Flask(__name__)
 app.config['db'] = Session()
-app.config['UPLOADS_DEFAULT_DEST'] = None
-app.config['UPLOADS_DEFAULT_URL'] = None
+app.config['UPLOADS_DEFAULT_DEST'] = os.path.join(app.root_path, 'image_uploads')
 app.register_blueprint(temperature_api, url_prefix='/temperature')
 app.register_blueprint(wine_color_api, url_prefix='/color')
 app.register_blueprint(calories_api, url_prefix='/calories')
@@ -38,10 +32,14 @@ app.register_blueprint(winetype_api, url_prefix='/winetype')
 app.register_blueprint(winestock_api, url_prefix='/winestock')
 app.register_blueprint(auth_api, url_prefix='/auth')
 
+brandphotos = UploadSet('brandphotos', IMAGES)
+glassphotos = UploadSet('glassphotos', IMAGES)
+configure_uploads(app, (glassphotos, brandphotos))
 
-# UPLOADED_PHOTOS_DEST = 'photolog'
-# winetype_images = UploadSet('photos', IMAGES)
-# configure_uploads(app, winetype_images)
+
+
+
+
 
 @app.route('/')
 def show_home():

@@ -4,9 +4,13 @@ from sqlalchemy import asc, desc, func
 from database import WineStock, WineType, WineRating
 from flask import session as login_session
 import datetime
+from flaskext.uploads import UploadSet, IMAGES
+from utils import make_safe_filename
 
 winestock_api = Blueprint('winestock_api', __name__)
 template_prefix = "winestock/"
+
+brandphotos = UploadSet('brandphotos', IMAGES)
 
 
 @winestock_api.route('/')
@@ -62,6 +66,10 @@ def new():
         item.vintage = request.form.get('vintagevalue', None)
         item.date_created = datetime.datetime.now()
         item.user_id = login_session.get('user_id', None)
+        if 'filename' in request.files:
+            item.filename = brandphotos.save(
+                request.files['filename'],
+                name=make_safe_filename(request.files['filename'].filename))
         session.add(item)
         session.commit()
         session.flush()

@@ -52,7 +52,9 @@ label.star:before {
 {%block body%}
     <div class="container-fluid">
       <div class="row">
-          <div class="col-md-4 col-sm-4 col-sx-4"></div>
+          <div class="col-md-4 col-sm-4 col-sx-4">
+              <p class="pull-right"><img class="img-responsive img-thumbnail" style="max-height:200px" src="{% if item.filename %}/_uploads/brandphotos/{{item.filename}}{%else%}{{url_for('static', filename='images/generic_wine_bottle.png')}}{%endif%}"/></p>
+          </div>
           <div class="col-md-4 col-sm-4 col-sx-4">
             <form class="form-horizontal">
                 <div class="form-group">

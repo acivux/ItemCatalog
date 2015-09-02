@@ -26,7 +26,7 @@ class GlassType(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False, unique=True)
-    #TODO: add image
+    filename = Column(String(250), nullable=True, unique=True)
 
     @property
     def serialize(self):
@@ -179,6 +179,7 @@ class WineStock(Base):
     date_edited = Column(DateTime, nullable=True)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
+    filename = Column(String(250), nullable=True, unique=True)
 
     @property
     def serialize(self):
