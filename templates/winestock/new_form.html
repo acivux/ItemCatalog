@@ -1,5 +1,9 @@
 {% extends "winestock/stock_base.html" %}
-{%block navbar%}{%endblock%}
+{%block navbar%}
+    {% if session.user_id %}
+        <li><a href="{{url_for('.new')}}" title="Add a new wine"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
+    {% endif %}
+{%endblock%}
 
 {%block breadcrumbs%}
     {% include 'partial_templates/breadcrumb_linked_home.html' %}

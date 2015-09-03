@@ -17,7 +17,7 @@
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
-    <a class="navbar-brand" href="{%block navbar_brand_url%}{%endblock%}">{%block navbar_brand%}{%endblock%}</a>
+    <a class="navbar-brand" href="{{url_for('show_home')}}">{% include 'partial_templates/name_app.html' %}</a>
     </div>
     {% if not session.user_id %}
         <form class="navbar-form navbar-right" action="{{ url_for('auth_api.show_login') }}">
@@ -26,10 +26,12 @@
     {% else %}
         <ul class="nav navbar-nav navbar-right">
             {%block navbar%}{%endblock%}
+            {% include 'partial_templates/admin_dropdown.html' %}
             <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><img src="{{session.picture}}" alt="{{url_for('static', filename='generic_person.png')}}" title="{{session.username}}" style="max-width:30px; margin-top: -7px;" class="img-circle"/> <span class="caret"></span></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><img src="{%if session.picture %}{{session.picture}}{%else%}{{url_for('static', filename='generic_person.png')}}{%endif%}" alt="{{session.username}}" title="{{session.username}}" style="max-width:30px; margin-top: -7px;" class="img-circle"/> <span class="caret"></span></a>
                   <ul class="dropdown-menu">
                     <li><a href="{{url_for('auth_api.user_edit')}}"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span>  Profile</a></li>
+                    <li><a href="{{url_for('winestock_api.list_user_reviews', user_id=session.user_id)}}"><span class="glyphicon glyphicon-list" aria-hidden="true"></span>  My Reviews</a></li>
                     <li role="separator" class="divider"></li>
                     <li><a href="{{url_for('auth_api.signout')}}"><span class="glyphicon glyphicon-off" aria-hidden="true"></span>  Sign Out</a></li>
                   </ul>

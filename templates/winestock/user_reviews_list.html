@@ -18,7 +18,6 @@
     <div class="row">
         <div class="col-md-4 col-sm-4 col-sx-4"></div>
         <div class="col-md-4 col-sm-4 col-sx-4">
-
             {% for review in reviews %}
                 <div class="media well">
                   <div class="media-left">
@@ -31,6 +30,12 @@
                     <h4 class="media-heading"><br/>{{review.summary}}</h4>
                     <p style="white-space: pre-wrap;">{{review.comment|e}}</p>
                     <p><small>{% for x in range(0,review.rating)%}<span class="glyphicon glyphicon-star" aria-hidden="true"></span>{%endfor%} <span class="pull-right"><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> {{review.date_created.strftime('%Y-%m-%d')}}</span></small></p>
+                  </div>
+                </div>
+            {% else %}
+                <div class="panel panel-default">
+                  <div class="panel-body text-center">
+                    No reviews for this user
                   </div>
                 </div>
             {% endfor%}

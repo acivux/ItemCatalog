@@ -1,3 +1,4 @@
+# TODO: Deprecated. Please delete
 from flask import current_app, Blueprint
 from flask import render_template, request, redirect, url_for, flash
 from sqlalchemy import asc, exc

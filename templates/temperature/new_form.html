@@ -1,5 +1,12 @@
 {% extends "temperature/temperature_base.html" %}
 {%block navbar%}{%endblock%}
+
+{%block breadcrumbs%}
+    {% include 'partial_templates/breadcrumb_linked_home.html' %}
+    {% include 'partial_templates/breadcrumb_linked_temperatures.html' %}
+    <li>New</li>
+{%endblock%}
+
 {%block body%}
 
     <div class="container-fluid">

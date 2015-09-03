@@ -1,15 +1,17 @@
-{% extends "base.html" %}
-{%block title%}Delete Wine Color{%endblock%}
-{%block navbar_brand_url%}color{%endblock%}
-{%block navbar_brand%}Delete Wine Color{%endblock%}
-{%block navbar%}
+{% extends "color/color_base.html" %}
+{%block navbar%}{%endblock%}
 
+{%block breadcrumbs%}
+    {% include 'partial_templates/breadcrumb_linked_home.html' %}
+    {% include 'partial_templates/breadcrumb_linked_color.html' %}
+    <li>Delete <i>{{colortype.name}}</i></li>
 {%endblock%}
-{%block body%}
 
+{%block body%}
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
+          <div class="col-md-4 col-sm-4 col-sx-4"></div>
+          <div class="col-md-4 col-sm-4 col-sx-4">
             <form class="form-horizontal" method='POST' enctype='multipart/form-data' action=""{{url_for('.delete',color_id=colortype.id)}}">
             <div class="panel panel-danger">
                 <div class="panel-heading">
@@ -21,7 +23,8 @@
                 </div>
             </div>
             </form>
-        </div>
+          </div>
+          <div class="col-md-4 col-sm-4 col-sx-4"></div>
     </div>
 </div>
 {%endblock%}

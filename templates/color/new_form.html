@@ -1,10 +1,12 @@
-{% extends "base.html" %}
-{%block title%}New Wine Color{%endblock%}
-{%block navbar_brand_url%}catalog{%endblock%}
-{%block navbar_brand%}New Wine Color{%endblock%}
-{%block navbar%}
+{% extends "color/color_base.html" %}
+{%block navbar%}{%endblock%}
 
+{%block breadcrumbs%}
+    {% include 'partial_templates/breadcrumb_linked_home.html' %}
+    {% include 'partial_templates/breadcrumb_linked_color.html' %}
+    <li>New</i></li>
 {%endblock%}
+
 {%block body%}
 
     <div class="container-fluid">
