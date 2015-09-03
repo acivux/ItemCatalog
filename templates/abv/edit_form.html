@@ -1,9 +1,14 @@
 {% extends "abv/abv_base.html" %}
 {%block navbar%}
-    <ul class="nav navbar-nav navbar-right">
-        <li><a href="{{url_for('.delete', item_id=item.id)}}"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a></li>
-    </ul>
+    <li><a href="{{url_for('.delete', item_id=item.id)}}"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a></li>
 {%endblock%}
+
+{%block breadcrumbs%}
+    {% include 'partial_templates/breadcrumb_linked_home.html' %}
+    {% include 'partial_templates/breadcrumb_linked_abv.html' %}
+    <li>Edit <i>{{item.name}}</i></li>
+{%endblock%}
+
 {%block body%}
 
     <div class="container-fluid">

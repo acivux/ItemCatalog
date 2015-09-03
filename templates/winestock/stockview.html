@@ -80,9 +80,10 @@ label.star:before {
                 <!-- date added
                     TODO: Link to user activity page
                  -->
-                <p class="text-right text-muted"><small>{% if item.user_id %}<span class="glyphicon glyphicon-user" aria-hidden="true"></span> <a href="">{{item.user.nickname or item.user.name}}</a>{%endif%}    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> {{item.date_created.strftime('%Y-%m-%d')}}</small></p>
+                <p class="text-right text-muted"><small>{% if item.user_id %}<span class="glyphicon glyphicon-user" aria-hidden="true"></span> <a href="{{url_for('.list_user_reviews', user_id=item.user_id)}}">{{item.user.nickname or item.user.name}}</a>{%endif%}    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> {{item.date_created.strftime('%Y-%m-%d')}}</small></p>
             </form>
             <!-- Add Review -->
+            {% if session.user_id %}
             <div class="panel panel-default">
                 <div class="panel-body">
                     <form class="form" method='POST' enctype='multipart/form-data' action="{{url_for('.new_review', stockitem_id=item.id)}}">
@@ -112,6 +113,7 @@ label.star:before {
                     </form>
                 </div>
             </div>
+            {%endif%}
             <!-- -->
               {% for review in reviews %}
                 <div class="media well">

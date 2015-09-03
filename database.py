@@ -1,13 +1,14 @@
-from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy import Column, ForeignKey, Integer, Float, String, DateTime, Boolean
-from sqlalchemy import Text
-from sqlalchemy import Table
+from sqlalchemy import Column, ForeignKey, Integer, Float, String, DateTime
+from sqlalchemy import Text, Boolean
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, scoped_session, sessionmaker
 from sqlalchemy import create_engine
 import colorsys
 
+
+engine = create_engine('sqlite:///catalog.db')
 Base = declarative_base()
+Base.metadata.bind = engine
 
 
 class User(Base):
@@ -34,6 +35,7 @@ class GlassType(Base):
         return {
             'name': self.name,
             'id': self.id,
+
         }
 
 
@@ -155,7 +157,10 @@ class WineType(Base):
     temperature = relationship(Temperature)
     filename = Column(String, nullable=True)
 
-    # TODO: Add image
+    # TODO: add id of creator.
+    # TODO: prevent deletion if not creator.
+    # TODO: prevent deletion if used in database.
+    # TODO: add date created and edited
     # TODO: Add wikipedia link explaining wine type
 
     @property
@@ -192,8 +197,8 @@ class WineStock(Base):
         }
 
 
-class WineRating(Base):
-    __tablename__ = 'wine_rating'
+class UserReview(Base):
+    __tablename__ = 'user_review'
 
     id = Column(Integer, primary_key=True)
     winestock_id = Column(Integer, ForeignKey('wine_stock.id'), nullable=False)
@@ -238,5 +243,4 @@ class Item(Base):
             'id': self.id,
         }
 
-engine = create_engine('sqlite:///catalog.db')
 Base.metadata.create_all(engine)

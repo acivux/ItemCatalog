@@ -1,7 +1,7 @@
 from flask import current_app, Blueprint
 from flask import render_template, request, redirect, url_for, flash
 from sqlalchemy import asc, desc, func
-from database import WineStock, WineType, WineRating
+from database import WineStock, WineType, UserReview
 from flask import session as login_session
 import datetime
 from flaskext.uploads import UploadSet, IMAGES
@@ -47,9 +47,9 @@ def show_brand(winetype_id):
 def show_stockitem(stockitem_id):
     session = current_app.config['db']
     item = session.query(WineStock).filter_by(id=stockitem_id).one()
-    reviews = session.query(WineRating).filter_by(
+    reviews = session.query(UserReview).filter_by(
         winestock_id=stockitem_id).order_by(
-        WineRating.date_created.desc())
+        UserReview.date_created.desc())
     return render_template(template_prefix+"stockview.html",
                            item=item,
                            reviews=reviews)
@@ -93,7 +93,7 @@ def new():
 def new_review(stockitem_id):
     session = current_app.config['db']
     if request.method == "POST":
-        reviewitem = WineRating(
+        reviewitem = UserReview(
             winestock_id=stockitem_id,
             summary=request.form.get('summary', None),
             comment=request.form.get('reviewtext', None),
@@ -110,6 +110,6 @@ def new_review(stockitem_id):
 @winestock_api.route('/reviews/<int:user_id>', methods=["GET"])
 def list_user_reviews(user_id):
     session = current_app.config['db']
-    reviews = session.query(WineRating).filter_by(user_id=user_id).order_by(WineRating.date_created.desc())
+    reviews = session.query(UserReview).filter_by(user_id=user_id).order_by(UserReview.date_created.desc())
     return render_template(template_prefix+"user_reviews_list.html", reviews=reviews)
 

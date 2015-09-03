@@ -1,9 +1,10 @@
 import os
+import flask.ext.restless
 from flask import Flask, redirect, url_for
 from flaskext.uploads import UploadSet, configure_uploads, IMAGES
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from database import Base
+from sqlalchemy.orm import sessionmaker, scoped_session
+from database import Base, GlassType, WineStock, UserReview
 from wine_color_api.wine_color_api import wine_color_api
 from temperature_api.temperature_api import temperature_api
 from calories_api.calories_api import calories_api
@@ -18,6 +19,7 @@ from auth_api.auth_api import auth_api
 engine = create_engine('sqlite:///catalog.db')
 Base.metadata.bind = engine
 Session = sessionmaker(bind=engine)
+api_endpoint_session = scoped_session(Session)
 
 app = Flask(__name__)
 app.config['db'] = Session()
@@ -36,9 +38,14 @@ brandphotos = UploadSet('brandphotos', IMAGES)
 glassphotos = UploadSet('glassphotos', IMAGES)
 configure_uploads(app, (glassphotos, brandphotos))
 
-
-
-
+api_manager = flask.ext.restless.APIManager(app, session=api_endpoint_session)
+glass_blueprint = api_manager.create_api(GlassType)
+winestock_blueprint = api_manager.create_api(
+    WineStock,
+    exclude_columns=['user', 'winetype_id'])
+review_blueprint = api_manager.create_api(
+    UserReview,
+    exclude_columns=['user', 'winestock_id'])
 
 
 @app.route('/')

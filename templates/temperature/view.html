@@ -1,8 +1,10 @@
 {% extends "temperature/temperature_base.html" %}
 {%block navbar%}
-    <ul class="nav navbar-nav navbar-right">
-        <li><a href="{{url_for('.new')}}">New</a></li><!-- TODO: Add link to new something -->
-    </ul>
+        <li><a href="{{url_for('.new')}}">New</a></li>
+{%endblock%}
+{%block breadcrumbs%}
+    {% include 'partial_templates/breadcrumb_linked_home.html' %}
+    <li>{% include 'partial_templates/name_temperature.html' %}</li>
 {%endblock%}
 {%block body%}
 

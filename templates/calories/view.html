@@ -1,9 +1,13 @@
 {% extends "calories/calories_base.html" %}
 {%block navbar%}
-    <ul class="nav navbar-nav navbar-right">
-        <li><a href="{{url_for('.new')}}">New</a></li><!-- TODO: Add link to new something -->
-    </ul>
+    <li><a href="{{url_for('.new')}}">New</a></li>
 {%endblock%}
+
+{%block breadcrumbs%}
+    {% include 'partial_templates/breadcrumb_linked_home.html' %}
+    {% include 'partial_templates/breadcrumb_unlinked_calories.html' %}
+{%endblock%}
+
 {%block body%}
 
     <div class="container-fluid">

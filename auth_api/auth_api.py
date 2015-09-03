@@ -149,7 +149,9 @@ def gconnect():
     user_id = get_user_id(data["email"])
     if not user_id:
         user_id = create_user(login_session)
+    user = get_user_info(user_id)
     login_session['user_id'] = user_id
+    login_session['isadmin'] = user.admin
 
     response = make_response(json.dumps('Please wait...'), 200)
     response.headers['Content-Type'] = 'application/json'
@@ -224,7 +226,9 @@ def fbconnect():
     user_id = get_user_id(login_session['email'])
     if not user_id:
         user_id = create_user(login_session)
+    user = get_user_info(user_id)
     login_session['user_id'] = user_id
+    login_session['isadmin'] = user.admin
 
     response = make_response(json.dumps('Authenticated'), 200)
     response.headers['Content-Type'] = 'application/json'

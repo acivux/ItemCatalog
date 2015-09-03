@@ -1,12 +1,14 @@
-{% extends "base.html" %}
-{%block title%}Wine Color Edit{%endblock%}
-{%block navbar_brand_url%}colors{%endblock%}
-{%block navbar_brand%}Wine Color Edit{%endblock%}
+{% extends "color/color_base.html" %}
 {%block navbar%}
-    <ul class="nav navbar-nav navbar-right">
         <li><a href="{{url_for('.delete', color_id=colortype.id)}}"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a></li>
-    </ul>
 {%endblock%}
+
+{%block breadcrumbs%}
+    {% include 'partial_templates/breadcrumb_linked_home.html' %}
+    {% include 'partial_templates/breadcrumb_linked_color.html' %}
+    <li>Edit <i>{{colortype.name}}</i></li>
+{%endblock%}
+
 {%block body%}
 
     <div class="container-fluid">
