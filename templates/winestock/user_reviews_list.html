@@ -22,7 +22,7 @@
                 <div class="media well">
                   <div class="media-left">
                     <a href="#">
-                      <img class="media-object img-circle" src="{{session.picture}}" alt="{{url_for('static', filename='generic_person.png')}}" style="width:64px; height: 64px">
+                      <img class="media-object img-circle" src="{%if review.user.picture %}{{review.user.picture}}{%else%}{{url_for('static', filename='generic_person.png')}}{%endif%}" alt="User Image" style="width:64px; height: 64px">
                     </a>
                   </div>
                   <div class="media-body">

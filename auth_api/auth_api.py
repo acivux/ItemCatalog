@@ -149,6 +149,8 @@ def gconnect():
     user_id = get_user_id(data["email"])
     if not user_id:
         user_id = create_user(login_session)
+    else:
+        update_user_profile(user_id, login_session)
     user = get_user_info(user_id)
     login_session['user_id'] = user_id
     login_session['isadmin'] = user.admin
@@ -226,6 +228,8 @@ def fbconnect():
     user_id = get_user_id(login_session['email'])
     if not user_id:
         user_id = create_user(login_session)
+    else:
+        update_user_profile(user_id, login_session)
     user = get_user_info(user_id)
     login_session['user_id'] = user_id
     login_session['isadmin'] = user.admin
@@ -269,5 +273,15 @@ def get_user_info(user_id):
     try:
         user = current_app.config['db'].query(User).filter_by(id=user_id).one()
         return user
+    except:
+        return None
+
+
+def update_user_profile(user_id, login_session):
+    try:
+        user = current_app.config['db'].query(User).filter_by(id=user_id).one()
+        user.name = login_session['username']
+        user.picture = login_session['picture']
+        current_app.config['db'].commit()
     except:
         return None

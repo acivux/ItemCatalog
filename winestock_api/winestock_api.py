@@ -64,7 +64,7 @@ def new():
         item.brand_name = request.form['itemname']
         item.winetype_id = request.form.get('winetypevalue', None)
         item.vintage = request.form.get('vintagevalue', None)
-        item.date_created = datetime.datetime.now()
+        item.date_created = datetime.datetime.today()
         item.user_id = login_session.get('user_id', None)
         if 'filename' in request.files:
             item.filename = brandphotos.save(
@@ -98,7 +98,7 @@ def new_review(stockitem_id):
             summary=request.form.get('summary', None),
             comment=request.form.get('reviewtext', None),
             rating=request.form.get('star', 1),
-            date_created=datetime.datetime.now(),
+            date_created=datetime.datetime.today(),
             user_id=login_session.get('user_id', None)
         )
         session.add(reviewitem)

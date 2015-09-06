@@ -4,7 +4,7 @@ from flask import Flask, redirect, url_for
 from flaskext.uploads import UploadSet, configure_uploads, IMAGES
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
-from database import Base, GlassType, WineStock, UserReview
+from database import Base, GlassType, WineStock, UserReview, WineType
 from wine_color_api.wine_color_api import wine_color_api
 from temperature_api.temperature_api import temperature_api
 from calories_api.calories_api import calories_api
@@ -14,6 +14,8 @@ from character_api.character_api import character_api
 from type_api.winetype_api import winetype_api
 from winestock_api.winestock_api import winestock_api
 from auth_api.auth_api import auth_api
+
+from utils import get_single_postprocessor
 
 # Database setup
 engine = create_engine('sqlite:///catalog.db')
@@ -38,6 +40,7 @@ brandphotos = UploadSet('brandphotos', IMAGES)
 glassphotos = UploadSet('glassphotos', IMAGES)
 configure_uploads(app, (glassphotos, brandphotos))
 
+#ToDo: Cleanup API's
 api_manager = flask.ext.restless.APIManager(app, session=api_endpoint_session)
 glass_blueprint = api_manager.create_api(GlassType)
 winestock_blueprint = api_manager.create_api(
@@ -46,6 +49,11 @@ winestock_blueprint = api_manager.create_api(
 review_blueprint = api_manager.create_api(
     UserReview,
     exclude_columns=['user', 'winestock_id'])
+winetype_get_blueprint = api_manager.create_api(
+    WineType,
+    exclude_columns=['user', 'winestock_id', 'winestock'],
+    postprocessors={'GET_SINGLE': [get_single_postprocessor]})
+
 
 
 @app.route('/')

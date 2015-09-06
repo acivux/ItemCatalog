@@ -3,6 +3,8 @@ from flask import render_template, request, redirect, url_for, flash
 from sqlalchemy import asc, exc, func
 from database import WineType, WineColor, GlassType, WineCalories, WineABV
 from database import Temperature
+from flask import session as login_session
+import datetime
 
 winetype_api = Blueprint('winetype_api', __name__)
 template_prefix = "winetype/"
@@ -22,13 +24,17 @@ def get_form_values(request, item=None):
             item.calorie_id = new_calorie
             item.abv_id = new_abv
             item.temperature_id = new_temperature
+            item.user_id = login_session['user_id']
+            item.date_edited = datetime.datetime.today()
         else:
             item = WineType(name=new_name,
                             color_id=new_color,
                             glass_type_id=new_glass,
                             calorie_id=new_calorie,
                             abv_id=new_abv,
-                            temperature_id=new_temperature)
+                            temperature_id=new_temperature,
+                            user_id=login_session['user_id'],
+                            date_created=datetime.datetime.today())
         return item
 
 @winetype_api.route('/')
@@ -84,6 +90,11 @@ def new():
 def edit(item_id):
     session = current_app.config['db']
     item = session.query(WineType).filter_by(id=item_id).one()
+
+    if item.user_id != login_session['user_id']:
+        flash("You are not allowed to edit this Wine Type", 'danger')
+        return redirect(url_for('winetype_api.show'))
+
     if request.method == "POST":
         item = get_form_values(request, item)
         try:

@@ -1,27 +1,65 @@
 {% extends "winestock/stock_base.html" %}
+{%block scripts%}
+<script>
+    $(document).ready(function() {
+        $('#stocktable').DataTable({
+            "scrollY":        "400px",
+            "scrollCollapse": true,
+            "paging":         false,
+            "info": false,
+            "ordering": false,
+            "searching":true,
+            "dom": "ft"
+            });
+    });
+</script>
+<style>
+    .table th, .table td {
+     border: 0px !important;
+ }
+</style>
+{%endblock%}
+
 {%block navbar%}
     {% if session.user_id %}
-        <li><a href="{{url_for('.new')}}" title="Add a new wine"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
+        <li><a href="{{url_for('winestock_api.new')}}" title="Add a new wine"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
+        <li><a href="{{url_for('winetype_api.show')}}">{% include 'partial_templates/name_winetype.html' %}</a></li>
     {% endif %}
 {%endblock%}
+
+
 
 {%block breadcrumbs%}
     {% include 'partial_templates/breadcrumb_unlinked_home.html' %}
 {%endblock%}
 
 {%block body%}
-<div class="container-fluid">
+<div class="container">
   <div class="row">
-      <div class="col-md-4 col-sm-4 col-sx-4"></div>
-      <div class="col-md-4 col-sm-4 col-sx-4">
-        <ul class="list-group">
-        {% for winetype in wines %}
-            <a href="{{url_for('.show_brand', winetype_id=winetype.0.id)}}" class="list-group-item">{{winetype.0.name}}<span class="badge">{{winetype.1}}</span></a>
-        {% endfor %}
-        </ul>
+      <div class="col-lg-8 col-md-8 col-sm-8 col-sx-8">
+        <div class="panel panel-default">
+          <div class="panel-body">
+              <table id="stocktable" class="display table table-condensed" cellspacing="0">
+                  <thead><th></th></thead>
+                <tbody>
+                {% for winetype in wines %}
+                    <tr><td style="padding:0px"><a href="{{url_for('.show_brand', winetype_id=winetype.0.id)}}" class="list-group-item">{{winetype.0.name}}<span class="badge">{{winetype.1}}</span></a></td></tr>
+                {% endfor %}
+                </tbody>
+              </table>
+          </div>
+        </div>
       </div>
-      <div class="col-md-4 col-sm-4 col-sx-4"></div>
   </div>
 </div>
 {%endblock%}
+      <!--<div class="col-md-4 col-sm-4 col-sx-4"></div>-->
+      <!--<div class="col-md-4 col-sm-4 col-sx-4">-->
+        <!--<ul class="list-group">-->
+        <!--{% for winetype in wines %}-->
+            <!--<a href="{{url_for('.show_brand', winetype_id=winetype.0.id)}}" class="list-group-item">{{winetype.0.name}}<span class="badge">{{winetype.1}}</span></a>-->
+        <!--{% endfor %}-->
+        <!--</ul>-->
+      <!--</div>-->
+      <!--<div class="col-md-4 col-sm-4 col-sx-4"></div>-->
 

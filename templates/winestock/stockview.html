@@ -119,7 +119,7 @@ label.star:before {
                 <div class="media well">
                   <div class="media-left">
                     <a href="#">
-                      <img class="media-object img-circle" src="{{session.picture}}" alt="{{url_for('static', filename='generic_person.png')}}" style="width:64px; height: 64px">
+                      <img class="media-object img-circle" src="{%if review.user.picture %}{{review.user.picture}}{%else%}{{url_for('static', filename='generic_person.png')}}{%endif%}" alt="User Image" style="width:64px; height: 64px">
                     </a>
                   </div>
                   <div class="media-body">
@@ -128,7 +128,13 @@ label.star:before {
                     <p><small>{% for x in range(0,review.rating)%}<span class="glyphicon glyphicon-star" aria-hidden="true"></span>{%endfor%}  <span class="pull-right"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <a href="{{url_for('.list_user_reviews', user_id=review.user_id)}}">{{review.user.nickname or review.user.name}}</a>  <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> {{review.date_created.strftime('%Y-%m-%d')}}</span></small></p>
                   </div>
                 </div>
-              {% endfor%}
+            {% else %}
+                <div class="panel panel-default">
+                  <div class="panel-body text-center">
+                    No reviews yet
+                  </div>
+                </div>
+            {% endfor%}
           </div>
           </div>
           <div class="col-md-4 col-sm-4 col-sx-4"></div>

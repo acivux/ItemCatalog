@@ -158,6 +158,11 @@ class WineType(Base):
     temperature_id = Column(Integer, ForeignKey('temperature.id'), nullable=False)
     temperature = relationship(Temperature)
     filename = Column(String, nullable=True)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship(User)
+    date_created = Column(DateTime, nullable=False)
+    date_edited = Column(DateTime, nullable=True)
+    brands = relationship("WineStock", cascade="all,delete", backref="winetype")
 
     # TODO: add id of creator.
     # TODO: prevent deletion if not creator.
@@ -180,13 +185,13 @@ class WineStock(Base):
     id = Column(Integer, primary_key=True)
     brand_name = Column(String(250), nullable=False)
     winetype_id = Column(Integer, ForeignKey('wine_type.id'), nullable=False)
-    winetype = relationship(WineType)
     vintage = Column(Integer, nullable=False)
     date_created = Column(DateTime, nullable=False)
     date_edited = Column(DateTime, nullable=True)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
     filename = Column(String(250), nullable=True, unique=True)
+    reviews = relationship("UserReview", cascade="all,delete", backref="winestock")
 
     @property
     def serialize(self):
@@ -203,7 +208,6 @@ class UserReview(Base):
 
     id = Column(Integer, primary_key=True)
     winestock_id = Column(Integer, ForeignKey('wine_stock.id'), nullable=False)
-    winestock = relationship(WineStock)
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     user = relationship(User)
     summary = Column(String(250), nullable=False)
@@ -217,30 +221,6 @@ class UserReview(Base):
         return {
             'user': self.user_id,
             'comment': self.commnet,
-            'id': self.id,
-        }
-
-
-# TODO: Remove this
-class Item(Base):
-    __tablename__ = 'item'
-
-    name = Column(String(80), nullable=False)
-    id = Column(Integer, primary_key=True)
-    description = Column(String(250))
-    date_created = Column(DateTime, nullable=False)
-    date_updated = Column(DateTime, nullable=False)
-    category_id = Column(Integer, ForeignKey('category.id'))
-    category = relationship(Category, backref="items")
-    user_id = Column(Integer, ForeignKey('user.id'))
-    user = relationship(User)
-
-    @property
-    def serialize(self):
-        """Return object data in easily serializeable format"""
-        return {
-            'name': self.name,
-            'description': self.description,
             'id': self.id,
         }
 

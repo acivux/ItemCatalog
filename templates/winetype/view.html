@@ -1,4 +1,90 @@
 {% extends "winetype/type_base.html" %}
+{%block scripts%}
+<script type="text/javascript" charset="utf-8">
+
+    var data;
+
+    $(document).ready(function() {
+
+        $('#example').DataTable({
+            "scrollY":        "400px",
+            "scrollCollapse": true,
+            "paging":         false,
+            "info": false,
+            "ordering": false,
+            "searching":true,
+            "dom": "ft"
+            });
+
+        $("#loadingtext").hide();
+        loadValues($("tbody tr").filter(":first").data("wtid"));
+    });
+
+
+function loadValues(id)
+{
+    $("#loadingtext").toggle();
+
+    $("#itemname").html("");
+    $("#colorvalue").html("");
+    $("#colorshower").css("color","white");
+    $("#glassvalue").html("");
+    $("#calorievalue").html("");
+    $("#abvvalue").html("");
+    $("#temperaturevalue").html("");
+
+    $.getJSON("/api/wine_type/"+id, function( sdata ) {
+        data = sdata;
+        glassname = "";
+        if (data.glass && data.glass.name)
+            glassname = data.glass.name;
+        caloriename = "";
+        if (data.calorie && data.calorie.name)
+            caloriename = data.calorie.name;
+        abvname = "";
+        if (data.abv && data.abv.name)
+            abvname = data.abv.name;
+        tempname = "";
+        if (data.temperature && data.temperature.name)
+            tempname = data.temperature.name +" ("+data.temperature.temp+"&deg;F)"
+
+        $("#itemname").html(data.name);
+        $("#colorvalue").html(data.color.name);
+        $("#colorshower").css("color","#"+data.color.value);
+        $("#glassvalue").html(glassname);
+        $("#calorievalue").html(caloriename);
+        $("#abvvalue").html(abvname);
+        $("#temperaturevalue").html(tempname);
+        $("#footer").html(data.date_created);
+        if (data.canedit === "")
+        {
+            $("#canedit").hide();
+        }
+        else
+        {
+            $("#canedit").show();
+        }
+        $("#user_reviews").attr("href",data.user_reviews).html(data.user_name);
+        $("#loadingtext").toggle();
+    }).fail(function(){
+        alert("Failed to fetch data");
+    })
+}
+
+function edit()
+{
+    document.location.href = data.canedit;
+}
+
+
+
+</script>
+<style>
+    .table th, .table td {
+     border: none !important;
+ }
+</style>
+{%endblock%}
 {%block navbar%}
     {% if session.user_id %}
         <li><a href="{{url_for('.new')}}"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
@@ -11,17 +97,44 @@
 {%endblock%}
 
 {%block body%}
-    <div class="container-fluid">
+    <div class="container">
       <div class="row">
-          <div class="col-md-4 col-sm-4 col-sx-4"></div>
-          <div class="col-md-4 col-sm-4 col-sx-4">
-            <ul class="list-group">
-            {% for winetype in winetypes %}
-                <a href="{{url_for('.edit', item_id=winetype.0)}}" class="list-group-item">{{winetype.1}}</a>
-            {% endfor %}
-            </ul>
+          <div class="col-lg-4 col-md-7 col-sm-8 col-sx-8">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                  <table id="example" class="display table table-condensed" cellspacing="0">
+                      <thead><th></th></thead>
+                    <tbody>
+                    {% for winetype in winetypes %}
+                        <tr data-wtid="{{winetype.0}}"><td style="padding:0px"><a href="#" onclick="loadValues({{winetype.0}})" class="list-group-item">{{winetype.1}}</a></td></tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+              </div>
+            </div>
           </div>
-          <div class="col-md-4 col-sm-4 col-sx-4"></div>
+          <!--<div class="col-md-4 col-sm-4 col-sx-4">-->
+            <!--<ul class="list-group">-->
+            <!--{% for winetype in winetypes %}-->
+                <!--<a href="{{url_for('.edit', item_id=winetype.0)}}" class="list-group-item">{{winetype.1}}</a>-->
+            <!--{% endfor %}-->
+            <!--</ul>-->
+          <!--</div>-->
+          <div class="col-lg-8 col-md-5 col-sm-4 col-sx-4">
+            <div class="panel panel-default" id="loadingtext">
+              <div class="panel-body">
+                Loading, please wait...
+              </div>
+            </div>
+            <div class="panel panel-default">
+              <div class="panel-body" id="displayform">
+                <form class="form-horizontal">
+                    {% include 'winetype/winetype_staticform_content.html' %}
+                </form>
+              </div>
+            <div class="panel-footer"><p class="text-right text-muted" style="margin: 0px"><a href="#" onclick="edit();" id="canedit"><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Edit"></span></a> | <span class="glyphicon glyphicon-user" aria-hidden="true"></span> <a href="#" id="user_reviews"></a>   <small><span class="glyphicon glyphicon-calendar" aria-hidden="true" title="Created"></span> <span id="footer"></span></small></p></div>
+            </div>
+          </div>
       </div>
     </div>
 {%endblock%}
