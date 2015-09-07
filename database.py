@@ -192,7 +192,7 @@ class WineStock(Base):
     user = relationship(User)
     filename = Column(String(250), nullable=True, unique=True)
     reviews = relationship("UserReview", cascade="all,delete", backref="winestock")
-
+    # added review here
     @property
     def serialize(self):
         """Return object data in easily serializeable format"""
