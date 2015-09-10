@@ -2,11 +2,14 @@ from flask import current_app, Blueprint
 from flask import render_template, request, redirect, url_for, flash
 from sqlalchemy import asc
 from database import WineColor
+from auth_api.auth_api import login_required, admin_required
 
 wine_color_api = Blueprint('wine_color_api', __name__)
 template_prefix = "color/"
 
 @wine_color_api.route('/')
+@login_required
+@admin_required
 def show():
     session = current_app.config['db']
     colors = session.query(WineColor).order_by(asc(WineColor.name))
@@ -14,6 +17,8 @@ def show():
 
 
 @wine_color_api.route('/new', methods=["GET", "POST"])
+@login_required
+@admin_required
 def new():
     session = current_app.config['db']
     if request.method == "POST":
@@ -29,6 +34,8 @@ def new():
 
 
 @wine_color_api.route('/<int:color_id>/edit', methods=["GET", "POST"])
+@login_required
+@admin_required
 def edit(color_id):
     session = current_app.config['db']
     color = session.query(WineColor).filter_by(id=color_id).one()
@@ -45,6 +52,8 @@ def edit(color_id):
 
 
 @wine_color_api.route('/<int:color_id>/delete', methods=["GET", "POST"])
+@login_required
+@admin_required
 def delete(color_id):
     session = current_app.config['db']
     if request.method == "POST":

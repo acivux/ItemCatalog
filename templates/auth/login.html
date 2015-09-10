@@ -12,9 +12,10 @@
 <body>
 <div class="container">
     <div class="jumbotron">
-        <div class="text-center">
-          <h1>Hello, world!</h1>
-          <p>Log in with your favourite social website</p>
+          <h1>WineCave</h1>
+          <p>WineCave helps you track your wine tasting journey. Add and rate your own wine selection, or, that of the other users of the site.</p>
+          <p>To experience it all, click on the logo of your favorite social website below, and follow the directions.</p>
+            <div class="text-center">
             <div id="signInButton">
                 <span class="g-signin"
                 data-scope="openid email"
@@ -26,8 +27,8 @@
                 data-approvalprompt="force">
                 </span>
             </div>
-        <button><fb:login-button scope="public_profile,email" onlogin="facebookSignInCallback();"><a href='javascript:facebookSignInCallback()'>Login with Facebook</a></fb:login-button></button>
-        <div id="result" class="alert" role="alert" style="display:none"></div>
+            <fb:login-button scope="public_profile,email" onlogin="facebookSignInCallback();"><a href='javascript:facebookSignInCallback()'>Login with Facebook</a></fb:login-button>
+            <div id="result" class="alert" role="alert" style="display:none"></div>
         </div>
     </div>
 </div>
@@ -51,7 +52,7 @@ function googleSignInCallback(authResult)
                       $('#result').addClass("alert-success")
                                   .html('Login Successful! Redirecting...')
                                   .show();
-                      window.location.href = "/winestock";
+                      window.location.href = "/";
                   }
                   else if (authResult['error'])
                   {
@@ -107,7 +108,7 @@ function facebookSignInCallback()
                           $('#result').addClass("alert-success")
                                       .html('Login Successful! Redirecting...')
                                       .show();
-                          window.location.href = "/winestock";
+                          window.location.href = "/";
                         }
                         else
                         {

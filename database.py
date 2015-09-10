@@ -28,6 +28,7 @@ class GlassType(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False, unique=True)
+    # ToDo: Remove image, not using.
     filename = Column(String(250), nullable=True, unique=True)
 
     @property
@@ -191,8 +192,8 @@ class WineStock(Base):
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
     filename = Column(String(250), nullable=True, unique=True)
-    reviews = relationship("UserReview", cascade="all,delete", backref="winestock")
-    # added review here
+    reviews = relationship("UserReview", cascade="all,delete", back_populates="winestock")
+
     @property
     def serialize(self):
         """Return object data in easily serializeable format"""
@@ -214,6 +215,7 @@ class UserReview(Base):
     comment = Column(Text, nullable=True)
     rating = Column(Integer, nullable=False)
     date_created = Column(DateTime, nullable=False)
+    winestock = relationship("WineStock", back_populates="reviews")
 
     @property
     def serialize(self):

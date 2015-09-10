@@ -30,7 +30,8 @@
                 <div class="form-group">
                     <label for="usernickname" class="col-sm-2 control-label">Nickname</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="usernickname" name="usernickname" placeholder="Nickname" value="{{user.nickname if user.nickname is not none}}">
+                        <input type="text" class="form-control" id="usernickname" name="usernickname" placeholder="Nickname" value="{{user.nickname if user.nickname is not none}}" aria-describedby="nicknamehelp">
+                        <span id="nicknamehelp" class="help-block">To hide your real name from other users, fill in a nickname.</span>
                     </div>
                 </div>
               <!--  Buttons -->

@@ -6,6 +6,7 @@ from flask import session as login_session
 import datetime
 from flaskext.uploads import UploadSet, IMAGES
 from utils import make_safe_filename
+from auth_api.auth_api import login_required, admin_required
 
 winestock_api = Blueprint('winestock_api', __name__)
 template_prefix = "winestock/"
@@ -30,14 +31,21 @@ def show_brand(winetype_id):
         id=winetype_id
     ).one()
 
+    averages = session.query(
+        func.avg(UserReview.rating).label('average')
+    ).join(WineStock).join(WineType).filter(WineType.id==winetype_id).subquery()
+
     wines = session.query(
-        WineStock
+        WineStock,
+        averages.columns.average
     ).filter_by(
         winetype_id=winetype_id
     ).order_by(
         WineStock.brand_name,
         WineStock.vintage.asc()
     )
+
+
     return render_template(template_prefix+'brandview.html',
                            winetype=winetype,
                            wines=wines)

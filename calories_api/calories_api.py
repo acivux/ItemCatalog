@@ -2,6 +2,7 @@ from flask import current_app, Blueprint
 from flask import render_template, request, redirect, url_for, flash
 from sqlalchemy import asc, exc
 from database import WineCalories
+from auth_api.auth_api import login_required, admin_required
 
 
 calories_api = Blueprint('calories_api', __name__)
@@ -9,6 +10,8 @@ template_prefix = "calories/"
 
 
 @calories_api.route('/')
+@login_required
+@admin_required
 def show():
     session = current_app.config['db']
     items = session.query(WineCalories).order_by(asc(WineCalories.name))
@@ -16,6 +19,8 @@ def show():
 
 
 @calories_api.route('/new', methods=["GET", "POST"])
+@login_required
+@admin_required
 def new():
     session = current_app.config['db']
     if request.method == "POST":
@@ -38,6 +43,8 @@ def new():
 
 
 @calories_api.route('/<int:item_id>/edit', methods=["GET", "POST"])
+@login_required
+@admin_required
 def edit(item_id):
     session = current_app.config['db']
     item = session.query(WineCalories).filter_by(id=item_id).one()
@@ -58,6 +65,8 @@ def edit(item_id):
 
 
 @calories_api.route('/<int:item_id>/delete', methods=["GET", "POST"])
+@login_required
+@admin_required
 def delete(item_id):
     session = current_app.config['db']
     if request.method == "POST":

@@ -37,27 +37,20 @@
       <div class="row">
           <div class="col-lg-8 col-md-8 col-sm-8 col-sx-8">
             <div class="panel panel-default">
-              <div class="panel-body">
-                  <table id="stocktable" class="display table table-condensed" cellspacing="0">
-                      <thead><th></th></thead>
+            <div class="panel-heading">Select the brand you want to review.</div>
+            <div class="panel-body">
+                <table id="stocktable" class="display table table-condensed" cellspacing="0">
+                    <thead><th></th></thead>
                     <tbody>
                     {% for winestock in wines %}
-                        <tr><td style="padding:0px"><a href="{{url_for('.show_stockitem',stockitem_id=winestock.id)}}" class="list-group-item">{{winestock.brand_name}}<span class="label label-info pull-right">{{winestock.vintage}}</span></a></td></tr>
+                        <tr><td style="padding:0px"><a href="{{url_for('.show_stockitem',stockitem_id=winestock.0.id)}}" class="list-group-item">{{winestock.0.brand_name}}<span class="pull-right"><span class="label label-info">{{winestock.0.vintage}}</span> <span class="label label-success">{{winestock.1 if winestock.1 != None else '0'}}</span></a></td></tr>
                     {% endfor %}
                     </tbody>
-                  </table>
-              </div>
+                </table>
+            </div>
             </div>
           </div>
       </div>
     </div>
 {%endblock%}
-          <!--<div class="col-md-4 col-sm-4 col-sx-4"></div>-->
-          <!--<div class="col-md-4 col-sm-4 col-sx-4">-->
-            <!--<ul class="list-group">-->
-            <!--{% for winestock in wines %}-->
-                <!--<a href="{{url_for('.show_stockitem',stockitem_id=winestock.id)}}" class="list-group-item">{{winestock.brand_name}}<span class="label label-info pull-right">{{winestock.vintage}}</span></a>-->
-            <!--{% endfor %}-->
-            <!--</ul>-->
-          <!--</div>-->
-          <!--<div class="col-md-4 col-sm-4 col-sx-4"></div>-->
+

@@ -2,6 +2,7 @@ import os
 import flask.ext.restless
 from flask import Flask, redirect, url_for
 from flaskext.uploads import UploadSet, configure_uploads, IMAGES
+from flask_login import LoginManager
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from database import Base, GlassType, WineStock, UserReview, WineType
@@ -33,12 +34,13 @@ app.register_blueprint(abv_api, url_prefix='/abv')
 app.register_blueprint(glass_api, url_prefix='/glass')
 app.register_blueprint(character_api, url_prefix='/character')
 app.register_blueprint(winetype_api, url_prefix='/winetype')
-app.register_blueprint(winestock_api, url_prefix='/winestock')
+app.register_blueprint(winestock_api)
 app.register_blueprint(auth_api, url_prefix='/auth')
 
 brandphotos = UploadSet('brandphotos', IMAGES)
 glassphotos = UploadSet('glassphotos', IMAGES)
 configure_uploads(app, (glassphotos, brandphotos))
+
 
 #ToDo: Cleanup API's
 api_manager = flask.ext.restless.APIManager(app, session=api_endpoint_session)

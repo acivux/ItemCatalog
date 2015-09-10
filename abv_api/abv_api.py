@@ -2,6 +2,7 @@ from flask import current_app, Blueprint
 from flask import render_template, request, redirect, url_for, flash
 from sqlalchemy import asc, exc
 from database import WineABV
+from auth_api.auth_api import login_required, admin_required
 
 
 abv_api = Blueprint('abv_api', __name__)
@@ -9,6 +10,8 @@ template_prefix = "abv/"
 
 
 @abv_api.route('/')
+@login_required
+@admin_required
 def show():
     session = current_app.config['db']
     items = session.query(WineABV).order_by(asc(WineABV.name))
@@ -16,6 +19,8 @@ def show():
 
 
 @abv_api.route('/new', methods=["GET", "POST"])
+@login_required
+@admin_required
 def new():
     session = current_app.config['db']
     if request.method == "POST":
@@ -38,6 +43,8 @@ def new():
 
 
 @abv_api.route('/<int:item_id>/edit', methods=["GET", "POST"])
+@login_required
+@admin_required
 def edit(item_id):
     session = current_app.config['db']
     item = session.query(WineABV).filter_by(id=item_id).one()
@@ -58,6 +65,8 @@ def edit(item_id):
 
 
 @abv_api.route('/<int:item_id>/delete', methods=["GET", "POST"])
+@login_required
+@admin_required
 def delete(item_id):
     session = current_app.config['db']
     if request.method == "POST":

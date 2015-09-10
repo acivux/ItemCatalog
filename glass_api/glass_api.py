@@ -5,6 +5,7 @@ from flask import render_template, request, redirect, url_for, flash
 from sqlalchemy import asc, exc
 from database import GlassType
 from flaskext.uploads import UploadSet, IMAGES
+from auth_api.auth_api import login_required, admin_required
 
 
 glass_api = Blueprint('glass_api', __name__)
@@ -14,6 +15,8 @@ glassphotos = UploadSet('glassphotos', IMAGES)
 
 
 @glass_api.route('/')
+@login_required
+@admin_required
 def show():
     session = current_app.config['db']
     items = session.query(GlassType).order_by(asc(GlassType.name))
@@ -21,6 +24,8 @@ def show():
 
 
 @glass_api.route('/new', methods=["GET", "POST"])
+@login_required
+@admin_required
 def new():
     session = current_app.config['db']
     if request.method == "POST":
@@ -48,6 +53,8 @@ def new():
 
 
 @glass_api.route('/<int:item_id>/edit', methods=["GET", "POST"])
+@login_required
+@admin_required
 def edit(item_id):
     session = current_app.config['db']
     item = session.query(GlassType).filter_by(id=item_id).one()
@@ -77,6 +84,8 @@ def edit(item_id):
 
 
 @glass_api.route('/<int:item_id>/delete', methods=["GET", "POST"])
+@login_required
+@admin_required
 def delete(item_id):
     session = current_app.config['db']
     if request.method == "POST":

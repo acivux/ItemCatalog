@@ -26,10 +26,10 @@
                     </a>
                   </div>
                   <div class="media-body">
-                    <h5 class="media-heading">{{review.winestock.brand_name}} ({{review.winestock.vintage}} {{review.winestock.winetype.name}})</h5>
+                    <h5 class="media-heading"><a href="{{url_for('.show_stockitem', stockitem_id=review.winestock_id)}}">{{review.winestock.brand_name}}</a> <small>({{review.winestock.winetype.name}}, {{review.winestock.vintage}})</small></h5>
                     <h4 class="media-heading"><br/>{{review.summary}}</h4>
                     <p style="white-space: pre-wrap;">{{review.comment|e}}</p>
-                    <p><small>{% for x in range(0,review.rating)%}<span class="glyphicon glyphicon-star" aria-hidden="true"></span>{%endfor%} <span class="pull-right"><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> {{review.date_created.strftime('%Y-%m-%d')}}</span></small></p>
+                    <p style="margin-bottom:0pt"><small>{% for x in range(0,review.rating)%}<span class="glyphicon glyphicon-star" aria-hidden="true"></span>{%endfor%} <span class="pull-right"><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> <span style="font-size:8pt">{{review.date_created.strftime('%Y-%m-%d')}}</span></span></small></p>
                   </div>
                 </div>
             {% else %}

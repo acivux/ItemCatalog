@@ -35,6 +35,11 @@ label.star:before {
   content: "\e006";
   font-family: 'Glyphicons Halflings';
 }
+
+.no-bottom {
+    margin-bottom: 0pt;
+    }
+
 </style>
 {% endblock%}
 {%block navbar%}
@@ -46,45 +51,32 @@ label.star:before {
 {%block breadcrumbs%}
     {% include 'partial_templates/breadcrumb_linked_home.html' %}
     {% include 'partial_templates/breadcrumb_linked_winestock.html' %}
-    <li>Stock Item</li>
+    <li>Brand Item</li>
 {%endblock%}
 
 {%block body%}
-    <div class="container-fluid">
+    <div class="container">
       <div class="row">
-          <div class="col-md-4 col-sm-4 col-sx-4">
-              <p class="pull-right"><img class="img-responsive img-thumbnail" style="max-height:200px" src="{% if item.filename %}/_uploads/brandphotos/{{item.filename}}{%else%}{{url_for('static', filename='images/generic_wine_bottle.png')}}{%endif%}"/></p>
-          </div>
-          <div class="col-md-4 col-sm-4 col-sx-4">
-            <form class="form-horizontal">
-                <div class="form-group">
-                    <label for="itemname" class="col-sm-2 col-xs-12 control-label">Name</label>
-                    <div class="col-sm-10">
-                        <p class="form-control-static" id="itemname" name="itemname">{{item.brand_name}}</p>
-                    </div>
+          <div class="col-md-9 col-sm-12 col-xs-12">
+                <div class="thumbnail">
+                  <img class="img-responsive img-thumbnail" style="max-width: 200px; max-height:200px" src="{% if item.filename %}/_uploads/brandphotos/{{item.filename}}{%else%}{{url_for('static', filename='images/generic_wine_bottle.png')}}{%endif%}"/>
+                  <div class="caption">
+                    <h3>{{item.brand_name}} <small>({{item.winetype.name}}, {{item.vintage}})</small></h3>
+                    <ol class="breadcrumb" style="font-size:8pt">
+                      <li><span class="glyphicon glyphicon-tint" aria-hidden="true" title="{% include 'partial_templates/name_color.html' %}" style="color:#{{item.winetype.color.value}}; text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;"></span> {{item.winetype.color.name}}</li>
+                      {% if item.winetype.glass%}<li><span class="glyphicon glyphicon-glass" aria-hidden="true" title="{% include 'partial_templates/name_glass.html' %}"></span> {{item.winetype.glass.name}}</li>{%endif%}
+                      {% if item.winetype.calorie%}<li><span class="glyphicon glyphicon-fire" aria-hidden="true" title="{% include 'partial_templates/name_calories.html' %}"></span> {{item.winetype.calorie.name}}</li>{%endif%}
+                      {% if item.winetype.abv%}<li><span class="glyphicon glyphicon-dashboard" aria-hidden="true" title="{% include 'partial_templates/name_abv.html' %}"></span> {{item.winetype.abv.name}}</li>{%endif%}
+                      {% if item.winetype.temperature%}<li><span class="glyphicon glyphicon-scale" aria-hidden="true" title="{% include 'partial_templates/name_temperature.html' %}"></span> {{item.winetype.temperature.name}} ({{item.winetype.temperature.temp}}&deg;F)</li>{%endif%}
+                    </ol>
+                    <p class="text-muted no-bottom" style="font-size: 8pt">{% if item.user_id %}<small>Added by <a href="{{url_for('.list_user_reviews', user_id=item.user_id)}}">{{item.user.nickname or item.user.name}}</a> on {{item.date_created.strftime('%Y-%m-%d')}}</small>{%endif%}</p>
+                  </div>
                 </div>
-                <!-- wine type -->
-                <div class="form-group">
-                    <label for="winetypevalue" class="col-sm-2 col-xs-12 control-label">Wine Type</label>
-                    <div class="col-sm-10">
-                        <p class="form-control-static" id="winetypevalue" name="winetypevalue">{{item.winetype.name}}</p>
-                    </div>
-                </div>
-                <!-- stock vintage -->
-                <div class="form-group">
-                    <label for="vintagevalue" class="col-sm-2 col-xs-12 control-label">Vintage</label>
-                    <div class="col-sm-5 col-xs-5">
-                        <p class="form-control-static" id="vintagevalue" name="vintagevalue">{{item.vintage}}</p>
-                    </div>
-                </div>
-                <!-- date added
-                    TODO: Link to user activity page
-                 -->
-                <p class="text-right text-muted"><small>{% if item.user_id %}<span class="glyphicon glyphicon-user" aria-hidden="true"></span> <a href="{{url_for('.list_user_reviews', user_id=item.user_id)}}">{{item.user.nickname or item.user.name}}</a>{%endif%}    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> {{item.date_created.strftime('%Y-%m-%d')}}</small></p>
-            </form>
+
             <!-- Add Review -->
             {% if session.user_id %}
             <div class="panel panel-default">
+                <div class="panel-heading">Add a new review</div>
                 <div class="panel-body">
                     <form class="form" method='POST' enctype='multipart/form-data' action="{{url_for('.new_review', stockitem_id=item.id)}}">
                         <div class="form-group">
@@ -137,7 +129,6 @@ label.star:before {
             {% endfor%}
           </div>
           </div>
-          <div class="col-md-4 col-sm-4 col-sx-4"></div>
       </div>
     </div>
 {%endblock%}

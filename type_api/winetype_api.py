@@ -5,6 +5,7 @@ from database import WineType, WineColor, GlassType, WineCalories, WineABV
 from database import Temperature
 from flask import session as login_session
 import datetime
+from auth_api.auth_api import login_required, admin_required
 
 winetype_api = Blueprint('winetype_api', __name__)
 template_prefix = "winetype/"
@@ -37,7 +38,9 @@ def get_form_values(request, item=None):
                             date_created=datetime.datetime.today())
         return item
 
+
 @winetype_api.route('/')
+@login_required
 def show():
     session = current_app.config['db']
     winetypes = session.query(WineType.id, WineType.name).group_by(WineType.name)
@@ -45,6 +48,7 @@ def show():
 
 
 @winetype_api.route('/new', methods=["GET", "POST"])
+@login_required
 def new():
     session = current_app.config['db']
     if request.method == "POST":
@@ -87,6 +91,7 @@ def new():
 
 
 @winetype_api.route('/<int:item_id>/edit', methods=["GET", "POST"])
+@login_required
 def edit(item_id):
     session = current_app.config['db']
     item = session.query(WineType).filter_by(id=item_id).one()
@@ -122,6 +127,7 @@ def edit(item_id):
 
 
 @winetype_api.route('/<int:item_id>/delete', methods=["GET", "POST"])
+@login_required
 def delete(item_id):
     session = current_app.config['db']
     if request.method == "POST":

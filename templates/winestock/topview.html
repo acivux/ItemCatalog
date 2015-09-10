@@ -17,6 +17,11 @@
     .table th, .table td {
      border: 0px !important;
  }
+
+.tbody.tr:last-child.td {
+    background-color: #fff;
+}
+
 </style>
 {%endblock%}
 
@@ -38,17 +43,18 @@
   <div class="row">
       <div class="col-lg-8 col-md-8 col-sm-8 col-sx-8">
         <div class="panel panel-default">
-          <div class="panel-body">
-              <table id="stocktable" class="display table table-condensed" cellspacing="0">
-                  <thead><th></th></thead>
-                <tbody>
-                {% for winetype in wines %}
+            <div class="panel-heading">Select the wine type you want to review.</div>
+            <div class="panel-body">
+                <table id="stocktable" class="display table table-condensed" cellspacing="0">
+                    <thead><th></th></thead>
+                    <tbody>
+                    {% for winetype in wines %}
                     <tr><td style="padding:0px"><a href="{{url_for('.show_brand', winetype_id=winetype.0.id)}}" class="list-group-item">{{winetype.0.name}}<span class="badge">{{winetype.1}}</span></a></td></tr>
-                {% endfor %}
-                </tbody>
-              </table>
-          </div>
-        </div>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+            </div>
       </div>
   </div>
 </div>

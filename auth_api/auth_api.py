@@ -1,7 +1,8 @@
 from flask import current_app, Blueprint
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, g
 from flask import redirect, jsonify, url_for, flash
 from flask import make_response
+from flask_login import UserMixin
 from database import User
 from flask import session as login_session
 import random
@@ -11,6 +12,7 @@ from oauth2client.client import FlowExchangeError
 import httplib2
 import json
 import requests
+from functools import wraps
 
 
 auth_api = Blueprint('auth_api', __name__)
@@ -58,6 +60,7 @@ def signout():
         del login_session['email']
         del login_session['picture']
         del login_session['user_id']
+        del login_session['isadmin']
         del login_session['provider']
         flash("You have successfully been logged out.", 'success')
         return redirect(url_for('winestock_api.show'))
@@ -285,3 +288,22 @@ def update_user_profile(user_id, login_session):
         current_app.config['db'].commit()
     except:
         return None
+
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in login_session:
+            return redirect(url_for('auth_api.show_login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if login_session.get('isadmin', False):
+            return f(*args, **kwargs)
+        else:
+            return redirect(url_for('auth_api.show_login'))
+    return decorated_function
