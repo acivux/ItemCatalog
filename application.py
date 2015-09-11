@@ -11,7 +11,6 @@ from temperature_api.temperature_api import temperature_api
 from calories_api.calories_api import calories_api
 from abv_api.abv_api import abv_api
 from glass_api.glass_api import glass_api
-from character_api.character_api import character_api
 from type_api.winetype_api import winetype_api
 from winestock_api.winestock_api import winestock_api
 from auth_api.auth_api import auth_api
@@ -32,26 +31,28 @@ app.register_blueprint(wine_color_api, url_prefix='/color')
 app.register_blueprint(calories_api, url_prefix='/calories')
 app.register_blueprint(abv_api, url_prefix='/abv')
 app.register_blueprint(glass_api, url_prefix='/glass')
-app.register_blueprint(character_api, url_prefix='/character')
 app.register_blueprint(winetype_api, url_prefix='/winetype')
 app.register_blueprint(winestock_api)
 app.register_blueprint(auth_api, url_prefix='/auth')
 
 brandphotos = UploadSet('brandphotos', IMAGES)
-glassphotos = UploadSet('glassphotos', IMAGES)
-configure_uploads(app, (glassphotos, brandphotos))
+configure_uploads(app, (brandphotos,))
 
 
-#ToDo: Cleanup API's
+# Setting up API endpoints
 api_manager = flask.ext.restless.APIManager(app, session=api_endpoint_session)
-glass_blueprint = api_manager.create_api(GlassType)
-winestock_blueprint = api_manager.create_api(
+
+glass_api_manager = api_manager.create_api(GlassType)
+
+winestock_api_manager = api_manager.create_api(
     WineStock,
     exclude_columns=['user', 'winetype_id'])
-review_blueprint = api_manager.create_api(
+
+review_api_manager = api_manager.create_api(
     UserReview,
     exclude_columns=['user', 'winestock_id'])
-winetype_get_blueprint = api_manager.create_api(
+
+winetype_api_manager = api_manager.create_api(
     WineType,
     exclude_columns=['user', 'winestock_id', 'winestock'],
     postprocessors={'GET_SINGLE': [get_single_postprocessor]})

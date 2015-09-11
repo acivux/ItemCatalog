@@ -2,7 +2,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from database import Base, User, WineType, WineCharacter, Temperature
+from database import Base, User, WineType, Temperature
 from database import GlassType, WineCalories, WineColor, WineABV, WineStock
 import datetime
 
@@ -24,25 +24,20 @@ session = DBSession()
 
 session.add(User(id=1, name="admin", email="admin@myurl.com", nickname="zztop", admin=False))
 session.add(User(id=2, name="admin2", email="admin2@myurl.com", nickname="formatc", admin=False))
-session.add(User(id=3, name="Jannie van Niekerk", email="acivux@gmail.com", admin=False))
+session.add(User(id=3, name="Jannie van Niekerk", email="acivux@gmail.com", admin=True))
 
-session.add(GlassType(id=1, name="Sparkling Wine Flute", filename='e4a72ec0510b11e58a142c337a28d002.png'))
-session.add(GlassType(id=2, name="White Wine Glass", filename='555f1421510c11e5be8b2c337a28d002.png'))
-session.add(GlassType(id=3, name="Standard Wine Glass", filename='59c52d5e510c11e5b6852c337a28d002.png'))
-session.add(GlassType(id=4, name="Light Red Wine Glass", filename='6296b70f510c11e5b0542c337a28d002.png'))
-session.add(GlassType(id=5, name="Bold Red Wine Glass", filename='6d30a4b0510c11e580702c337a28d002.png'))
-session.add(GlassType(id=6, name="Dessert Wine Glass", filename='67fba2ae510c11e5868d2c337a28d002.png'))
+session.add(GlassType(id=1, name="Sparkling Wine Flute"))
+session.add(GlassType(id=2, name="White Wine Glass"))
+session.add(GlassType(id=3, name="Standard Wine Glass"))
+session.add(GlassType(id=4, name="Light Red Wine Glass"))
+session.add(GlassType(id=5, name="Bold Red Wine Glass"))
+session.add(GlassType(id=6, name="Dessert Wine Glass"))
 
 session.add(Temperature(id=1, name="Ice Cold", temp=43))
 session.add(Temperature(id=2, name="Cold", temp=48))
 session.add(Temperature(id=3, name="Cool", temp=54))
 session.add(Temperature(id=4, name="Cellar", temp=62))
 session.add(Temperature(id=5, name="Cool Room", temp=68))
-
-session.add(WineCharacter(id=1, name="Non Vintage"))
-session.add(WineCharacter(id=2, name="Vintage"))
-session.add(WineCharacter(id=3, name="Unoaked"))
-session.add(WineCharacter(id=4, name="Oaked"))
 
 session.add(WineCalories(id=1, name="120-160"))
 session.add(WineCalories(id=2, name="110-170"))

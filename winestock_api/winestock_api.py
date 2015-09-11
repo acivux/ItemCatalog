@@ -95,6 +95,7 @@ def new():
                                winetypes=winetypes,
                                maxyear=maxyear)
 
+# Todo: Delete stock Item
 
 @winestock_api.route('/stockitem/<int:stockitem_id>/rating/new',
                      methods=["POST"])

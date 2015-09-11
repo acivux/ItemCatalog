@@ -43,7 +43,7 @@
                     <thead><th></th></thead>
                     <tbody>
                     {% for winestock in wines %}
-                        <tr><td style="padding:0px"><a href="{{url_for('.show_stockitem',stockitem_id=winestock.0.id)}}" class="list-group-item">{{winestock.0.brand_name}}<span class="pull-right"><span class="label label-info">{{winestock.0.vintage}}</span> <span class="label label-success">{{winestock.1 if winestock.1 != None else '0'}}</span></a></td></tr>
+                        <tr><td style="padding:0px"><a href="{{url_for('.show_stockitem',stockitem_id=winestock.0.id)}}" class="list-group-item">{{winestock.0.brand_name}}<span class="pull-right"><span class="label label-default" title="Vintage">{{winestock.0.vintage}}</span> <span class="label label-success" title="Average Rating">{{winestock.1 if winestock.1 != None else '0'}}</span></a></td></tr>
                     {% endfor %}
                     </tbody>
                 </table>

@@ -43,7 +43,7 @@ def get_form_values(request, item=None):
 @login_required
 def show():
     session = current_app.config['db']
-    winetypes = session.query(WineType.id, WineType.name).group_by(WineType.name)
+    winetypes = session.query(WineType.id, WineType.name).order_by(asc(func.lower(WineType.name)))
     return render_template(template_prefix+'view.html', winetypes=winetypes)
 
 

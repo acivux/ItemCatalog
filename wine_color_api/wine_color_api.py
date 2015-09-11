@@ -1,7 +1,7 @@
 from flask import current_app, Blueprint
 from flask import render_template, request, redirect, url_for, flash
-from sqlalchemy import asc
-from database import WineColor
+from sqlalchemy import asc, func
+from database import WineColor, WineType
 from auth_api.auth_api import login_required, admin_required
 
 wine_color_api = Blueprint('wine_color_api', __name__)
@@ -57,12 +57,18 @@ def edit(color_id):
 def delete(color_id):
     session = current_app.config['db']
     if request.method == "POST":
+        used = session.query(func.count(WineType.id).label('colorcount')).filter_by(id=color_id).scalar()
         color = session.query(WineColor).filter_by(id=color_id).one()
         c_name = color.name
-        session.delete(color)
-        session.commit()
-        flash("Successfully Deleted Color '%s'" % (c_name,), 'success')
+        if used == 0:
+            session.delete(color)
+            session.commit()
+            flash("Successfully Deleted Color '%s'" % (c_name,), 'success')
+        else:
+            flash("'%s' color still in use and cannot be deleted." % (c_name,), 'danger')
         return redirect(url_for('.show'))
     else:
         color = session.query(WineColor).filter_by(id=color_id).one()
         return render_template(template_prefix+'delete_form.html', colortype=color)
+
+#ToDo: make sure no admin level attribtutes get deleted while still in use.

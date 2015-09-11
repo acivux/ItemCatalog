@@ -11,8 +11,6 @@ from auth_api.auth_api import login_required, admin_required
 glass_api = Blueprint('glass_api', __name__)
 template_prefix = "glass/"
 
-glassphotos = UploadSet('glassphotos', IMAGES)
-
 
 @glass_api.route('/')
 @login_required
@@ -31,12 +29,7 @@ def new():
     if request.method == "POST":
         new_name = request.form['itemname']
         try:
-            glassimagefilename = None
-            if 'filename' in request.files:
-                glassimagefilename = glassphotos.save(
-                    request.files['filename'],
-                    name=make_safe_filename(request.files['filename'].filename))
-            item = GlassType(name=new_name, filename=glassimagefilename)
+            item = GlassType(name=new_name)
             session.add(item)
             session.commit()
         except exc.IntegrityError:
@@ -61,10 +54,6 @@ def edit(item_id):
     if request.method == "POST":
         new_name = request.form['itemname']
         item.name = new_name
-        if 'filename' in request.files:
-            item.filename = glassphotos.save(
-                request.files['filename'],
-                name=make_safe_filename(request.files['filename'].filename))
         try:
             session.commit()
         except exc.IntegrityError:
@@ -76,8 +65,6 @@ def edit(item_id):
         return redirect(url_for('.show'))
     else:
         glass_url = None
-        if item.filename:
-            glass_url = glassphotos.url(item.filename)
         return render_template(template_prefix+'edit_form.html',
                                item=item,
                                glass_url=glass_url)
@@ -93,8 +80,6 @@ def delete(item_id):
         c_name = item.name
         session.delete(item)
         session.commit()
-        if item.filename:
-            os.remove(glassphotos.path(item.filename))
         flash("Successfully Deleted '%s'" % (c_name,), 'success')
         return redirect(url_for('.show'))
     else:

@@ -28,8 +28,6 @@ class GlassType(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False, unique=True)
-    # ToDo: Remove image, not using.
-    filename = Column(String(250), nullable=True, unique=True)
 
     @property
     def serialize(self):
@@ -54,24 +52,6 @@ class Temperature(Base):
         return {
             'name': self.name,
             'temp': self.temp,
-            'id': self.id,
-        }
-
-
-# TODO: Deprecatred. Please delete
-class WineCharacter(Base):
-    __tablename__ = 'wine_character'
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False, unique=True)
-    wine_id = Column(Integer, ForeignKey('wine_type.id'))
-    wine = relationship("WineType", backref="characters")
-
-    @property
-    def serialize(self):
-        """Return object data in easily serializeable format"""
-        return {
-            'name': self.name,
             'id': self.id,
         }
 

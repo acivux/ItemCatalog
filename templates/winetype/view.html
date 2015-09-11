@@ -113,20 +113,8 @@ function edit()
               </div>
             </div>
           </div>
-          <!--<div class="col-md-4 col-sm-4 col-sx-4">-->
-            <!--<ul class="list-group">-->
-            <!--{% for winetype in winetypes %}-->
-                <!--<a href="{{url_for('.edit', item_id=winetype.0)}}" class="list-group-item">{{winetype.1}}</a>-->
-            <!--{% endfor %}-->
-            <!--</ul>-->
-          <!--</div>-->
-          <div class="col-lg-8 col-md-5 col-sm-4 col-sx-4">
-            <!--<div class="panel panel-default" id="loadingtext">-->
-              <!--<div class="panel-body">-->
-                <!--Loading, please wait...-->
-              <!--</div>-->
-            <!--</div>-->
-            <div class="panel panel-default">
+           <div class="col-lg-8 col-md-5 col-sm-4 col-sx-4">
+             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h5>Selection Properties <small><span id="loadingtext">Loading, please wait...</span></small></h5>
                 </div>
@@ -135,7 +123,7 @@ function edit()
                         {% include 'winetype/winetype_staticform_content.html' %}
                     </form>
                 </div>
-            <div class="panel-footer"><p class="text-right text-muted" style="margin: 0px"><a href="#" onclick="edit();" id="canedit"><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Edit"></span></a> | <span class="glyphicon glyphicon-user" aria-hidden="true"></span> <a href="#" id="user_reviews"></a>   <small><span class="glyphicon glyphicon-calendar" aria-hidden="true" title="Created"></span> <span id="footer"></span></small></p></div>
+            <div class="panel-footer"><p class="text-right text-muted" style="margin: 0px"><a href="#" onclick="edit();" id="canedit" class="btn btn-default btn-xs" role="button"><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Edit"></span></a> | <span class="glyphicon glyphicon-user" aria-hidden="true"></span> <a href="#" id="user_reviews"></a>   <small><span class="glyphicon glyphicon-calendar" aria-hidden="true" title="Created"></span> <span id="footer"></span></small></p></div>
             </div>
           </div>
       </div>
