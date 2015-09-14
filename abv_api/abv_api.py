@@ -1,7 +1,7 @@
 from flask import current_app, Blueprint
 from flask import render_template, request, redirect, url_for, flash
-from sqlalchemy import asc, exc
-from database import WineABV
+from sqlalchemy import asc, exc, func
+from database import WineABV, WineType
 from auth_api.auth_api import login_required, admin_required
 
 
@@ -70,12 +70,19 @@ def edit(item_id):
 def delete(item_id):
     session = current_app.config['db']
     if request.method == "POST":
+        used = session.query(func.count(WineType.id).label('count'))\
+            .filter_by(abv_id=item_id).scalar()
         item = session.query(WineABV).filter_by(id=item_id).one()
         c_name = item.name
-        session.delete(item)
-        session.commit()
-        flash("Successfully Deleted '%s'" % (c_name,), 'success')
+        if used == 0:
+            session.delete(item)
+            session.commit()
+            flash("Successfully Deleted '%s'" % (c_name,), 'success')
+        else:
+            flash("'%s' is still in use and cannot be deleted." % (c_name,),
+                  'danger')
         return redirect(url_for('.show'))
+
     else:
         item = session.query(WineABV).filter_by(id=item_id).one()
         return render_template(template_prefix+'delete_form.html', item=item)

@@ -145,10 +145,6 @@ class WineType(Base):
     date_edited = Column(DateTime, nullable=True)
     brands = relationship("WineStock", cascade="all,delete", backref="winetype")
 
-    # TODO: add id of creator.
-    # TODO: prevent deletion if not creator.
-    # TODO: prevent deletion if used in database.
-    # TODO: add date created and edited
     # TODO: Add wikipedia link explaining wine type
 
     @property
@@ -159,7 +155,7 @@ class WineType(Base):
             'id': self.id,
         }
 
-
+# ToDo: rename stock to brand
 class WineStock(Base):
     __tablename__ = 'wine_stock'
 

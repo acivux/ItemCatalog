@@ -1,7 +1,7 @@
 from flask import current_app, Blueprint
 from flask import render_template, request, redirect, url_for, flash
-from sqlalchemy import asc, exc
-from database import Temperature
+from sqlalchemy import asc, exc, func
+from database import Temperature, WineType
 from auth_api.auth_api import login_required, admin_required
 
 temperature_api = Blueprint('temperature_api', __name__)
@@ -13,7 +13,7 @@ template_prefix = "temperature/"
 @admin_required
 def show():
     session = current_app.config['db']
-    items = session.query(Temperature).order_by(asc(Temperature.temp))
+    items = session.query(Temperature).order_by(asc(Temperature.temp,))
     return render_template(template_prefix+'view.html', items=items)
 
 
@@ -72,11 +72,17 @@ def edit(item_id):
 def delete(item_id):
     session = current_app.config['db']
     if request.method == "POST":
+        used = session.query(func.count(WineType.id).label('count'))\
+            .filter_by(temperature_id=item_id).scalar()
         item = session.query(Temperature).filter_by(id=item_id).one()
         c_name = item.name
-        session.delete(item)
-        session.commit()
-        flash("Successfully Deleted '%s'" % (c_name,), 'success')
+        if used == 0:
+            session.delete(item)
+            session.commit()
+            flash("Successfully Deleted '%s'" % (c_name,), 'success')
+        else:
+            flash("'%s' is still in use and cannot be deleted." % (c_name,),
+                  'danger')
         return redirect(url_for('.show'))
     else:
         item = session.query(Temperature).filter_by(id=item_id).one()

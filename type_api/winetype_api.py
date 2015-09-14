@@ -1,11 +1,11 @@
 from flask import current_app, Blueprint
 from flask import render_template, request, redirect, url_for, flash
-from sqlalchemy import asc, exc, func
+from sqlalchemy import asc, exc, collate
 from database import WineType, WineColor, GlassType, WineCalories, WineABV
 from database import Temperature
 from flask import session as login_session
 import datetime
-from auth_api.auth_api import login_required, admin_required
+from auth_api.auth_api import login_required
 
 winetype_api = Blueprint('winetype_api', __name__)
 template_prefix = "winetype/"
@@ -43,7 +43,9 @@ def get_form_values(request, item=None):
 @login_required
 def show():
     session = current_app.config['db']
-    winetypes = session.query(WineType.id, WineType.name).order_by(asc(func.lower(WineType.name)))
+    winetypes = session\
+        .query(WineType.id, WineType.name)\
+        .order_by(asc(collate(WineType.name, 'NOCASE')))
     return render_template(template_prefix+'view.html', winetypes=winetypes)
 
 
@@ -97,7 +99,7 @@ def edit(item_id):
     item = session.query(WineType).filter_by(id=item_id).one()
 
     if item.user_id != login_session['user_id']:
-        flash("You are not allowed to edit this Wine Type", 'danger')
+        flash("You are not allowed to edit this wine type", 'danger')
         return redirect(url_for('winetype_api.show'))
 
     if request.method == "POST":
@@ -129,9 +131,18 @@ def edit(item_id):
 @winetype_api.route('/<int:item_id>/delete', methods=["GET", "POST"])
 @login_required
 def delete(item_id):
+    """
+    Deletion of wine type is allowed. Caution thought that all the reviews
+    will be deleted too
+    """
     session = current_app.config['db']
+    item = session.query(WineType).filter_by(id=item_id).one()
+
+    if item.user_id != login_session['user_id']:
+        flash("You are not allowed to delete this wine type", 'danger')
+        return redirect(url_for('winetype_api.show'))
+
     if request.method == "POST":
-        item = session.query(WineType).filter_by(id=item_id).one()
         c_name = item.name
         session.delete(item)
         session.commit()

@@ -1,8 +1,7 @@
 from flask import current_app, Blueprint
-from flask import Flask, render_template, request, g
-from flask import redirect, jsonify, url_for, flash
+from flask import render_template, request, g
+from flask import redirect, url_for, flash
 from flask import make_response
-from flask_login import UserMixin
 from database import User
 from flask import session as login_session
 import random
@@ -62,6 +61,7 @@ def signout():
         del login_session['user_id']
         del login_session['isadmin']
         del login_session['provider']
+        del login_session['_csrf_token']
         flash("You have successfully been logged out.", 'success')
         return redirect(url_for('winestock_api.show'))
     else:
@@ -294,6 +294,7 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user_id' not in login_session:
+            flash("You need to be signed in perform this task", "danger")
             return redirect(url_for('auth_api.show_login'))
         return f(*args, **kwargs)
     return decorated_function
@@ -305,5 +306,22 @@ def admin_required(f):
         if login_session.get('isadmin', False):
             return f(*args, **kwargs)
         else:
+            flash("Only administrators can perform this task", "danger")
             return redirect(url_for('auth_api.show_login'))
     return decorated_function
+
+
+def authenticate_api(*args, **kwargs):
+    from flask.ext.restless import ProcessingException
+    if 'user_id' not in login_session:
+        raise ProcessingException(description='Not authenticated!')
+    return None
+
+
+def generate_csrf_token():
+    if '_csrf_token' not in login_session:
+        token = ''.join(random.choice(string.ascii_uppercase + string.digits)
+                for x in xrange(64))
+        login_session['_csrf_token'] = token
+    return login_session['_csrf_token']
+

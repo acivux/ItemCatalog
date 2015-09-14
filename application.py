@@ -1,11 +1,11 @@
 import os
-import flask.ext.restless
-from flask import Flask, redirect, url_for
+import flask.ext.restless as restfull
+from flask import Flask, redirect, url_for, request, abort
+from flask import session as login_session
 from flaskext.uploads import UploadSet, configure_uploads, IMAGES
-from flask_login import LoginManager
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
-from database import Base, GlassType, WineStock, UserReview, WineType
+from database import Base, WineStock, UserReview, WineType
 from wine_color_api.wine_color_api import wine_color_api
 from temperature_api.temperature_api import temperature_api
 from calories_api.calories_api import calories_api
@@ -13,7 +13,7 @@ from abv_api.abv_api import abv_api
 from glass_api.glass_api import glass_api
 from type_api.winetype_api import winetype_api
 from winestock_api.winestock_api import winestock_api
-from auth_api.auth_api import auth_api
+from auth_api.auth_api import auth_api, authenticate_api, generate_csrf_token
 
 from utils import get_single_postprocessor
 
@@ -39,29 +39,53 @@ brandphotos = UploadSet('brandphotos', IMAGES)
 configure_uploads(app, (brandphotos,))
 
 
-# Setting up API endpoints
-api_manager = flask.ext.restless.APIManager(app, session=api_endpoint_session)
+# set up CSRF token handling
+@app.before_request
+def csrf_protect():
+    if request.method == "POST":
+        token = login_session.pop('_csrf_token', None)
+        if not token or token != request.form.get('_csrf_token'):
+            abort(403)
 
-glass_api_manager = api_manager.create_api(GlassType)
+app.jinja_env.globals['csrf_token'] = generate_csrf_token
+
+
+
+# Setting up API endpoints
+# Only implementing WineType, WineStock, UserReview
+# Note that API for admin level functions will not be implemented.
+api_manager = restfull.APIManager(app, session=api_endpoint_session)
+
+
 
 winestock_api_manager = api_manager.create_api(
     WineStock,
-    exclude_columns=['user', 'winetype_id'])
-
+    preprocessors=dict(GET_SINGLE=[authenticate_api],
+                       GET_MANY=[authenticate_api]),
+    exclude_columns=['user', 'winetype_id'],
+    collection_name='winebrand')
 review_api_manager = api_manager.create_api(
     UserReview,
-    exclude_columns=['user', 'winestock_id'])
-
+    preprocessors=dict(GET_SINGLE=[authenticate_api],
+                       GET_MANY=[authenticate_api]),
+    exclude_columns=['user', 'winestock_id'],
+    collection_name='review')
 winetype_api_manager = api_manager.create_api(
     WineType,
     exclude_columns=['user', 'winestock_id', 'winestock'],
-    postprocessors={'GET_SINGLE': [get_single_postprocessor]})
+    preprocessors=dict(GET_SINGLE=[authenticate_api],
+                       GET_MANY=[authenticate_api]),
+    postprocessors={'GET_SINGLE': [get_single_postprocessor]},
+    collection_name='winetype')
 
-
+#ToDo: CSRF protection
+#ToDo: Readme file
 
 @app.route('/')
 def show_home():
     return redirect(url_for('winestock_api.show'))
+
+
 
 
 if __name__ == '__main__':

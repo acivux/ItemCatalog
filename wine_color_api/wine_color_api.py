@@ -7,6 +7,7 @@ from auth_api.auth_api import login_required, admin_required
 wine_color_api = Blueprint('wine_color_api', __name__)
 template_prefix = "color/"
 
+
 @wine_color_api.route('/')
 @login_required
 @admin_required
@@ -48,7 +49,8 @@ def edit(color_id):
         flash("Successfully Edited Color '%s'" % (new_name,), 'success')
         return redirect(url_for('.show'))
     else:
-        return render_template(template_prefix+'edit_form.html', colortype=color)
+        return render_template(template_prefix+'edit_form.html',
+                               colortype=color)
 
 
 @wine_color_api.route('/<int:color_id>/delete', methods=["GET", "POST"])
@@ -57,7 +59,8 @@ def edit(color_id):
 def delete(color_id):
     session = current_app.config['db']
     if request.method == "POST":
-        used = session.query(func.count(WineType.id).label('colorcount')).filter_by(id=color_id).scalar()
+        used = session.query(func.count(WineType.id).label('count'))\
+            .filter_by(color_id=color_id).scalar()
         color = session.query(WineColor).filter_by(id=color_id).one()
         c_name = color.name
         if used == 0:
@@ -65,10 +68,10 @@ def delete(color_id):
             session.commit()
             flash("Successfully Deleted Color '%s'" % (c_name,), 'success')
         else:
-            flash("'%s' color still in use and cannot be deleted." % (c_name,), 'danger')
+            flash("'%s' color still in use and cannot be deleted." % (c_name,),
+                  'danger')
         return redirect(url_for('.show'))
     else:
         color = session.query(WineColor).filter_by(id=color_id).one()
-        return render_template(template_prefix+'delete_form.html', colortype=color)
-
-#ToDo: make sure no admin level attribtutes get deleted while still in use.
+        return render_template(template_prefix+'delete_form.html',
+                               colortype=color)

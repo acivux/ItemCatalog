@@ -33,7 +33,7 @@ function loadValues(id)
     $("#abvvalue").html("");
     $("#temperaturevalue").html("");
 
-    $.getJSON("/api/wine_type/"+id, function( sdata ) {
+    $.getJSON("/api/winetype/"+id, function( sdata ) {
         data = sdata;
         glassname = "";
         if (data.glass && data.glass.name)
@@ -55,7 +55,7 @@ function loadValues(id)
         $("#calorievalue").html(caloriename);
         $("#abvvalue").html(abvname);
         $("#temperaturevalue").html(tempname);
-        $("#footer").html(data.date_created);
+        $("#footer").html(data.date_edited || data.date_created);
         if (data.canedit === "")
         {
             $("#canedit").hide();
@@ -123,7 +123,7 @@ function edit()
                         {% include 'winetype/winetype_staticform_content.html' %}
                     </form>
                 </div>
-            <div class="panel-footer"><p class="text-right text-muted" style="margin: 0px"><a href="#" onclick="edit();" id="canedit" class="btn btn-default btn-xs" role="button"><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Edit"></span></a> | <span class="glyphicon glyphicon-user" aria-hidden="true"></span> <a href="#" id="user_reviews"></a>   <small><span class="glyphicon glyphicon-calendar" aria-hidden="true" title="Created"></span> <span id="footer"></span></small></p></div>
+            <div class="panel-footer"><p class="text-right text-muted" style="margin: 0px"><a href="#" onclick="edit();" id="canedit" class="btn btn-default btn-xs" role="button"><span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Edit"></span></a> | <small><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <a href="#" id="user_reviews"></a>   <span class="glyphicon glyphicon-calendar" aria-hidden="true" title="Created"></span> <span id="footer"></span></small></p></div>
             </div>
           </div>
       </div>

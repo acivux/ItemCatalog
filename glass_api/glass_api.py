@@ -2,9 +2,8 @@ from utils import make_safe_filename
 import os
 from flask import current_app, Blueprint
 from flask import render_template, request, redirect, url_for, flash
-from sqlalchemy import asc, exc
-from database import GlassType
-from flaskext.uploads import UploadSet, IMAGES
+from sqlalchemy import asc, exc, func
+from database import GlassType, WineType
 from auth_api.auth_api import login_required, admin_required
 
 
@@ -76,11 +75,17 @@ def edit(item_id):
 def delete(item_id):
     session = current_app.config['db']
     if request.method == "POST":
+        used = session.query(func.count(WineType.id).label('count'))\
+            .filter_by(glass_type_id=item_id).scalar()
         item = session.query(GlassType).filter_by(id=item_id).one()
         c_name = item.name
-        session.delete(item)
-        session.commit()
-        flash("Successfully Deleted '%s'" % (c_name,), 'success')
+        if used == 0:
+            session.delete(item)
+            session.commit()
+            flash("Successfully Deleted '%s'" % (c_name,), 'success')
+        else:
+            flash("'%s' is still in use and cannot be deleted." % (c_name,),
+                  'danger')
         return redirect(url_for('.show'))
     else:
         item = session.query(GlassType).filter_by(id=item_id).one()

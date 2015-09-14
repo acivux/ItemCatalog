@@ -13,6 +13,7 @@
       <div class="row">
           <div class="col-md-9 col-sm-12 col-xs-12">
             <form class="form-horizontal" method='POST' enctype='multipart/form-data' action='{{url_for('.edit', item_id=item.id)}}'>
+              <input name=_csrf_token type=hidden value="{{ csrf_token() }}">
                 <div class="form-group">
                     <label for="itemname" class="col-sm-3 col-xs-12 control-label">Name</label>
                     <div class="col-sm-9 col-xs-12">

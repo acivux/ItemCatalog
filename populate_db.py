@@ -24,7 +24,7 @@ session = DBSession()
 
 session.add(User(id=1, name="admin", email="admin@myurl.com", nickname="zztop", admin=False))
 session.add(User(id=2, name="admin2", email="admin2@myurl.com", nickname="formatc", admin=False))
-session.add(User(id=3, name="Jannie van Niekerk", email="acivux@gmail.com", admin=True))
+session.add(User(id=3, name="Jannie van Niekerk", email="acivux@gmail.com", admin=False))
 
 session.add(GlassType(id=1, name="Sparkling Wine Flute"))
 session.add(GlassType(id=2, name="White Wine Glass"))
@@ -180,7 +180,7 @@ session.add(WineType(id=13,
                      abv_id=4,
                      temperature_id=5,
                      date_created=datetime.datetime(2015, 1, 1, 0, 0, 0, 1),
-                     user_id=2))
+                     user_id=3))
 
 session.add(WineStock(id=1,
                       brand_name="Testing 123",
@@ -197,5 +197,13 @@ session.add(WineStock(id=2,
                       date_created=datetime.datetime(2015, 2, 2, 0, 0, 0, 1),
                       user_id=2,
                       filename='gwb2.png'))
+session.add(WineStock(id=3,
+                      brand_name="FiFi",
+                      vintage=2010,
+                      winetype_id=12,
+                      date_created=datetime.datetime(2015, 2, 2, 0, 0, 0, 1),
+                      user_id=3,
+                      filename='gwb3.png'))
+
 
 session.commit()

@@ -14,6 +14,7 @@
           <div class="col-md-4 col-sm-4 col-sx-4"></div>
           <div class="col-md-4 col-sm-4 col-sx-4">
             <form class="form-horizontal" method='POST' enctype='multipart/form-data' action=""{{url_for('.delete',item_id=item.id)}}">
+              <input name=_csrf_token type=hidden value="{{ csrf_token() }}">
             <div class="panel panel-danger">
                 <div class="panel-heading">
                     <h3 class="panel-title">Are you sure you want to delete calorie item "{{item.name}}"?</h3>
