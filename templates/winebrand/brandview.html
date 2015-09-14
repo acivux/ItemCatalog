@@ -1,4 +1,4 @@
-{% extends "winestock/stock_base.html" %}
+{% extends "winebrand/brand_base.html" %}
 {% block scripts%}
 <style>
 div.stars {
@@ -46,14 +46,14 @@ label.star:before {
     {% if session.user_id %}
         <li><a href="{{url_for('.new')}}"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
         {%if session.user_id == item.user_id %}
-        <li><a href="{{url_for('.edit_stockitem', stockitem_id=item.id)}}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a></li>
+        <li><a href="{{url_for('.edit_branditem', stockitem_id=item.id)}}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a></li>
         {% endif%}
     {% endif %}
 {%endblock%}
 
 {%block breadcrumbs%}
     {% include 'partial_templates/breadcrumb_linked_home.html' %}
-    {% include 'partial_templates/breadcrumb_linked_winestock.html' %}
+    {% include 'partial_templates/breadcrumb_linked_winebrand.html' %}
     <li>Brand Item</li>
 {%endblock%}
 
@@ -114,7 +114,7 @@ label.star:before {
                 <div class="media well">
                   <div class="media-left">
                     <a href="#">
-                      <img class="media-object img-circle" src="{%if review.user.picture %}{{review.user.picture}}{%else%}{{url_for('static', filename='generic_person.png')}}{%endif%}" alt="User Image" style="width:64px; height: 64px">
+                      <img class="media-object img-circle" src="{%if review.user.picture %}{{review.user.picture}}{%else%}{{url_for('static', filename='images/generic_person.png')}}{%endif%}" alt="User Image" style="width:64px; height: 64px">
                     </a>
                   </div>
                   <div class="media-body">

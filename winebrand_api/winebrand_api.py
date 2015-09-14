@@ -1,7 +1,7 @@
 from flask import current_app, Blueprint
 from flask import render_template, request, redirect, url_for, flash
 from sqlalchemy import asc, desc, func, collate
-from database import WineStock, WineType, UserReview
+from database import WineBrand, WineType, UserReview
 from flask import session as login_session
 import datetime
 from flaskext.uploads import UploadSet, IMAGES
@@ -9,24 +9,24 @@ from utils import make_safe_filename
 from auth_api.auth_api import login_required
 import os
 
-winestock_api = Blueprint('winestock_api', __name__)
-template_prefix = "winestock/"
+winebrand_api = Blueprint('winebrand_api', __name__)
+template_prefix = "winebrand/"
 
 brandphotos = UploadSet('brandphotos', IMAGES)
 
 
-@winestock_api.route('/')
+@winebrand_api.route('/')
 def show():
     session = current_app.config['db']
     wines = session\
-        .query(WineType, func.count(WineStock.id))\
-        .join(WineStock)\
+        .query(WineType, func.count(WineBrand.id))\
+        .join(WineBrand)\
         .group_by(WineType.name)\
         .order_by(asc(collate(WineType.name, 'NOCASE')))
     return render_template(template_prefix+'topview.html', wines=wines)
 
 
-@winestock_api.route('/<int:winetype_id>/', methods=["GET"])
+@winebrand_api.route('/<int:winetype_id>/', methods=["GET"])
 def show_brand(winetype_id):
     session = current_app.config['db']
 
@@ -36,45 +36,116 @@ def show_brand(winetype_id):
         id=winetype_id
     ).one()
 
-    averages = session\
-        .query(WineStock.id, func.avg(UserReview.rating).label('average'))\
-        .join(UserReview.winestock)\
+    counter = session\
+        .query(UserReview.winebrand_id, UserReview.rating, func.count(UserReview.rating).label('count'))\
+        .join(WineBrand)\
         .join(WineType)\
-        .filter(WineStock.winetype_id == winetype_id)\
-        .group_by(WineStock.id)\
+        .filter(WineBrand.winetype_id == winetype_id)\
+        .group_by(WineBrand.id, UserReview.rating)\
+        .order_by(UserReview.winebrand_id, desc('count'))\
+        .subquery()
+
+    maxer = session\
+        .query(counter.c.winebrand_id, func.max(counter.c.count).label('maxcount'))\
+        .group_by(counter.c.winebrand_id)\
+        .subquery()
+
+    tops = session\
+        .query(UserReview.winebrand_id, UserReview.rating, func.count(UserReview.rating).label('topcount'))\
+        .join(maxer, maxer.c.winebrand_id == UserReview.winebrand_id)\
+        .group_by(UserReview.winebrand_id, UserReview.rating)\
+        .having(func.count(UserReview.rating) == maxer.c.maxcount)\
         .subquery()
 
     wines = session\
-        .query(WineStock, averages.c.average)\
-        .outerjoin(averages, WineStock.id == averages.c.id)\
-        .filter(WineStock.winetype_id == winetype_id)\
-        .order_by(WineStock.brand_name, WineStock.vintage.asc())
-    return render_template(template_prefix+'brandview.html',
+        .query(WineBrand, tops.c.rating)\
+        .outerjoin(tops, WineBrand.id == tops.c.winebrand_id)\
+        .filter(WineBrand.winetype_id == winetype_id)\
+        .order_by(WineBrand.brand_name, WineBrand.vintage.asc())
+
+    # averages = session\
+    #     .query(WineBrand.id, UserReview.rating, func.count(UserReview.rating).label('count'))\
+    #     .join(UserReview.winebrand)\
+    #     .join(WineType)\
+    #     .filter(WineBrand.winetype_id == winetype_id)\
+    #     .group_by(WineBrand.id, UserReview.rating)\
+    #     .order_by(desc('count'))\
+    #     .subquery()
+    #
+    # maxes = session\
+    #     .query(WineBrand.id, averages.c.rating, func.max(averages.c.count).label('max'))\
+    #     .join(UserReview.winebrand)\
+    #     .join(WineType)\
+    #     .outerjoin(averages, WineBrand.id == averages.c.id)\
+    #     .filter(WineBrand.winetype_id == winetype_id)\
+    #     .group_by(WineBrand.id, UserReview.rating)\
+    #     .subquery()
+    #
+    # wines = session\
+    #     .query(WineBrand, maxes.c.rating)\
+    #     .outerjoin(maxes, WineBrand.id == maxes.c.id)\
+    #     .filter(WineBrand.winetype_id == winetype_id)\
+    #     .order_by(WineBrand.brand_name, WineBrand.vintage.asc())
+
+    return render_template(template_prefix+'brandsview.html',
                            winetype=winetype,
                            wines=wines)
 
 
-@winestock_api.route('/stockitem/<int:stockitem_id>/', methods=["GET"])
-def show_stockitem(stockitem_id):
+# SELECT distinct
+# user_review.winebrand_id,
+# user_review.rating,
+# count(user_review.rating) as topcount
+# from
+# user_review
+# left join
+# -- maxer start
+# (SELECT
+# brandid,
+# max(counter.scount) as maxcount
+# from
+# (SELECT
+# winebrand_id as brandid,
+# user_review.rating as arating,
+# count(user_review.rating) AS scount
+# FROM
+# user_review
+# GROUP BY
+# winebrand_id,
+# user_review.rating
+# ORDER BY
+# winebrand_id, scount DESC) as counter
+# group by brandid) as maxer
+# -- maxer end
+# on maxer.brandid = user_review.winebrand_id
+# group by
+# user_review.winebrand_id,
+# user_review.rating
+# having
+# count(user_review.rating) = maxer.maxcount
+
+
+@winebrand_api.route('/branditem/<int:stockitem_id>/', methods=["GET"])
+def show_branditem(stockitem_id):
     session = current_app.config['db']
     item = session\
-        .query(WineStock)\
+        .query(WineBrand)\
         .filter_by(id=stockitem_id)\
         .one()
     reviews = session\
         .query(UserReview)\
-        .filter_by(winestock_id=stockitem_id)\
+        .filter_by(winebrand_id=stockitem_id)\
         .order_by(UserReview.date_created.desc())
-    return render_template(template_prefix+"stockview.html",
+    return render_template(template_prefix+"brandview.html",
                            item=item,
                            reviews=reviews)
 
 
-@winestock_api.route('/new', methods=["GET", "POST"])
+@winebrand_api.route('/new', methods=["GET", "POST"])
 @login_required
 def new():
     session = current_app.config['db']
-    item = WineStock(brand_name="", vintage=1980)
+    item = WineBrand(brand_name="", vintage=1980)
     maxyear = datetime.date.today().year
     if request.method == "POST":
         item.brand_name = request.form['itemname']
@@ -94,7 +165,7 @@ def new():
             .one()
         flash("Successfully Added '%s (%s)'" % (winetype.name, item.brand_name),
               'success')
-        return redirect(url_for('.show_stockitem', stockitem_id=item.id))
+        return redirect(url_for('.show_branditem', stockitem_id=item.id))
     else:
         winetypes = session\
             .query(WineType)\
@@ -106,19 +177,19 @@ def new():
                                maxyear=maxyear)
 
 
-@winestock_api.route('/stockitem/<int:stockitem_id>/delete',
+@winebrand_api.route('/branditem/<int:stockitem_id>/delete',
                      methods=["GET", "POST"])
 @login_required
-def delete_stockitem(stockitem_id):
+def delete_branditem(stockitem_id):
     session = current_app.config['db']
-    item = session.query(WineStock)\
+    item = session.query(WineBrand)\
         .filter_by(id=stockitem_id)\
         .one()
 
     if item.user_id != login_session['user_id']:
         flash("You cannot delete this item",
               'danger')
-        return redirect(url_for(".show_stockitem", stockitem_id=stockitem_id))
+        return redirect(url_for(".show_branditem", stockitem_id=stockitem_id))
 
     if request.method == "POST":
         try:
@@ -135,20 +206,20 @@ def delete_stockitem(stockitem_id):
         return render_template(template_prefix+'delete_form.html', item=item)
 
 
-@winestock_api.route('/stockitem/<int:stockitem_id>/edit',
+@winebrand_api.route('/branditem/<int:stockitem_id>/edit',
                      methods=["GET", "POST"])
 @login_required
-def edit_stockitem(stockitem_id):
+def edit_branditem(stockitem_id):
     session = current_app.config['db']
     maxyear = datetime.date.today().year
-    item = session.query(WineStock)\
+    item = session.query(WineBrand)\
         .filter_by(id=stockitem_id)\
         .one()
 
     if item.user_id != login_session['user_id']:
         flash("You cannot edit this item",
               'danger')
-        return redirect(url_for(".show_stockitem", stockitem_id=stockitem_id))
+        return redirect(url_for(".show_branditem", stockitem_id=stockitem_id))
 
     if request.method == "POST":
         item.brand_name = request.form['itemname']
@@ -174,7 +245,7 @@ def edit_stockitem(stockitem_id):
             .one()
         flash("Successfully Added '%s (%s)'" % (winetype.name, item.brand_name),
               'success')
-        return redirect(url_for('.show_stockitem', stockitem_id=item.id))
+        return redirect(url_for('.show_branditem', stockitem_id=item.id))
     else:
         winetypes = session.query(WineType)\
             .order_by(asc(collate(WineType.name, 'NOCASE')))\
@@ -185,14 +256,14 @@ def edit_stockitem(stockitem_id):
                                maxyear=maxyear)
 
 
-@winestock_api.route('/stockitem/<int:stockitem_id>/rating/new',
+@winebrand_api.route('/branditem/<int:stockitem_id>/rating/new',
                      methods=["POST"])
 @login_required
 def new_review(stockitem_id):
     session = current_app.config['db']
     if request.method == "POST":
         reviewitem = UserReview(
-            winestock_id=stockitem_id,
+            winebrand_id=stockitem_id,
             summary=request.form.get('summary', None),
             comment=request.form.get('reviewtext', None),
             rating=request.form.get('star', 1),
@@ -202,10 +273,10 @@ def new_review(stockitem_id):
         session.add(reviewitem)
         session.commit()
         flash("Successfully added a review", 'success')
-        return redirect(url_for('.show_stockitem', stockitem_id=stockitem_id))
+        return redirect(url_for('.show_branditem', stockitem_id=stockitem_id))
 
 # ToDo: Edit / Delete Reviews!?
-@winestock_api.route('/reviews/<int:user_id>', methods=["GET"])
+@winebrand_api.route('/reviews/<int:user_id>', methods=["GET"])
 def list_user_reviews(user_id):
     session = current_app.config['db']
     reviews = session.query(UserReview)\

@@ -1,4 +1,4 @@
-{% extends "winestock/stock_base.html" %}
+{% extends "winebrand/brand_base.html" %}
 {%block scripts%}
 <script>
     $(document).ready(function() {
@@ -27,7 +27,7 @@
 
 {%block navbar%}
     {% if session.user_id %}
-        <li><a href="{{url_for('winestock_api.new')}}" title="Add a new wine"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
+        <li><a href="{{url_for('winebrand_api.new')}}" title="Add a new wine"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
         <li><a href="{{url_for('winetype_api.show')}}">{% include 'partial_templates/name_winetype.html' %}</a></li>
     {% endif %}
 {%endblock%}

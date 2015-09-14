@@ -1,4 +1,4 @@
-{% extends "winestock/stock_base.html" %}
+{% extends "winebrand/brand_base.html" %}
 {% block scripts%}
 
 {% endblock%}
@@ -22,11 +22,11 @@
                 <div class="media well">
                   <div class="media-left">
                     <a href="#">
-                      <img class="media-object img-circle" src="{%if review.user.picture %}{{review.user.picture}}{%else%}{{url_for('static', filename='generic_person.png')}}{%endif%}" alt="User Image" style="width:64px; height: 64px">
+                      <img class="media-object img-circle" src="{%if review.user.picture %}{{review.user.picture}}{%else%}{{url_for('static', filename='images/generic_person.png')}}{%endif%}" alt="User Image" style="width:64px; height: 64px">
                     </a>
                   </div>
                   <div class="media-body">
-                    <h5 class="media-heading"><a href="{{url_for('.show_stockitem', stockitem_id=review.winestock_id)}}">{{review.winestock.brand_name}}</a> <small>({{review.winestock.winetype.name}}, {{review.winestock.vintage}})</small></h5>
+                    <h5 class="media-heading"><a href="{{url_for('.show_branditem', stockitem_id=review.winebrand_id)}}">{{review.winebrand.brand_name}}</a> <small>({{review.winebrand.winetype.name}}, {{review.winebrand.vintage}})</small></h5>
                     <h4 class="media-heading"><br/>{{review.summary}}</h4>
                     <p style="white-space: pre-wrap;">{{review.comment|e}}</p>
                     <p style="margin-bottom:0pt"><small>{% for x in range(0,review.rating)%}<span class="glyphicon glyphicon-star" aria-hidden="true"></span>{%endfor%} <span class="pull-right"><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> <span style="font-size:8pt">{{review.date_created.strftime('%Y-%m-%d')}}</span></span></small></p>

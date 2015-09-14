@@ -29,15 +29,6 @@ class GlassType(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False, unique=True)
 
-    @property
-    def serialize(self):
-        """Return object data in easily serializeable format"""
-        return {
-            'name': self.name,
-            'id': self.id,
-
-        }
-
 
 class Temperature(Base):
     __tablename__ = 'temperature'
@@ -46,15 +37,6 @@ class Temperature(Base):
     name = Column(String(250), nullable=False, unique=True)
     temp = Column(Float, nullable=False, unique=True)  # Fahrenheit Only
 
-    @property
-    def serialize(self):
-        """Return object data in easily serializeable format"""
-        return {
-            'name': self.name,
-            'temp': self.temp,
-            'id': self.id,
-        }
-
 
 class WineABV(Base):
     __tablename__ = 'wine_abv'
@@ -62,28 +44,12 @@ class WineABV(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False, unique=True)
 
-    @property
-    def serialize(self):
-        """Return object data in easily serializeable format"""
-        return {
-            'name': self.name,
-            'id': self.id,
-        }
-
 
 class WineCalories(Base):
     __tablename__ = 'wine_calories'
 
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False, unique=True)
-
-    @property
-    def serialize(self):
-        """Return object data in easily serializeable format"""
-        return {
-            'name': self.name,
-            'id': self.id,
-        }
 
 
 class WineColor(Base):
@@ -93,34 +59,12 @@ class WineColor(Base):
     name = Column(String(250), nullable=False, unique=True)
     value = Column(String(6), nullable=False, unique=True)  # HTML hex color code
 
-    @property
-    def hue(self):
-        r, g, b = (int(self.value[i:i+2], 16) / 255.0 for i in xrange(0, 5, 2))
-        return colorsys.rgb_to_hsv(r, g, b)
-
-    @property
-    def serialize(self):
-        """Return object data in easily serializeable format"""
-        return {
-            'name': self.name,
-            'color': self.color,
-            'id': self.id,
-        }
-
 
 class Category(Base):
     __tablename__ = 'category'
 
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
-
-    @property
-    def serialize(self):
-        """Return object data in easily serializeable format"""
-        return {
-            'name': self.name,
-            'id': self.id,
-        }
 
 
 class WineType(Base):
@@ -138,26 +82,18 @@ class WineType(Base):
     abv = relationship(WineABV)
     temperature_id = Column(Integer, ForeignKey('temperature.id'), nullable=False)
     temperature = relationship(Temperature)
-    filename = Column(String, nullable=True)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
     date_created = Column(DateTime, nullable=False)
     date_edited = Column(DateTime, nullable=True)
-    brands = relationship("WineStock", cascade="all,delete", backref="winetype")
+    brands = relationship("WineBrand", cascade="all,delete", backref="winetype")
 
     # TODO: Add wikipedia link explaining wine type
 
-    @property
-    def serialize(self):
-        """Return object data in easily serializeable format"""
-        return {
-            'name': self.name,
-            'id': self.id,
-        }
 
 # ToDo: rename stock to brand
-class WineStock(Base):
-    __tablename__ = 'wine_stock'
+class WineBrand(Base):
+    __tablename__ = 'wine_brand'
 
     id = Column(Integer, primary_key=True)
     brand_name = Column(String(250), nullable=False)
@@ -167,39 +103,22 @@ class WineStock(Base):
     date_edited = Column(DateTime, nullable=True)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
-    filename = Column(String(250), nullable=True, unique=True)
-    reviews = relationship("UserReview", cascade="all,delete", back_populates="winestock")
-
-    @property
-    def serialize(self):
-        """Return object data in easily serializeable format"""
-        return {
-            'brand': self.brand,
-            'on_hand': self.on_hand,
-            'id': self.id,
-        }
+    filename = Column(String(250), nullable=True, unique=False)
+    reviews = relationship("UserReview", cascade="all,delete", back_populates="winebrand")
 
 
 class UserReview(Base):
     __tablename__ = 'user_review'
 
     id = Column(Integer, primary_key=True)
-    winestock_id = Column(Integer, ForeignKey('wine_stock.id'), nullable=False)
+    winebrand_id = Column(Integer, ForeignKey('wine_brand.id'), nullable=False)
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     user = relationship(User)
     summary = Column(String(250), nullable=False)
     comment = Column(Text, nullable=True)
     rating = Column(Integer, nullable=False)
     date_created = Column(DateTime, nullable=False)
-    winestock = relationship("WineStock", back_populates="reviews")
+    winebrand = relationship("WineBrand", back_populates="reviews")
 
-    @property
-    def serialize(self):
-        """Return object data in easily serializeable format"""
-        return {
-            'user': self.user_id,
-            'comment': self.commnet,
-            'id': self.id,
-        }
 
 Base.metadata.create_all(engine)

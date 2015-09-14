@@ -1,4 +1,4 @@
-{% extends "winestock/stock_base.html" %}
+{% extends "winebrand/brand_base.html" %}
 {%block navbar%}
     {% if session.user_id %}
         <li><a href="{{url_for('.new')}}" title="Add a new wine"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
@@ -23,7 +23,7 @@
                         <input type="text" class="form-control" id="itemname" name="itemname" placeholder="Name" value="{{item.name}}">
                     </div>
                 </div>
-                <!-- stock count -->
+                <!-- vintage -->
                 <div class="form-group">
                     <label for="vintagevalue" class="col-sm-2 control-label">Vintage</label>
                     <div class="col-sm-5 col-xs-5">

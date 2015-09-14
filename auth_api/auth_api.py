@@ -34,7 +34,7 @@ def user_edit():
             user.nickname = request.form.get('usernickname')
             session.commit()
             flash("User nickname changed", 'success')
-            return redirect(url_for('winestock_api.show'))
+            return redirect(url_for('winebrand_api.show'))
         else:
             user = get_user_info(login_session['user_id'])
             return render_template(template_prefix+'user_edit.html', user=user)
@@ -61,12 +61,12 @@ def signout():
         del login_session['user_id']
         del login_session['isadmin']
         del login_session['provider']
-        del login_session['_csrf_token']
+        #del login_session['_csrf_token']
         flash("You have successfully been logged out.", 'success')
-        return redirect(url_for('winestock_api.show'))
+        return redirect(url_for('winebrand_api.show'))
     else:
         flash("You were not logged in", 'danger')
-        return redirect(url_for('winestock_api.show'))
+        return redirect(url_for('winebrand_api.show'))
 
 
 @auth_api.route('/gconnect', methods=['POST'])
@@ -86,7 +86,7 @@ def gconnect():
         return response
 
     # Obtain authorization code
-    code = request.data
+    code = request.values.get('authresult', None)
 
     try:
         # Upgrade the authorization code into a credentials object
@@ -193,7 +193,7 @@ def fbconnect():
     with open('facebook_client_secrets.json', 'r') as jsfile:
         facebook_secrets = json.loads(jsfile.read())
 
-    access_token = request.data
+    access_token = request.values.get('access_token', None)
     app_id = facebook_secrets['web']['app_id']
     app_secret = facebook_secrets['web']['app_secret']
 
