@@ -30,14 +30,12 @@ def show():
 def show_brand(winetype_id):
     session = current_app.config['db']
 
-    winetype = session.query(
-        WineType
-    ).filter_by(
-        id=winetype_id
-    ).one()
+    winetype = session.query(WineType).filter_by(id=winetype_id).one()
 
     counter = session\
-        .query(UserReview.winebrand_id, UserReview.rating, func.count(UserReview.rating).label('count'))\
+        .query(UserReview.winebrand_id,
+               UserReview.rating,
+               func.count(UserReview.rating).label('count'))\
         .join(WineBrand)\
         .join(WineType)\
         .filter(WineBrand.winetype_id == winetype_id)\
@@ -46,12 +44,15 @@ def show_brand(winetype_id):
         .subquery()
 
     maxer = session\
-        .query(counter.c.winebrand_id, func.max(counter.c.count).label('maxcount'))\
+        .query(counter.c.winebrand_id,
+               func.max(counter.c.count).label('maxcount'))\
         .group_by(counter.c.winebrand_id)\
         .subquery()
 
     tops = session\
-        .query(UserReview.winebrand_id, UserReview.rating, func.count(UserReview.rating).label('topcount'))\
+        .query(UserReview.winebrand_id,
+               UserReview.rating,
+               func.count(UserReview.rating).label('topcount'))\
         .join(maxer, maxer.c.winebrand_id == UserReview.winebrand_id)\
         .group_by(UserReview.winebrand_id, UserReview.rating)\
         .having(func.count(UserReview.rating) == maxer.c.maxcount)\
@@ -61,68 +62,11 @@ def show_brand(winetype_id):
         .query(WineBrand, tops.c.rating)\
         .outerjoin(tops, WineBrand.id == tops.c.winebrand_id)\
         .filter(WineBrand.winetype_id == winetype_id)\
-        .order_by(WineBrand.brand_name, WineBrand.vintage.asc())
-
-    # averages = session\
-    #     .query(WineBrand.id, UserReview.rating, func.count(UserReview.rating).label('count'))\
-    #     .join(UserReview.winebrand)\
-    #     .join(WineType)\
-    #     .filter(WineBrand.winetype_id == winetype_id)\
-    #     .group_by(WineBrand.id, UserReview.rating)\
-    #     .order_by(desc('count'))\
-    #     .subquery()
-    #
-    # maxes = session\
-    #     .query(WineBrand.id, averages.c.rating, func.max(averages.c.count).label('max'))\
-    #     .join(UserReview.winebrand)\
-    #     .join(WineType)\
-    #     .outerjoin(averages, WineBrand.id == averages.c.id)\
-    #     .filter(WineBrand.winetype_id == winetype_id)\
-    #     .group_by(WineBrand.id, UserReview.rating)\
-    #     .subquery()
-    #
-    # wines = session\
-    #     .query(WineBrand, maxes.c.rating)\
-    #     .outerjoin(maxes, WineBrand.id == maxes.c.id)\
-    #     .filter(WineBrand.winetype_id == winetype_id)\
-    #     .order_by(WineBrand.brand_name, WineBrand.vintage.asc())
+        .order_by(collate(WineBrand.brand_name, 'NOCASE'), WineBrand.vintage.asc())
 
     return render_template(template_prefix+'brandsview.html',
                            winetype=winetype,
                            wines=wines)
-
-
-# SELECT distinct
-# user_review.winebrand_id,
-# user_review.rating,
-# count(user_review.rating) as topcount
-# from
-# user_review
-# left join
-# -- maxer start
-# (SELECT
-# brandid,
-# max(counter.scount) as maxcount
-# from
-# (SELECT
-# winebrand_id as brandid,
-# user_review.rating as arating,
-# count(user_review.rating) AS scount
-# FROM
-# user_review
-# GROUP BY
-# winebrand_id,
-# user_review.rating
-# ORDER BY
-# winebrand_id, scount DESC) as counter
-# group by brandid) as maxer
-# -- maxer end
-# on maxer.brandid = user_review.winebrand_id
-# group by
-# user_review.winebrand_id,
-# user_review.rating
-# having
-# count(user_review.rating) = maxer.maxcount
 
 
 @winebrand_api.route('/branditem/<int:stockitem_id>/', methods=["GET"])

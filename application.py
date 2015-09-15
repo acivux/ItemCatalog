@@ -113,7 +113,6 @@ winetype_api_manager = api_manager.create_api(
     postprocessors={'GET_SINGLE': [get_single_postprocessor]},
     collection_name='winetype')
 
-# ToDo: CSRF protection
 # ToDo: Readme file
 
 

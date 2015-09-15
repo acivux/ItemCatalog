@@ -1,4 +1,3 @@
-# TODO: remove serialize properties. API was implemented via Flask-Restful
 from sqlalchemy import Column, ForeignKey, Integer, Float, String, DateTime
 from sqlalchemy import Text, Boolean
 from sqlalchemy.ext.declarative import declarative_base
@@ -88,10 +87,7 @@ class WineType(Base):
     date_edited = Column(DateTime, nullable=True)
     brands = relationship("WineBrand", cascade="all,delete", backref="winetype")
 
-    # TODO: Add wikipedia link explaining wine type
 
-
-# ToDo: rename stock to brand
 class WineBrand(Base):
     __tablename__ = 'wine_brand'
 

@@ -5,9 +5,10 @@
         <li><a href="{{url_for('.delete_branditem', stockitem_id=item.id)}}" title="Delete"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a></li>
     {% endif %}
 {%endblock%}
-<!-- ToDo: Fix breadcrumbs -->
 {%block breadcrumbs%}
     {% include 'partial_templates/breadcrumb_linked_home.html' %}
+    {% include 'partial_templates/breadcrumb_linked_winebrand.html' %}
+    <li>Brand Edit</li>
 {%endblock%}
 
 {%block body%}

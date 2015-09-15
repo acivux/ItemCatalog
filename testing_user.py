@@ -6,4 +6,4 @@ from database import User
 TESTING_USER = User(id=1,
                     name="Jannie van Niekerk",
                     email="acivux@gmail.com",
-                    admin=False)
+                    admin=True)

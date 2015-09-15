@@ -13,7 +13,10 @@ def make_safe_filename(oldfilename):
 def get_single_postprocessor(instance_id=None, **kw):
     from auth_api.auth_api import get_user_info
 
-    cd = datetime.datetime.strptime(kw['result']['date_created'],"%Y-%m-%dT%H:%M:%S.%f")
+    try:
+        cd = datetime.datetime.strptime(kw['result']['date_created'],"%Y-%m-%dT%H:%M:%S")
+    except:
+        cd = datetime.datetime.strptime(kw['result']['date_created'],"%Y-%m-%dT%H:%M:%S.%f")
     kw['result']['date_created'] = cd.strftime("%Y-%m-%d")
     if kw['result']['date_edited']:
         cd = datetime.datetime.strptime(kw['result']['date_edited'],"%Y-%m-%dT%H:%M:%S.%f")

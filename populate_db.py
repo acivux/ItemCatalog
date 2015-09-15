@@ -23,7 +23,7 @@ DBSession = sessionmaker(bind=engine)
 # session.rollback()
 session = DBSession()
 
-ratings = [1, 2, 3, 4, 5, 3, 2, 1]
+ratings = [1, 2, 3, 4, 5, 3, 2]
 fake_person_names = ["Joetta Janas", "Richelle Riles", "Marvin Malcom",
                      "Leandra Luick", "Sylvester Schachter", "Dara Doran",
                      "Bradford Bartol", "Tamar Twitchell", "Aracelis Allred",
@@ -130,7 +130,7 @@ def random_creation_date():
 
 
 def random_user():
-    return random.randint(0, len(fake_person_names))
+    return random.randint(2, len(fake_person_names))
 
 
 def random_image():
@@ -284,29 +284,6 @@ for review_id in xrange(1, 4000):
                          rating=random.choice(ratings),
                          date_created=random_creation_date())
     session.add(areview)
-
-#
-# session.add(WineBrand(id=1,
-#                       brand_name="Testing 123",
-#                       vintage=1990,
-#                       winetype_id=13,
-#                       date_created=datetime.datetime(2015, 1, 1, 0, 0, 0, 1),
-#                       user_id=1,
-#                       filename='gwb1.png'))
-# session.add(WineBrand(id=2,
-#                       brand_name="More Testing 123",
-#                       vintage=2000,
-#                       winetype_id=12,
-#                       date_created=datetime.datetime(2015, 2, 2, 0, 0, 0, 1),
-#                       user_id=2,
-#                       filename='gwb2.png'))
-# session.add(WineBrand(id=3,
-#                       brand_name="FiFi",
-#                       vintage=2010,
-#                       winetype_id=12,
-#                       date_created=datetime.datetime(2015, 2, 2, 0, 0, 0, 1),
-#                       user_id=3,
-#                       filename='gwb3.png'))
 
 
 session.commit()

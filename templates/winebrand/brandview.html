@@ -82,6 +82,7 @@ label.star:before {
                 <div class="panel-heading">Add a new review</div>
                 <div class="panel-body">
                     <form class="form" method='POST' enctype='multipart/form-data' action="{{url_for('.new_review', stockitem_id=item.id)}}">
+                        <input name=_csrf_token type=hidden value="{{ csrf_token() }}">
                         <div class="form-group">
                             <label for="summary" class="control-label">Short Summary</label>
                             <input type="text" class="form-control" id="summary" name="summary" placeholder="Summary" maxlength="100">
