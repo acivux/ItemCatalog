@@ -114,6 +114,7 @@ class UserReview(Base):
     comment = Column(Text, nullable=True)
     rating = Column(Integer, nullable=False)
     date_created = Column(DateTime, nullable=False)
+    date_edited = Column(DateTime, nullable=True)
     winebrand = relationship("WineBrand", back_populates="reviews")
 
 

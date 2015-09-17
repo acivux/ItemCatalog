@@ -219,7 +219,7 @@ def new_review(stockitem_id):
         flash("Successfully added a review", 'success')
         return redirect(url_for('.show_branditem', stockitem_id=stockitem_id))
 
-# ToDo: Edit / Delete Reviews!?
+
 @winebrand_api.route('/reviews/<int:user_id>', methods=["GET"])
 def list_user_reviews(user_id):
     session = current_app.config['db']
@@ -228,3 +228,58 @@ def list_user_reviews(user_id):
         .order_by(UserReview.date_created.desc())
     return render_template(template_prefix+"user_reviews_list.html",
                            reviews=reviews)
+
+
+@winebrand_api.route('/reviews/<int:review_id>/delete',
+                     methods=["GET", "POST"])
+@login_required
+def delete_review(review_id):
+    session = current_app.config['db']
+    review = session\
+        .query(UserReview)\
+        .filter_by(id=review_id)\
+        .one()
+
+    if review.user_id != login_session['user_id']:
+        flash("You cannot delete this item",
+              'danger')
+        return redirect(url_for(".list_user_reviews", user_id=review.user_id))
+
+    if request.method == "POST":
+        session.delete(review)
+        session.commit()
+        flash("Successfully deleted '%s'" % (review.summary,), 'success')
+        return redirect(url_for(".list_user_reviews", user_id=review.user_id))
+    else:
+        return render_template(template_prefix+'delete_review.html',
+                               item=review)
+
+
+@winebrand_api.route('/reviews/<int:review_id>/edit',
+                     methods=["GET", "POST"])
+@login_required
+def edit_review(review_id):
+    session = current_app.config['db']
+    review = session\
+        .query(UserReview)\
+        .filter_by(id=review_id)\
+        .one()
+
+    if review.user_id != login_session['user_id']:
+        flash("You cannot edit this item",
+              'danger')
+        return redirect(url_for(".list_user_reviews", user_id=review.user_id))
+
+    if request.method == "POST":
+        review.summary = request.form.get('summary', None)
+        review.comment = request.form.get('reviewtext', None)
+        review.rating = request.form.get('star', 1)
+        review.date_edited = datetime.datetime.today()
+        session.add(review)
+        session.commit()
+        session.flush()
+        flash("Successfully edited '%s'" % (review.summary,), 'success')
+        return redirect(url_for(".list_user_reviews", user_id=review.user_id))
+    else:
+        return render_template(template_prefix+'edit_review.html',
+                               item=review)

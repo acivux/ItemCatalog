@@ -1,0 +1,95 @@
+{% extends "winebrand/brand_base.html" %}
+{% block scripts%}
+<style>
+div.stars {
+  width: 100%;
+  display: inline-block;
+}
+
+input.star { display: none; }
+
+label.star {
+  float: right;
+  padding: 5px;
+  font-size: 15px;
+  color: #444;
+  transition: all .2s;
+}
+
+input.star:checked ~ label.star:before {
+  content: '\e006';
+  color: #FD4;
+  transition: all .25s;
+}
+
+input.star-5:checked ~ label.star:before {
+  color: #FE7;
+  text-shadow: 0 0 20px #952;
+}
+
+input.star-1:checked ~ label.star:before { color: #F62; }
+
+label.star:hover { transform: rotate(-15deg) scale(1.3); }
+
+label.star:before {
+  content: "\e006";
+  font-family: 'Glyphicons Halflings';
+}
+
+.no-bottom {
+    margin-bottom: 0pt;
+    }
+
+</style>
+{% endblock%}
+
+{%block navbar%}
+    {% if session.user_id %}
+        {%if session.user_id == item.user_id %}
+        <li><a href="{{url_for('.delete_review', review_id=item.id)}}" title="Delete"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a></li>
+        {% endif%}
+    {% endif %}
+{%endblock%}
+
+{%block breadcrumbs%}
+    {% include 'partial_templates/breadcrumb_linked_home.html' %}
+    {% include 'partial_templates/breadcrumb_linked_userreview.html' %}
+    <li>Review</li>
+{%endblock%}
+
+{%block body%}
+    <div class="container">
+      <div class="row">
+          <div class="col-md-9 col-sm-12 col-xs-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">Edit a review</div>
+                <div class="panel-body">
+                    <form class="form" method='POST' enctype='multipart/form-data' action="{{url_for('.edit_review', review_id=item.id)}}">
+                        <input name=_csrf_token type=hidden value="{{ csrf_token() }}">
+                        <div class="form-group">
+                            <label for="summary" class="control-label">Short Summary</label>
+                            <input type="text" class="form-control" id="summary" name="summary" placeholder="Summary" maxlength="100" value="{{item.summary}}">
+                        </div>
+                        <div class="form-group">
+                            <label for="reviewtext" class="control-label">Review</label>
+                            <textarea id="reviewtext" class="form-control" rows="3" name="reviewtext">{{item.comment}}</textarea>
+                        </div>
+                        <div id="rating">
+                            {%for x in range(5,0,-1) %}
+                            <input class="star star-{{x}}" id="star-{{x}}" type="radio" name="star" value="{{x}}"{%if x == item.rating%} checked{%endif%}/>
+                            <label class="star star-{{x}}" for="star-{{x}}"></label>
+                            {% endfor%}
+                        </div>
+                        <div class="form-group">
+                                <button type="submit" class="btn btn-default">Save</button>
+                                <a class="btn btn-default" href="{{ url_for('.list_user_reviews', user_id=item.user_id)}}" role="button">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+          </div>
+      </div>
+  </div>
+
+{%endblock%}
+

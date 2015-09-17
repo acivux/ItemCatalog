@@ -10,7 +10,7 @@
 
 {%block breadcrumbs%}
     {% include 'partial_templates/breadcrumb_linked_home.html' %}
-    <li>User Reviews</li>
+    {% include 'partial_templates/breadcrumb_unlinked_userreview.html' %}
 {%endblock%}
 
 {%block body%}
@@ -26,7 +26,7 @@
                     </a>
                   </div>
                   <div class="media-body">
-                    <h5 class="media-heading"><a href="{{url_for('.show_branditem', stockitem_id=review.winebrand_id)}}">{{review.winebrand.brand_name}}</a> <small>({{review.winebrand.winetype.name}}, {{review.winebrand.vintage}})</small></h5>
+                    <h5 class="media-heading"><a href="{{url_for('.show_branditem', stockitem_id=review.winebrand_id)}}">{{review.winebrand.brand_name}}</a> <small>({{review.winebrand.winetype.name}}, {{review.winebrand.vintage}})</small> {%if review.user_id == session.user_id%}<span class="pull-right"><a href="{{url_for('.edit_review', review_id=review.id)}}" title="Edit"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a></span>{%endif%}</h5>
                     <h4 class="media-heading"><br/>{{review.summary}}</h4>
                     <p style="white-space: pre-wrap;">{{review.comment|e}}</p>
                     <p style="margin-bottom:0pt"><small>{% for x in range(0,review.rating)%}<span class="glyphicon glyphicon-star" aria-hidden="true"></span>{%endfor%} <span class="pull-right"><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> <span style="font-size:8pt">{{review.date_created.strftime('%Y-%m-%d')}}</span></span></small></p>
@@ -35,7 +35,7 @@
             {% else %}
                 <div class="panel panel-default">
                   <div class="panel-body text-center">
-                    No reviews for this user
+                    You have no reviews
                   </div>
                 </div>
             {% endfor%}
