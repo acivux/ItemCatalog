@@ -61,7 +61,6 @@ def signout():
         del login_session['user_id']
         del login_session['isadmin']
         del login_session['provider']
-        #del login_session['_csrf_token']
         flash("You have successfully been logged out.", 'success')
         return redirect(url_for('winebrand_api.show'))
     else:
@@ -72,7 +71,7 @@ def signout():
 @auth_api.route('/gconnect', methods=['POST'])
 def gconnect():
 
-    google_client_secrets_file = 'google_client_secrets.json'
+    google_client_secrets_file = './auth_api/google_client_secrets.json'
 
     with open(google_client_secrets_file, 'r') as gcsf:
         google_client_secrets_json = json.loads(gcsf.read())
@@ -190,7 +189,7 @@ def fbconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    with open('facebook_client_secrets.json', 'r') as jsfile:
+    with open('./auth_api/facebook_client_secrets.json', 'r') as jsfile:
         facebook_secrets = json.loads(jsfile.read())
 
     access_token = request.values.get('access_token', None)
