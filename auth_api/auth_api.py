@@ -17,6 +17,7 @@ from functools import wraps
 auth_api = Blueprint('auth_api', __name__)
 template_prefix = "auth/"
 
+
 @auth_api.route('/login')
 def show_login():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
@@ -30,7 +31,10 @@ def user_edit():
     if login_session.get('user_id', None):
         if request.method == "POST":
             session = current_app.config['db']
-            user = session.query(User).filter_by(id=login_session['user_id']).one()
+            user = session\
+                .query(User)\
+                .filter_by(id=login_session['user_id'])\
+                .one()
             user.nickname = request.form.get('usernickname')
             session.commit()
             flash("User nickname changed", 'success')
@@ -89,7 +93,8 @@ def gconnect():
 
     try:
         # Upgrade the authorization code into a credentials object
-        oauth_flow = flow_from_clientsecrets(google_client_secrets_file, scope='')
+        oauth_flow = flow_from_clientsecrets(google_client_secrets_file,
+                                             scope='')
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
     except FlowExchangeError:
@@ -204,7 +209,6 @@ def fbconnect():
     result = h.request(url, 'GET')[1]
 
     # Use token to get user info from API
-    userinfo_url = "https://graph.facebook.com/v2.2/me"
     # strip expire tag from access token
     token = result.split("&")[0]
 
