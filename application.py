@@ -1,5 +1,4 @@
 import os
-import flask.ext.restless as restfull
 from flask import Flask, redirect, url_for, request, abort, render_template
 from flask import session as login_session
 from flaskext.uploads import UploadSet, configure_uploads, IMAGES

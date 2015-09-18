@@ -1,10 +1,8 @@
 from sqlalchemy import Column, ForeignKey, Integer, Float, String, DateTime
 from sqlalchemy import Text, Boolean
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, scoped_session, sessionmaker
+from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
-import colorsys
-
 
 engine = create_engine('sqlite:///catalog.db')
 Base = declarative_base()
@@ -56,7 +54,8 @@ class WineColor(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False, unique=True)
-    value = Column(String(6), nullable=False, unique=True)  # HTML hex color code
+    # HTML hex color code
+    value = Column(String(6), nullable=False, unique=True)
 
 
 class Category(Base):
@@ -70,7 +69,8 @@ class WineType(Base):
     __tablename__ = 'wine_type'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(250, convert_unicode=True), nullable=False, unique=True)
+    name = Column(String(250, convert_unicode=True), nullable=False,
+                  unique=True)
     color_id = Column(Integer, ForeignKey('wine_color.id'), nullable=False)
     color = relationship(WineColor)
     glass_type_id = Column(Integer, ForeignKey('glasstype.id'), nullable=False)
@@ -79,7 +79,8 @@ class WineType(Base):
     calorie = relationship(WineCalories)
     abv_id = Column(Integer, ForeignKey('wine_abv.id'), nullable=False)
     abv = relationship(WineABV)
-    temperature_id = Column(Integer, ForeignKey('temperature.id'), nullable=False)
+    temperature_id = Column(Integer, ForeignKey('temperature.id'),
+                            nullable=False)
     temperature = relationship(Temperature)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
@@ -100,7 +101,8 @@ class WineBrand(Base):
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
     filename = Column(String(250), nullable=True, unique=False)
-    reviews = relationship("UserReview", cascade="all,delete", back_populates="winebrand")
+    reviews = relationship("UserReview", cascade="all,delete",
+                           back_populates="winebrand")
 
 
 class UserReview(Base):
@@ -116,6 +118,5 @@ class UserReview(Base):
     date_created = Column(DateTime, nullable=False)
     date_edited = Column(DateTime, nullable=True)
     winebrand = relationship("WineBrand", back_populates="reviews")
-
 
 Base.metadata.create_all(engine)

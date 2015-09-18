@@ -1,5 +1,5 @@
 from flask import current_app, Blueprint
-from flask import render_template, request, g
+from flask import render_template, request
 from flask import redirect, url_for, flash
 from flask import make_response
 from database import User
@@ -20,8 +20,9 @@ template_prefix = "auth/"
 
 @auth_api.route('/login')
 def show_login():
-    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
-                    for x in xrange(32))
+    state = ''.join(
+        random.choice(string.ascii_uppercase + string.digits) for x in
+        xrange(32))
     login_session['state'] = state
     return render_template(template_prefix+'login.html', STATE=state)
 
@@ -263,11 +264,11 @@ def get_user_id(email):
         return None
 
 
-def create_user(login_session):
+def create_user(login_session_obj):
     try:
-        newuser = User(name=login_session['username'],
-                       email=login_session['email'],
-                       picture=login_session['picture'])
+        newuser = User(name=login_session_obj['username'],
+                       email=login_session_obj['email'],
+                       picture=login_session_obj['picture'])
         current_app.config['db'].add(newuser)
         current_app.config['db'].commit()
         return newuser.id
@@ -283,11 +284,11 @@ def get_user_info(user_id):
         return None
 
 
-def update_user_profile(user_id, login_session):
+def update_user_profile(user_id, login_session_obj):
     try:
         user = current_app.config['db'].query(User).filter_by(id=user_id).one()
-        user.name = login_session['username']
-        user.picture = login_session['picture']
+        user.name = login_session_obj['username']
+        user.picture = login_session_obj['picture']
         current_app.config['db'].commit()
     except:
         return None
@@ -323,8 +324,9 @@ def authenticate_api(*args, **kwargs):
 
 def generate_csrf_token():
     if '_csrf_token' not in login_session:
-        token = ''.join(random.choice(string.ascii_uppercase + string.digits)
-                for x in xrange(64))
+        token = ''.join(
+            random.choice(string.ascii_uppercase + string.digits) for x in
+            xrange(64))
         login_session['_csrf_token'] = token
     return login_session['_csrf_token']
 
