@@ -89,7 +89,7 @@ color_api_manager = api_manager.create_api(
     WineColor,
     preprocessors=dict(GET_SINGLE=[authenticate_api],
                        GET_MANY=[authenticate_api]),
-    collection_name='colors')
+    collection_name='color')
 
 winebrand_api_manager = api_manager.create_api(
     WineBrand,
@@ -114,6 +114,8 @@ winetype_api_manager = api_manager.create_api(
     collection_name='winetype')
 
 # ToDo: Readme file
+# ToDo: update browser title
+# ToDo: add help page
 
 
 @app.route('/')

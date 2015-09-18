@@ -1,0 +1,57 @@
+{% extends "winebrand/brand_base.html" %}
+
+{%block scripts%}
+<script>
+    $(document).ready(function() {
+        $('#stocktable').DataTable({
+            "scrollY":        "400px",
+            "scrollCollapse": true,
+            "paging":         false,
+            "info": false,
+            "ordering": false,
+            "searching":true,
+            "dom": "ft"
+            });
+    });
+</script>
+<style>
+    .table th, .table td {
+     border: 0px !important;
+ }
+</style>
+{%endblock%}
+
+{%block navbar%}
+    {% if session.user_id %}
+        <!-- ToDo: need fixing? -->
+        <li><a href="{{url_for('.new')}}"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
+    {% endif %}
+{%endblock%}
+
+{%block breadcrumbs%}
+    {% include 'partial_templates/breadcrumb_linked_home.html' %}
+    {% include 'partial_templates/breadcrumb_unlinked_userwines.html' %}
+{%endblock%}
+
+{%block body%}
+    <div class="container">
+      <div class="row">
+          <div class="col-lg-8 col-md-8 col-sm-8 col-sx-8">
+            <div class="panel panel-default">
+            <div class="panel-heading">My wine list</div>
+            <div class="panel-body">
+                <table id="stocktable" class="display table table-condensed" cellspacing="0">
+                    <thead><th></th></thead>
+                    <tbody>
+                    {% for winestock in wines %}
+                        <tr><td style="padding:0px"><a href="{{url_for('.show_branditem',stockitem_id=winestock.0.id)}}" class="list-group-item">{{winestock.0.brand_name}}<span class="pull-right"><span class="label label-default" title="Vintage">{{winestock.0.vintage}}</span> <span class="label label-success" title="Most Rated">{{winestock.1|int(winestock.1) if winestock.1 != None else '0'}}</span></a></td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            </div>
+          </div>
+      </div>
+    </div>
+{%endblock%}
+

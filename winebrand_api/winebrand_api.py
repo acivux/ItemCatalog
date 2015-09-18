@@ -23,6 +23,7 @@ def show():
         .join(WineBrand)\
         .group_by(WineType.name)\
         .order_by(asc(collate(WineType.name, 'NOCASE')))
+        # ToDo: make sure sorting is implemented throughout
     return render_template(template_prefix+'topview.html', wines=wines)
 
 
@@ -230,6 +231,47 @@ def list_user_reviews(user_id):
                            reviews=reviews)
 
 
+@winebrand_api.route('/wines/<int:user_id>', methods=["GET"])
+def list_user_wines(user_id):
+    session = current_app.config['db']
+
+    counter = session\
+        .query(UserReview.winebrand_id,
+               UserReview.rating,
+               func.count(UserReview.rating).label('count'))\
+        .join(WineBrand)\
+        .join(WineType)\
+        .filter(WineBrand.user_id == user_id)\
+        .group_by(WineBrand.id, UserReview.rating)\
+        .order_by(UserReview.winebrand_id, desc('count'))\
+        .subquery()
+
+    maxer = session\
+        .query(counter.c.winebrand_id,
+               func.max(counter.c.count).label('maxcount'))\
+        .group_by(counter.c.winebrand_id)\
+        .subquery()
+
+    tops = session\
+        .query(UserReview.winebrand_id,
+               UserReview.rating,
+               func.count(UserReview.rating).label('topcount'))\
+        .join(maxer, maxer.c.winebrand_id == UserReview.winebrand_id)\
+        .group_by(UserReview.winebrand_id, UserReview.rating)\
+        .having(func.count(UserReview.rating) == maxer.c.maxcount)\
+        .distinct()\
+        .subquery()
+
+    wines = session\
+        .query(WineBrand, tops.c.rating)\
+        .outerjoin(tops, WineBrand.id == tops.c.winebrand_id)\
+        .filter(WineBrand.user_id == user_id)\
+        .order_by(collate(WineBrand.brand_name, 'NOCASE'), WineBrand.vintage.asc())
+
+    return render_template(template_prefix+"user_wines_list.html",
+                           wines=wines)
+
+
 @winebrand_api.route('/reviews/<int:review_id>/delete',
                      methods=["GET", "POST"])
 @login_required
@@ -283,3 +325,4 @@ def edit_review(review_id):
     else:
         return render_template(template_prefix+'edit_review.html',
                                item=review)
+
