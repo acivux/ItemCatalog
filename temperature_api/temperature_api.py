@@ -1,6 +1,6 @@
 from flask import current_app, Blueprint
 from flask import render_template, request, redirect, url_for, flash
-from sqlalchemy import asc, exc, func
+from sqlalchemy import asc, exc, func, collate
 from database import Temperature, WineType
 from auth_api.auth_api import login_required, admin_required
 
@@ -13,7 +13,9 @@ template_prefix = "temperature/"
 @admin_required
 def show():
     session = current_app.config['db']
-    items = session.query(Temperature).order_by(asc(Temperature.temp,))
+    items = session\
+        .query(Temperature)\
+        .order_by(asc(collate(Temperature.temp, 'NOCASE')))
     return render_template(template_prefix+'view.html', items=items)
 
 

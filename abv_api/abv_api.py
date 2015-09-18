@@ -1,6 +1,6 @@
 from flask import current_app, Blueprint
 from flask import render_template, request, redirect, url_for, flash
-from sqlalchemy import asc, exc, func
+from sqlalchemy import asc, exc, func, collate
 from database import WineABV, WineType
 from auth_api.auth_api import login_required, admin_required
 
@@ -14,7 +14,9 @@ template_prefix = "abv/"
 @admin_required
 def show():
     session = current_app.config['db']
-    items = session.query(WineABV).order_by(asc(WineABV.name))
+    items = session\
+        .query(WineABV)\
+        .order_by(asc(collate(WineABV.name, 'NOCASE')))
     return render_template(template_prefix+'view.html', items=items)
 
 

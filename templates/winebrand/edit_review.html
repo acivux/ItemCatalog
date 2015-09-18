@@ -46,7 +46,7 @@ label.star:before {
 {%block navbar%}
     {% if session.user_id %}
         {%if session.user_id == item.user_id %}
-        <li><a href="{{url_for('.delete_review', review_id=item.id)}}" title="Delete"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a></li>
+        <li><a href="{{url_for('.delete_review', review_id=item.id)}}"><span class="glyphicon glyphicon-trash" aria-hidden="true" title="Delete"></span></a></li>
         {% endif%}
     {% endif %}
 {%endblock%}

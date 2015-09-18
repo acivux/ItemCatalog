@@ -27,8 +27,8 @@
 
 {%block navbar%}
     {% if session.user_id %}
-        <li><a href="{{url_for('winebrand_api.new')}}" title="Add a new wine"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
-        <li><a href="{{url_for('winetype_api.show')}}">{% include 'partial_templates/name_winetype.html' %}</a></li>
+        <li><a href="{{url_for('winebrand_api.new')}}"><span class="glyphicon glyphicon-plus" aria-hidden="true" title="New Wine Brand"></span></a></li>
+        <li><a href="{{url_for('winetype_api.show')}}"><span class="glyphicon glyphicon-bookmark text-danger" aria-hidden="true" title="{% include 'partial_templates/name_winetype.html' %}"></span></a></li>
     {% endif %}
 {%endblock%}
 
@@ -49,7 +49,7 @@
                     <thead><th></th></thead>
                     <tbody>
                     {% for winetype in wines %}
-                    <tr><td style="padding:0px"><a href="{{url_for('.show_brand', winetype_id=winetype.0.id)}}" class="list-group-item">{{winetype.0.name}}<span class="badge">{{winetype.1}}</span></a></td></tr>
+                    <tr><td style="padding:0px"><a href="{{url_for('.show_brand', winetype_id=winetype.0.id)}}" class="list-group-item">{{winetype.0.name}}<span class="badge" title="Count">{{winetype.1}}</span></a></td></tr>
                     {% endfor %}
                     </tbody>
                 </table>

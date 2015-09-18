@@ -1,6 +1,6 @@
 {% extends "abv/abv_base.html" %}
 {%block navbar%}
-    <li><a href="{{url_for('.delete', item_id=item.id)}}"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a></li>
+    <li><a href="{{url_for('.delete', item_id=item.id)}}"><span class="glyphicon glyphicon-trash" aria-hidden="true" title="Delete"></span></a></li>
 {%endblock%}
 
 {%block breadcrumbs%}

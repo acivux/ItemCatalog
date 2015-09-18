@@ -15,8 +15,13 @@ The easiest way to get all the required Python packages installed is by using `p
 `pip install Flask`
 ### Flask-Restless
 `pip install Flask-Restless`
+
+Flask-Restless handles the database API front-end.
+
 ### Flask-Uploads
 `pip Flask-Uploads`
+
+Flask-Uploads handles the images as uploaded by users.
 
 ## Setup
 ### Your user

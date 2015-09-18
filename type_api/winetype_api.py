@@ -11,13 +11,13 @@ winetype_api = Blueprint('winetype_api', __name__)
 template_prefix = "winetype/"
 
 
-def get_form_values(request, item=None):
-        new_name = request.form['itemname']
-        new_color = request.form.get('colorvalue', None)
-        new_glass = request.form.get('glassvalue', None)
-        new_calorie = request.form.get('calorievalue', None)
-        new_abv = request.form.get('abvvalue', None)
-        new_temperature = request.form.get('temperaturevalue', None)
+def get_form_values(request_obj, item=None):
+        new_name = request_obj.form['itemname']
+        new_color = request_obj.form.get('colorvalue', None)
+        new_glass = request_obj.form.get('glassvalue', None)
+        new_calorie = request_obj.form.get('calorievalue', None)
+        new_abv = request_obj.form.get('abvvalue', None)
+        new_temperature = request_obj.form.get('temperaturevalue', None)
         if item:
             item.name = new_name
             item.color_id = new_color
@@ -61,11 +61,21 @@ def new():
         except exc.IntegrityError:
             session.rollback()
             flash("Duplicate values!", 'danger')
-            winecolors = session.query(WineColor).order_by(asc(WineColor.name))
-            glasses = session.query(GlassType).order_by(asc(GlassType.name))
-            calories = session.query(WineCalories).order_by(asc(WineCalories.name))
-            abvs = session.query(WineABV).order_by(asc(WineABV.name))
-            temps = session.query(Temperature).order_by(asc(Temperature.temp))
+            winecolors = session\
+                .query(WineColor)\
+                .order_by(asc(collate(WineColor.name, 'NOCASE')))
+            glasses = session\
+                .query(GlassType)\
+                .order_by(asc(collate(GlassType.name, 'NOCASE')))
+            calories = session\
+                .query(WineCalories)\
+                .order_by(asc(collate(WineCalories.name, 'NOCASE')))
+            abvs = session\
+                .query(WineABV)\
+                .order_by(asc(collate(WineABV.name, 'NOCASE')))
+            temps = session\
+                .query(Temperature)\
+                .order_by(asc(collate(Temperature.temp, 'NOCASE')))
             return render_template(template_prefix+'/new_form.html',
                                    winetype=item,
                                    winecolors=winecolors,
@@ -78,11 +88,21 @@ def new():
         return redirect(url_for('.show'))
     else:
         winetype = WineType(name="")
-        winecolors = session.query(WineColor).order_by(asc(WineColor.name))
-        glasses = session.query(GlassType).order_by(asc(GlassType.name))
-        calories = session.query(WineCalories).order_by(asc(WineCalories.name))
-        abvs = session.query(WineABV).order_by(asc(WineABV.name))
-        temps = session.query(Temperature).order_by(asc(Temperature.temp))
+        winecolors = session\
+            .query(WineColor)\
+            .order_by(asc(collate(WineColor.name, 'NOCASE')))
+        glasses = session\
+            .query(GlassType)\
+            .order_by(asc(collate(GlassType.name, 'NOCASE')))
+        calories = session\
+            .query(WineCalories)\
+            .order_by(asc(collate(WineCalories.name, 'NOCASE')))
+        abvs = session\
+            .query(WineABV)\
+            .order_by(asc(collate(WineABV.name, 'NOCASE')))
+        temps = session\
+            .query(Temperature)\
+            .order_by(asc(collate(Temperature.temp, 'NOCASE')))
         return render_template(template_prefix+'new_form.html',
                                winetype=winetype,
                                winecolors=winecolors,
@@ -114,11 +134,16 @@ def edit(item_id):
         flash("Successfully Edited '%s'" % (item.name,), 'success')
         return redirect(url_for('.show'))
     else:
-        winecolors = session.query(WineColor).order_by(asc(WineColor.name))
-        glasses = session.query(GlassType).order_by(asc(GlassType.name))
-        calories = session.query(WineCalories).order_by(asc(WineCalories.name))
-        abvs = session.query(WineABV).order_by(asc(WineABV.name))
-        temps = session.query(Temperature).order_by(asc(Temperature.temp))
+        winecolors = session.query(WineColor).order_by(
+            asc(collate(WineColor.name, 'NOCASE')))
+        glasses = session.query(GlassType).order_by(
+            asc(collate(GlassType.name, 'NOCASE')))
+        calories = session.query(WineCalories).order_by(
+            asc(collate(WineCalories.name, 'NOCASE')))
+        abvs = session.query(WineABV).order_by(
+            asc(collate(WineABV.name, 'NOCASE')))
+        temps = session.query(Temperature).order_by(
+            asc(collate(Temperature.temp, 'NOCASE')))
         return render_template(template_prefix+'edit_form.html',
                                winetype=item,
                                winecolors=winecolors,

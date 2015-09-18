@@ -23,7 +23,6 @@ def show():
         .join(WineBrand)\
         .group_by(WineType.name)\
         .order_by(asc(collate(WineType.name, 'NOCASE')))
-        # ToDo: make sure sorting is implemented throughout
     return render_template(template_prefix+'topview.html', wines=wines)
 
 
@@ -63,7 +62,8 @@ def show_brand(winetype_id):
         .query(WineBrand, tops.c.rating)\
         .outerjoin(tops, WineBrand.id == tops.c.winebrand_id)\
         .filter(WineBrand.winetype_id == winetype_id)\
-        .order_by(collate(WineBrand.brand_name, 'NOCASE'), WineBrand.vintage.asc())
+        .order_by(collate(WineBrand.brand_name, 'NOCASE'),
+                  WineBrand.vintage.asc())
 
     return render_template(template_prefix+'brandsview.html',
                            winetype=winetype,
@@ -266,7 +266,8 @@ def list_user_wines(user_id):
         .query(WineBrand, tops.c.rating)\
         .outerjoin(tops, WineBrand.id == tops.c.winebrand_id)\
         .filter(WineBrand.user_id == user_id)\
-        .order_by(collate(WineBrand.brand_name, 'NOCASE'), WineBrand.vintage.asc())
+        .order_by(collate(WineBrand.brand_name, 'NOCASE'),
+                  WineBrand.vintage.asc())
 
     return render_template(template_prefix+"user_wines_list.html",
                            wines=wines)
@@ -325,4 +326,3 @@ def edit_review(review_id):
     else:
         return render_template(template_prefix+'edit_review.html',
                                item=review)
-

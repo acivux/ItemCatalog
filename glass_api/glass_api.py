@@ -1,8 +1,6 @@
-from utils import make_safe_filename
-import os
 from flask import current_app, Blueprint
 from flask import render_template, request, redirect, url_for, flash
-from sqlalchemy import asc, exc, func
+from sqlalchemy import asc, exc, func, collate
 from database import GlassType, WineType
 from auth_api.auth_api import login_required, admin_required
 
@@ -16,7 +14,9 @@ template_prefix = "glass/"
 @admin_required
 def show():
     session = current_app.config['db']
-    items = session.query(GlassType).order_by(asc(GlassType.name))
+    items = session\
+        .query(GlassType)\
+        .order_by(asc(collate(GlassType.name, 'NOCASE')))
     return render_template(template_prefix+'view.html', items=items)
 
 

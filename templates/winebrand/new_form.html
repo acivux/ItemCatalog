@@ -1,7 +1,7 @@
 {% extends "winebrand/brand_base.html" %}
 {%block navbar%}
     {% if session.user_id %}
-        <li><a href="{{url_for('.new')}}" title="Add a new wine"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
+        <li><a href="{{url_for('.new')}}" title="Add a new wine"><span class="glyphicon glyphicon-plus" aria-hidden="true" title="New Wine Brand"></span></a></li>
     {% endif %}
 {%endblock%}
 

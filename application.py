@@ -1,6 +1,6 @@
 import os
 import flask.ext.restless as restfull
-from flask import Flask, redirect, url_for, request, abort
+from flask import Flask, redirect, url_for, request, abort, render_template
 from flask import session as login_session
 from flaskext.uploads import UploadSet, configure_uploads, IMAGES
 from sqlalchemy import create_engine
@@ -15,6 +15,7 @@ from glass_api.glass_api import glass_api
 from type_api.winetype_api import winetype_api
 from winebrand_api.winebrand_api import winebrand_api
 from auth_api.auth_api import auth_api, authenticate_api, generate_csrf_token
+from auth_api.auth_api import login_required
 
 from utils import get_single_postprocessor
 
@@ -113,14 +114,16 @@ winetype_api_manager = api_manager.create_api(
     postprocessors={'GET_SINGLE': [get_single_postprocessor]},
     collection_name='winetype')
 
-# ToDo: Readme file
-# ToDo: update browser title
-# ToDo: add help page
-
 
 @app.route('/')
 def show_home():
     return redirect(url_for('winebrand_api.show'))
+
+
+@app.route('/help')
+@login_required
+def show_help():
+    return render_template("help.html")
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'

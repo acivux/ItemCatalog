@@ -1,6 +1,6 @@
 from flask import current_app, Blueprint
 from flask import render_template, request, redirect, url_for, flash
-from sqlalchemy import asc, func
+from sqlalchemy import asc, func, collate
 from database import WineColor, WineType
 from auth_api.auth_api import login_required, admin_required
 
@@ -13,7 +13,8 @@ template_prefix = "color/"
 @admin_required
 def show():
     session = current_app.config['db']
-    colors = session.query(WineColor).order_by(asc(WineColor.name))
+    colors = session.query(WineColor).order_by(
+        asc(collate(WineColor.name, 'NOCASE')))
     return render_template(template_prefix+'view.html', colortypes=colors)
 
 
@@ -59,8 +60,10 @@ def edit(color_id):
 def delete(color_id):
     session = current_app.config['db']
     if request.method == "POST":
-        used = session.query(func.count(WineType.id).label('count'))\
-            .filter_by(color_id=color_id).scalar()
+        used = session\
+            .query(func.count(WineType.id).label('count'))\
+            .filter_by(color_id=color_id)\
+            .scalar()
         color = session.query(WineColor).filter_by(id=color_id).one()
         c_name = color.name
         if used == 0:

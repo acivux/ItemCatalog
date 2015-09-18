@@ -1,0 +1,40 @@
+{% extends "winebrand/brand_base.html" %}
+
+{%block scripts%}{%endblock%}
+
+{%block navbar%}
+    {% if session.user_id %}
+        <li><a href=""><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
+    {% endif %}
+{%endblock%}
+
+{%block breadcrumbs%}
+    {% include 'partial_templates/breadcrumb_linked_home.html' %}
+    <li>Help</li>
+{%endblock%}
+
+{%block body%}
+    <div class="container">
+      <div class="row">
+          <div class="col-lg-8 col-md-8 col-sm-8 col-sx-8">
+            <div class="panel panel-default">
+            <div class="panel-body">
+                <h4>Add your own wine</h4>
+                <p>Make sure you are in the home screen, then click the <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> sign top right.</p>
+                <h4>Add your own wine type</h4>
+                <p>Make sure you are in the home screen, then click the <span class="glyphicon glyphicon-bookmark text-danger" aria-hidden="true"></span> icon. This will navigate to the Wine Type screen. Click the <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> sign top right to add  new Wine Type.</p>
+                <h4>Create a review</h4>
+                <p>You can review your own, or other user wines. Make sure you are in the home screen, then select a wine type from the list. This will navigate to a wine brand list. Select the brand from the list. This will navigate to the specific brand of wine you want to review. Add your review, or, read other reviews.</p>
+                <h4><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> View your profile</h4>
+                <p>Click your social media icon top right, and from the drop down list select "Profile". You can edit/save your nickname on this screen.</p>
+                <h4><span class="glyphicon glyphicon-list" aria-hidden="true"></span> Your wines</h4>
+                <p>Click your social media icon top right, and from the drop down list select "My Wines". This will list all your wines. Select a wine from the list, which will let you view the specific wine. Clicking on the <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> sign top right will allow you to edit that specific wine. When editing a wine, the <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> sign will be available top right to delete the wine if you so wish. Note that when a wine is deleted, <mark>all</mark> reviews are deleted.</p>
+                <h4><span class="glyphicon glyphicon-heart-empty" aria-hidden="true"></span> Your reviews</h4>
+                <p>Click your social media icon top right, and from the drop down list select "My Reviews". This will list all your reviews. Clicking on the <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> sign will allow you to edit that specific review. When editing a review, the <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> sign will be available top right to delete the review if you so wish.</p>
+            </div>
+            </div>
+          </div>
+      </div>
+    </div>
+{%endblock%}
+
