@@ -1,4 +1,5 @@
 import os
+import flask.ext.restless
 from flask import Flask, redirect, url_for, request, abort, render_template
 from flask import session as login_session
 from flaskext.uploads import UploadSet, configure_uploads, IMAGES
@@ -17,6 +18,7 @@ from auth_api.auth_api import auth_api, authenticate_api, generate_csrf_token
 from auth_api.auth_api import login_required
 
 from utils import get_single_postprocessor
+
 
 # Database setup
 engine = create_engine('sqlite:///catalog.db')
@@ -59,7 +61,7 @@ def csrf_protect():
 app.jinja_env.globals['csrf_token'] = generate_csrf_token
 
 # Setting up API endpoints
-api_manager = restfull.APIManager(app, session=api_endpoint_session)
+api_manager = flask.ext.restless.APIManager(app, session=api_endpoint_session)
 
 glass_api_manager = api_manager.create_api(
     GlassType,

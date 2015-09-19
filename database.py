@@ -18,6 +18,7 @@ class User(Base):
     picture = Column(String(250), nullable=True)
     nickname = Column(String(250), nullable=True, unique=True)
     admin = Column(Boolean)
+    #ToDo: user json?
 
 
 class GlassType(Base):
@@ -25,6 +26,10 @@ class GlassType(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False, unique=True)
+
+    @property
+    def serialize(self):
+        return {"id": self.id, "name": self.name}
 
 
 class Temperature(Base):
@@ -34,6 +39,10 @@ class Temperature(Base):
     name = Column(String(250), nullable=False, unique=True)
     temp = Column(Float, nullable=False, unique=True)  # Fahrenheit Only
 
+    @property
+    def serialize(self):
+        return {"id": self.id, "name": self.name, "temp": self.temp}
+
 
 class WineABV(Base):
     __tablename__ = 'wine_abv'
@@ -41,12 +50,19 @@ class WineABV(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False, unique=True)
 
+    @property
+    def serialize(self):
+        return {"id": self.id, "name": self.name}
 
 class WineCalories(Base):
     __tablename__ = 'wine_calories'
 
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False, unique=True)
+
+    @property
+    def serialize(self):
+        return {"id": self.id, "name": self.name}
 
 
 class WineColor(Base):
@@ -57,12 +73,20 @@ class WineColor(Base):
     # HTML hex color code
     value = Column(String(6), nullable=False, unique=True)
 
+    @property
+    def serialize(self):
+        return {"id": self.id, "name": self.name, "value": self.value}
+
 
 class Category(Base):
     __tablename__ = 'category'
 
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
+
+    @property
+    def serialize(self):
+        return {"id": self.id, "name": self.name}
 
 
 class WineType(Base):
@@ -88,6 +112,20 @@ class WineType(Base):
     date_edited = Column(DateTime, nullable=True)
     brands = relationship("WineBrand", cascade="all,delete", backref="winetype")
 
+    @property
+    def serialize(self):
+        return {"id": self.id,
+                "name": self.name,
+                "color": self.color.name,
+                "glass": self.glass.name if self.glass else "",
+                "calorie": self.calorie.name if self.calorie else "",
+                "abv": self.abv.name if self.abv else "",
+                "temperature":
+                    self.temperature.name if self.temperature else "",
+                "date_created": self.date_created,
+                "date_edited": self.date_edited
+                }
+
 
 class WineBrand(Base):
     __tablename__ = 'wine_brand'
@@ -104,6 +142,17 @@ class WineBrand(Base):
     reviews = relationship("UserReview", cascade="all,delete",
                            back_populates="winebrand")
 
+    @property
+    def serialize(self):
+        return {"id": self.id,
+                "brand_name": self.brand_name,
+                "vintage": self.vintage,
+                "date_created": self.date_created,
+                "date_edited": self .date_edited,
+                "user": self.user.nickname or self.user.name,
+                "picture": self.filename
+                }
+
 
 class UserReview(Base):
     __tablename__ = 'user_review'
@@ -118,5 +167,17 @@ class UserReview(Base):
     date_created = Column(DateTime, nullable=False)
     date_edited = Column(DateTime, nullable=True)
     winebrand = relationship("WineBrand", back_populates="reviews")
+
+    @property
+    def serialize(self):
+        return {"id": self.id,
+                "user": self.user.nickname or self.user.name,
+                "summary": self.summary,
+                "comment": self.comment,
+                "rating": self.rating,
+                "date_created": self.date_created,
+                "date_edited": self .date_edited,
+                "winebrand": self.winebrand.serialize
+                }
 
 Base.metadata.create_all(engine)

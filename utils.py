@@ -1,6 +1,7 @@
 import os
 import uuid
 import datetime
+
 from flask import session as login_session
 from flask import url_for
 
@@ -34,3 +35,6 @@ def get_single_postprocessor(instance_id=None, **kw):
         kw['result']['user_name'] = user.nickname or user.name
         kw['result']['user_reviews'] = url_for(
             'winebrand_api.list_user_reviews', user_id=kw['result']['user_id'])
+
+
+# ToDo: comment on functions

@@ -1,4 +1,4 @@
-from flask import current_app, Blueprint
+from flask import current_app, Blueprint, jsonify
 from flask import render_template, request, redirect, url_for, flash
 from sqlalchemy import asc, exc, collate
 from database import WineType, WineColor, GlassType, WineCalories, WineABV
@@ -6,6 +6,7 @@ from database import Temperature
 from flask import session as login_session
 import datetime
 from auth_api.auth_api import login_required
+from json_util import is_json_request
 
 winetype_api = Blueprint('winetype_api', __name__)
 template_prefix = "winetype/"
@@ -39,14 +40,21 @@ def get_form_values(request_obj, item=None):
         return item
 
 
-@winetype_api.route('/')
+@winetype_api.route('/view.json', methods=["GET"])
+@winetype_api.route('/view', methods=["GET"])
 @login_required
 def show():
     session = current_app.config['db']
     winetypes = session\
         .query(WineType.id, WineType.name)\
         .order_by(asc(collate(WineType.name, 'NOCASE')))
-    return render_template(template_prefix+'view.html', winetypes=winetypes)
+    if is_json_request(request):
+        query = session\
+            .query(WineType)\
+            .order_by(asc(collate(WineType.name, 'NOCASE')))
+        return jsonify(items=[x.serialize for x in query])
+    else:
+        return render_template(template_prefix+'view.html', winetypes=winetypes)
 
 
 @winetype_api.route('/new', methods=["GET", "POST"])

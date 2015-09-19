@@ -1,14 +1,15 @@
-from flask import current_app, Blueprint
+from flask import current_app, Blueprint, jsonify
 from flask import render_template, request, redirect, url_for, flash
 from sqlalchemy import asc, exc, func, collate
 from database import GlassType, WineType
 from auth_api.auth_api import login_required, admin_required
-
+from json_util import is_json_request
 
 glass_api = Blueprint('glass_api', __name__)
 template_prefix = "glass/"
 
 
+@glass_api.route('.json')
 @glass_api.route('/')
 @login_required
 @admin_required
@@ -17,7 +18,10 @@ def show():
     items = session\
         .query(GlassType)\
         .order_by(asc(collate(GlassType.name, 'NOCASE')))
-    return render_template(template_prefix+'view.html', items=items)
+    if is_json_request(request):
+        return jsonify(items=[x.serialize for x in items])
+    else:
+        return render_template(template_prefix+'view.html', items=items)
 
 
 @glass_api.route('/new', methods=["GET", "POST"])
@@ -44,6 +48,7 @@ def new():
         return render_template(template_prefix+'new_form.html', item=item)
 
 
+@glass_api.route('/<int:item_id>/edit.json')
 @glass_api.route('/<int:item_id>/edit', methods=["GET", "POST"])
 @login_required
 @admin_required
@@ -63,10 +68,11 @@ def edit(item_id):
         flash("Successfully Edited '%s'" % (new_name,), 'success')
         return redirect(url_for('.show'))
     else:
-        glass_url = None
-        return render_template(template_prefix+'edit_form.html',
-                               item=item,
-                               glass_url=glass_url)
+        if is_json_request(request):
+            return jsonify(item.serialize)
+        else:
+            return render_template(template_prefix+'edit_form.html',
+                                   item=item)
 
 
 @glass_api.route('/<int:item_id>/delete', methods=["GET", "POST"])

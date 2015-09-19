@@ -1,4 +1,5 @@
-from flask import current_app, Blueprint
+import os
+from flask import current_app, Blueprint, jsonify
 from flask import render_template, request, redirect, url_for, flash
 from sqlalchemy import asc, desc, func, collate
 from database import WineBrand, WineType, UserReview
@@ -7,7 +8,7 @@ import datetime
 from flaskext.uploads import UploadSet, IMAGES
 from utils import make_safe_filename
 from auth_api.auth_api import login_required
-import os
+from json_util import is_json_request
 
 winebrand_api = Blueprint('winebrand_api', __name__)
 template_prefix = "winebrand/"
@@ -15,21 +16,30 @@ template_prefix = "winebrand/"
 brandphotos = UploadSet('brandphotos', IMAGES)
 
 
-@winebrand_api.route('/')
+@winebrand_api.route('/view.json', methods=["GET"])
+@winebrand_api.route('/view', methods=["GET"])
 def show():
+    from json_util import WineCaveHomeListSchema
+
     session = current_app.config['db']
     wines = session\
-        .query(WineType, func.count(WineBrand.id))\
+        .query(WineType, func.count(WineBrand.id).label('count'))\
         .join(WineBrand)\
         .group_by(WineType.name)\
         .order_by(asc(collate(WineType.name, 'NOCASE')))
-    return render_template(template_prefix+'topview.html', wines=wines)
+    if is_json_request(request):
+        schema = WineCaveHomeListSchema()
+        return jsonify(items=[schema.dump(x).data for x in wines])
+    else:
+        return render_template(template_prefix+'topview.html', wines=wines)
 
 
-@winebrand_api.route('/<int:winetype_id>/', methods=["GET"])
+@winebrand_api.route('/<int:winetype_id>/view.json', methods=["GET"])
+@winebrand_api.route('/<int:winetype_id>/view', methods=["GET"])
 def show_brand(winetype_id):
-    session = current_app.config['db']
+    from json_util import WineBrandListSchema
 
+    session = current_app.config['db']
     winetype = session.query(WineType).filter_by(id=winetype_id).one()
 
     counter = session\
@@ -65,12 +75,18 @@ def show_brand(winetype_id):
         .order_by(collate(WineBrand.brand_name, 'NOCASE'),
                   WineBrand.vintage.asc())
 
-    return render_template(template_prefix+'brandsview.html',
-                           winetype=winetype,
-                           wines=wines)
+    if is_json_request(request):
+        schema = WineBrandListSchema()
+        return jsonify({"winetype": winetype.serialize,
+                        "items": [schema.dump(x).data for x in wines]})
+    else:
+        return render_template(template_prefix+'brandsview.html',
+                               winetype=winetype,
+                               wines=wines)
 
 
-@winebrand_api.route('/branditem/<int:stockitem_id>/', methods=["GET"])
+@winebrand_api.route('/branditem/<int:stockitem_id>/view.json', methods=["GET"])
+@winebrand_api.route('/branditem/<int:stockitem_id>/view', methods=["GET"])
 def show_branditem(stockitem_id):
     session = current_app.config['db']
     item = session\
@@ -81,9 +97,12 @@ def show_branditem(stockitem_id):
         .query(UserReview)\
         .filter_by(winebrand_id=stockitem_id)\
         .order_by(UserReview.date_created.desc())
-    return render_template(template_prefix+"brandview.html",
-                           item=item,
-                           reviews=reviews)
+    if is_json_request(request):
+        return jsonify(items=[x.serialize for x in reviews])
+    else:
+        return render_template(template_prefix+"brandview.html",
+                               item=item,
+                               reviews=reviews)
 
 
 @winebrand_api.route('/new', methods=["GET", "POST"])
@@ -221,18 +240,25 @@ def new_review(stockitem_id):
         return redirect(url_for('.show_branditem', stockitem_id=stockitem_id))
 
 
-@winebrand_api.route('/reviews/<int:user_id>', methods=["GET"])
+@winebrand_api.route('/reviews/<int:user_id>/view.json', methods=["GET"])
+@winebrand_api.route('/reviews/<int:user_id>/view', methods=["GET"])
 def list_user_reviews(user_id):
     session = current_app.config['db']
     reviews = session.query(UserReview)\
         .filter_by(user_id=user_id)\
         .order_by(UserReview.date_created.desc())
-    return render_template(template_prefix+"user_reviews_list.html",
-                           reviews=reviews)
+    if is_json_request(request):
+        return jsonify(items=[x.serialize for x in reviews])
+    else:
+        return render_template(template_prefix+"user_reviews_list.html",
+                               reviews=reviews)
 
 
-@winebrand_api.route('/wines/<int:user_id>', methods=["GET"])
+@winebrand_api.route('/wines/<int:user_id>/view.json', methods=["GET"])
+@winebrand_api.route('/wines/<int:user_id>/view', methods=["GET"])
 def list_user_wines(user_id):
+    from json_util import WineBrandListSchema
+
     session = current_app.config['db']
 
     counter = session\
@@ -269,8 +295,12 @@ def list_user_wines(user_id):
         .order_by(collate(WineBrand.brand_name, 'NOCASE'),
                   WineBrand.vintage.asc())
 
-    return render_template(template_prefix+"user_wines_list.html",
-                           wines=wines)
+    if is_json_request(request):
+        schema = WineBrandListSchema()
+        return jsonify(items=[schema.dump(x).data for x in wines])
+    else:
+        return render_template(template_prefix+"user_wines_list.html",
+                               wines=wines)
 
 
 @winebrand_api.route('/reviews/<int:review_id>/delete',

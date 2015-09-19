@@ -1,13 +1,15 @@
-from flask import current_app, Blueprint
+from flask import current_app, Blueprint, jsonify
 from flask import render_template, request, redirect, url_for, flash
 from sqlalchemy import asc, func, collate
 from database import WineColor, WineType
 from auth_api.auth_api import login_required, admin_required
+from json_util import is_json_request
 
 wine_color_api = Blueprint('wine_color_api', __name__)
 template_prefix = "color/"
 
 
+@wine_color_api.route('.json')
 @wine_color_api.route('/')
 @login_required
 @admin_required
@@ -15,7 +17,10 @@ def show():
     session = current_app.config['db']
     colors = session.query(WineColor).order_by(
         asc(collate(WineColor.name, 'NOCASE')))
-    return render_template(template_prefix+'view.html', colortypes=colors)
+    if is_json_request(request):
+        return jsonify(items=[x.serialize for x in colors])
+    else:
+        return render_template(template_prefix+'view.html', colortypes=colors)
 
 
 @wine_color_api.route('/new', methods=["GET", "POST"])
@@ -35,6 +40,7 @@ def new():
         return render_template(template_prefix+'new_form.html')
 
 
+@wine_color_api.route('/<int:color_id>/edit.json')
 @wine_color_api.route('/<int:color_id>/edit', methods=["GET", "POST"])
 @login_required
 @admin_required
@@ -50,8 +56,11 @@ def edit(color_id):
         flash("Successfully Edited Color '%s'" % (new_name,), 'success')
         return redirect(url_for('.show'))
     else:
-        return render_template(template_prefix+'edit_form.html',
-                               colortype=color)
+        if is_json_request(request):
+            return jsonify(color.serialize)
+        else:
+            return render_template(template_prefix+'edit_form.html',
+                                   colortype=color)
 
 
 @wine_color_api.route('/<int:color_id>/delete', methods=["GET", "POST"])

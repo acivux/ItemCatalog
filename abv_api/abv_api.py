@@ -1,15 +1,16 @@
-from flask import current_app, Blueprint
+from flask import current_app, Blueprint, jsonify
 from flask import render_template, request, redirect, url_for, flash
 from sqlalchemy import asc, exc, func, collate
 from database import WineABV, WineType
 from auth_api.auth_api import login_required, admin_required
-
+from json_util import is_json_request
 
 abv_api = Blueprint('abv_api', __name__)
 template_prefix = "abv/"
 
 
 @abv_api.route('/')
+@abv_api.route('.json')
 @login_required
 @admin_required
 def show():
@@ -17,7 +18,10 @@ def show():
     items = session\
         .query(WineABV)\
         .order_by(asc(collate(WineABV.name, 'NOCASE')))
-    return render_template(template_prefix+'view.html', items=items)
+    if is_json_request(request):
+        return jsonify(items=[x.serialize for x in items])
+    else:
+        return render_template(template_prefix+'view.html', items=items)
 
 
 @abv_api.route('/new', methods=["GET", "POST"])
@@ -44,6 +48,7 @@ def new():
         return render_template(template_prefix+'new_form.html', item=item)
 
 
+@abv_api.route('/<int:item_id>/edit.json')
 @abv_api.route('/<int:item_id>/edit', methods=["GET", "POST"])
 @login_required
 @admin_required
@@ -63,7 +68,10 @@ def edit(item_id):
         flash("Successfully Edited '%s'" % (new_name,), 'success')
         return redirect(url_for('.show'))
     else:
-        return render_template(template_prefix+'edit_form.html', item=item)
+        if is_json_request(request):
+            return jsonify(item.serialize)
+        else:
+            return render_template(template_prefix+'edit_form.html', item=item)
 
 
 @abv_api.route('/<int:item_id>/delete', methods=["GET", "POST"])
