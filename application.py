@@ -1,10 +1,12 @@
 import os
-import flask.ext.restless
+
 from flask import Flask, redirect, url_for, request, abort, render_template
 from flask import session as login_session
 from flaskext.uploads import UploadSet, configure_uploads, IMAGES
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
+
+import flask.ext.restless
 from database import Base, WineBrand, UserReview, WineType, GlassType
 from database import Temperature, WineABV, WineCalories, WineColor
 from wine_color_api.wine_color_api import wine_color_api
@@ -16,7 +18,6 @@ from type_api.winetype_api import winetype_api
 from winebrand_api.winebrand_api import winebrand_api
 from auth_api.auth_api import auth_api, authenticate_api, generate_csrf_token
 from auth_api.auth_api import login_required
-
 from utils import get_single_postprocessor
 
 
@@ -26,6 +27,7 @@ Base.metadata.bind = engine
 Session = sessionmaker(bind=engine)
 api_endpoint_session = scoped_session(Session)
 
+# App setup
 app = Flask(__name__)
 app.config['db'] = Session()
 app.config['UPLOADS_DEFAULT_DEST'] = os.path.join(app.root_path,
@@ -39,28 +41,13 @@ app.register_blueprint(winetype_api, url_prefix='/winetype')
 app.register_blueprint(winebrand_api)
 app.register_blueprint(auth_api, url_prefix='/auth')
 
+app.jinja_env.globals['csrf_token'] = generate_csrf_token
+
+# Image uploads setup
 brandphotos = UploadSet('brandphotos', IMAGES)
 configure_uploads(app, (brandphotos,))
 
-
-# set up CSRF token handling
-@app.before_request
-def csrf_protect():
-    if request.method == "POST":
-        # When signed in, the CSRF token is stored here
-        server_token = login_session.pop('_csrf_token', None)
-
-        # When first signing in, the CSRF token is found here
-        form_token = request.form.get('_csrf_token', None)
-        if not form_token:
-            form_token = request.values.get('_csrf_token', None)
-
-        if not server_token or server_token != form_token:
-            abort(403)
-
-app.jinja_env.globals['csrf_token'] = generate_csrf_token
-
-# Setting up API endpoints
+# Database API endpoints setup
 api_manager = flask.ext.restless.APIManager(app, session=api_endpoint_session)
 
 glass_api_manager = api_manager.create_api(
@@ -116,15 +103,40 @@ winetype_api_manager = api_manager.create_api(
     collection_name='winetype')
 
 
+@app.before_request
+def csrf_protect():
+    """
+    Verify csrf token is valid for each post request
+    """
+    if request.method == "POST":
+        # When signed in, the CSRF token is stored here
+        server_token = login_session.pop('_csrf_token', None)
+
+        # When first signing in, the CSRF token is found here
+        form_token = request.form.get('_csrf_token', None)
+        if not form_token:
+            form_token = request.values.get('_csrf_token', None)
+
+        if not server_token or server_token != form_token:
+            abort(403)
+
+
 @app.route('/')
 def show_home():
+    """
+    Entry point for application
+    """
     return redirect(url_for('winebrand_api.show'))
 
 
 @app.route('/help')
 @login_required
 def show_help():
+    """
+    Shows the help page
+    """
     return render_template("help.html")
+
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'

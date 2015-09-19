@@ -1,24 +1,25 @@
+import random
+import string
+import json
+from functools import wraps
+
 from flask import current_app, Blueprint
 from flask import render_template, request
 from flask import redirect, url_for, flash
 from flask import make_response
-from database import User
 from flask import session as login_session
-import random
-import string
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 import httplib2
-import json
 import requests
-from functools import wraps
 
+from database import User
 
 auth_api = Blueprint('auth_api', __name__)
 template_prefix = "auth/"
 
 
-@auth_api.route('/login')
+@auth_api.route('/login', methods=["GET"])
 def show_login():
     state = ''.join(
         random.choice(string.ascii_uppercase + string.digits) for x in
@@ -50,8 +51,11 @@ def user_edit():
         return response
 
 
-@auth_api.route('/signout')
+@auth_api.route('/signout', methods=["GET"])
 def signout():
+    """
+    Sign user out of the app, and disconnect from 3rd party authenticator
+    """
     if 'provider' in login_session:
         if login_session['provider'] == 'google':
             gdisconnect()
@@ -75,7 +79,9 @@ def signout():
 
 @auth_api.route('/gconnect', methods=['POST'])
 def gconnect():
-
+    """
+    Authenticate user through Google
+    """
     google_client_secrets_file = './auth_api/google_client_secrets.json'
 
     with open(google_client_secrets_file, 'r') as gcsf:
@@ -169,7 +175,9 @@ def gconnect():
 
 
 def gdisconnect():
-    # Only disconnect a connected user.
+    """
+    Disconnect from Google
+    """
     credentials = login_session.get('credentials')
     if credentials is None:
         response = make_response(
@@ -190,6 +198,9 @@ def gdisconnect():
 
 @auth_api.route('/fbconnect', methods=['POST'])
 def fbconnect():
+    """
+    Authenticate user through Facebook
+    """
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
         response.headers['Content-Type'] = 'application/json'
@@ -247,6 +258,9 @@ def fbconnect():
 
 
 def fbdisconnect():
+    """
+    Disconnect from Facebook
+    """
     facebook_id = login_session['facebook_id']
     access_token = login_session['access_token']
     url = 'https://graph.facebook.com/%s/permissions?access_token=%s' % (
@@ -295,6 +309,10 @@ def update_user_profile(user_id, login_session_obj):
 
 
 def login_required(f):
+    """
+    Function decorator to prevent public access
+    :param f: function to protect
+    """
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user_id' not in login_session:
@@ -305,6 +323,10 @@ def login_required(f):
 
 
 def admin_required(f):
+    """
+    Function decorator to prevent non-administrator access
+    :param f: function to protect
+    """
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if login_session.get('isadmin', False):
@@ -316,6 +338,10 @@ def admin_required(f):
 
 
 def authenticate_api(*args, **kwargs):
+    """
+    Flask-Restless uses this function to verify request was made by
+    logged in user.
+    """
     from flask.ext.restless import ProcessingException
     if 'user_id' not in login_session:
         raise ProcessingException(description='Not authenticated!')
@@ -323,10 +349,15 @@ def authenticate_api(*args, **kwargs):
 
 
 def generate_csrf_token():
+    """
+    Generates a random string for use as CSRF token
+    :return: a token
+    """
     if '_csrf_token' not in login_session:
         token = ''.join(
             random.choice(string.ascii_uppercase + string.digits) for x in
             xrange(64))
         login_session['_csrf_token'] = token
     return login_session['_csrf_token']
+
 

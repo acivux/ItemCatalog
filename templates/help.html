@@ -4,7 +4,8 @@
 
 {%block navbar%}
     {% if session.user_id %}
-        <li><a href=""><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
+        <li><a href="{{url_for('winebrand_api.new')}}"><span class="glyphicon glyphicon-plus" aria-hidden="true" title="New Wine Brand"></span></a></li>
+        <li><a href="{{url_for('winetype_api.show')}}"><span class="glyphicon glyphicon-bookmark text-danger" aria-hidden="true" title="{% include 'partial_templates/name_winetype.html' %}"></span></a></li>
     {% endif %}
 {%endblock%}
 

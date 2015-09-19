@@ -1,11 +1,13 @@
 import os
+import datetime
+
 from flask import current_app, Blueprint, jsonify
 from flask import render_template, request, redirect, url_for, flash
 from sqlalchemy import asc, desc, func, collate
-from database import WineBrand, WineType, UserReview
 from flask import session as login_session
-import datetime
 from flaskext.uploads import UploadSet, IMAGES
+
+from database import WineBrand, WineType, UserReview
 from utils import make_safe_filename
 from auth_api.auth_api import login_required
 from json_util import is_json_request

@@ -1,11 +1,13 @@
 # coding=utf-8
+import datetime
+import random
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
 from database import Base, User, WineType, Temperature
 from database import GlassType, WineCalories, WineColor, WineABV, WineBrand
 from database import UserReview
-import datetime
-import random
 from testing_user import TESTING_USER
 
 engine = create_engine('sqlite:///catalog.db')

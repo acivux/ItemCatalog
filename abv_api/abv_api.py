@@ -1,6 +1,7 @@
 from flask import current_app, Blueprint, jsonify
 from flask import render_template, request, redirect, url_for, flash
 from sqlalchemy import asc, exc, func, collate
+
 from database import WineABV, WineType
 from auth_api.auth_api import login_required, admin_required
 from json_util import is_json_request
@@ -9,8 +10,8 @@ abv_api = Blueprint('abv_api', __name__)
 template_prefix = "abv/"
 
 
-@abv_api.route('/')
-@abv_api.route('.json')
+@abv_api.route('/view.json', methods=["GET"])
+@abv_api.route('/view', methods=["GET"])
 @login_required
 @admin_required
 def show():
@@ -48,7 +49,6 @@ def new():
         return render_template(template_prefix+'new_form.html', item=item)
 
 
-@abv_api.route('/<int:item_id>/edit.json')
 @abv_api.route('/<int:item_id>/edit', methods=["GET", "POST"])
 @login_required
 @admin_required

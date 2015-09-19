@@ -16,7 +16,12 @@ The easiest way to get all the required Python packages installed is by using `p
 ### Flask-Restless
 `pip install Flask-Restless`
 
-Flask-Restless handles the database API front-end.
+Flask-Restless handles the database JSON API front-end.
+
+### Marshmallow
+`pip install marshmallow`
+
+Marshmallow handles custom database query conversions to JSON
 
 ### Flask-Uploads
 `pip Flask-Uploads`
@@ -58,7 +63,14 @@ An admin user can manage the following wine type attributes:
 To mark a user as an administrator, set the `admin` field in the user's database record to `True`. No UI has been implemented for this.
 Normally the test user will be set as administrator when `populate_db.py` is executed. 
 
-## API
+## Page API
+All application pages (except the user view page) that present a data view has an equivalent JSON implementation. To access the JSON data, append ".json" to the url.
+
+For example:
+
+`http://localhost:5000/view.json`
+
+## Database API
 A JSON API is implemented through Flask-Restless on the database level. Only GET requests are valid. Some additional features, like paging, is implemented.
 
 Please read the Flask-Restless [documentation](https://flask-restless.readthedocs.org/en/latest/index.html) for further information. 
@@ -84,5 +96,3 @@ Use the url `http://localhost:5000/api/color`. This will list the first page of 
 
 #### List all a specific color
 To find the color with id=2: `http://localhost:5000/api/color/2`
-
-# ToDo:Marshmallow 

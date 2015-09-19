@@ -10,6 +10,9 @@ Base.metadata.bind = engine
 
 
 class User(Base):
+    """
+    User data.
+    """
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True)
@@ -18,10 +21,13 @@ class User(Base):
     picture = Column(String(250), nullable=True)
     nickname = Column(String(250), nullable=True, unique=True)
     admin = Column(Boolean)
-    #ToDo: user json?
+    # User API not implemented due to privacy concerns
 
 
 class GlassType(Base):
+    """
+    Glass type to use with a wine.
+    """
     __tablename__ = 'glasstype'
 
     id = Column(Integer, primary_key=True)
@@ -33,6 +39,9 @@ class GlassType(Base):
 
 
 class Temperature(Base):
+    """
+    Serving temperature for a wine
+    """
     __tablename__ = 'temperature'
 
     id = Column(Integer, primary_key=True)
@@ -45,6 +54,9 @@ class Temperature(Base):
 
 
 class WineABV(Base):
+    """
+    Alcohol per Volume of the wine bottle
+    """
     __tablename__ = 'wine_abv'
 
     id = Column(Integer, primary_key=True)
@@ -54,7 +66,11 @@ class WineABV(Base):
     def serialize(self):
         return {"id": self.id, "name": self.name}
 
+
 class WineCalories(Base):
+    """
+    Calories per serving of wine
+    """
     __tablename__ = 'wine_calories'
 
     id = Column(Integer, primary_key=True)
@@ -66,6 +82,9 @@ class WineCalories(Base):
 
 
 class WineColor(Base):
+    """
+    Color of the wine
+    """
     __tablename__ = 'wine_color'
 
     id = Column(Integer, primary_key=True)
@@ -78,18 +97,10 @@ class WineColor(Base):
         return {"id": self.id, "name": self.name, "value": self.value}
 
 
-class Category(Base):
-    __tablename__ = 'category'
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
-
-    @property
-    def serialize(self):
-        return {"id": self.id, "name": self.name}
-
-
 class WineType(Base):
+    """
+    Type of wine.
+    """
     __tablename__ = 'wine_type'
 
     id = Column(Integer, primary_key=True)
@@ -128,6 +139,9 @@ class WineType(Base):
 
 
 class WineBrand(Base):
+    """
+    A specific brand of wine.
+    """
     __tablename__ = 'wine_brand'
 
     id = Column(Integer, primary_key=True)
@@ -155,6 +169,9 @@ class WineBrand(Base):
 
 
 class UserReview(Base):
+    """
+    User reviews
+    """
     __tablename__ = 'user_review'
 
     id = Column(Integer, primary_key=True)

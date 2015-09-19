@@ -1,6 +1,7 @@
 from flask import current_app, Blueprint, jsonify
 from flask import render_template, request, redirect, url_for, flash
 from sqlalchemy import asc, exc, func, collate
+
 from database import Temperature, WineType
 from auth_api.auth_api import login_required, admin_required
 from json_util import is_json_request
@@ -9,8 +10,8 @@ temperature_api = Blueprint('temperature_api', __name__)
 template_prefix = "temperature/"
 
 
-@temperature_api.route('.json')
-@temperature_api.route('/')
+@temperature_api.route('/view.json', methods=["GET"])
+@temperature_api.route('/view', methods=["GET"])
 @login_required
 @admin_required
 def show():
@@ -49,7 +50,6 @@ def new():
         return render_template(template_prefix+'new_form.html', item=item)
 
 
-@temperature_api.route('/<int:item_id>/edit.json')
 @temperature_api.route('/<int:item_id>/edit', methods=["GET", "POST"])
 @login_required
 @admin_required
