@@ -44,6 +44,7 @@ def show_brand(winetype_id):
     session = current_app.config['db']
     winetype = session.query(WineType).filter_by(id=winetype_id).one()
 
+    # Get the rating most assigned to a wine brand
     counter = session\
         .query(UserReview.winebrand_id,
                UserReview.rating,
@@ -109,6 +110,7 @@ def show_branditem(stockitem_id):
         .filter_by(winebrand_id=stockitem_id)\
         .order_by(UserReview.date_created.desc())
 
+    # Calculate percentages for each rating
     totalcount = session\
         .query(func.count(UserReview.rating).label('totalcount'))\
         .filter(UserReview.winebrand_id == stockitem_id)\
@@ -291,6 +293,7 @@ def list_user_wines(user_id):
 
     session = current_app.config['db']
 
+    # Get the rating most assigned to a wine brand
     counter = session\
         .query(UserReview.winebrand_id,
                UserReview.rating,
