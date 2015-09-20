@@ -40,6 +40,23 @@ label.star:before {
     margin-bottom: 0pt;
     }
 
+.progress-color-5 {
+    background-color: #A4F0B7;
+}
+.progress-color-4 {
+    background-color: #A8CFFF;
+}
+.progress-color-3 {
+    background-color: #B5FFFC;
+}
+.progress-color-2 {
+    background-color: #FFE920;
+}
+.progress-color-1 {
+    background-color: #FFAC62;
+}
+
+
 </style>
 {% endblock%}
 {%block navbar%}
@@ -65,13 +82,19 @@ label.star:before {
                   <img class="img-responsive img-thumbnail" style="max-width: 200px; max-height:200px" src="{% if item.filename %}/_uploads/brandphotos/{{item.filename}}{%else%}{{url_for('static', filename='images/generic_wine_bottle.png')}}{%endif%}"/>
                   <div class="caption">
                     <h3>{{item.brand_name}} <small>({{item.winetype.name}}, {{item.vintage}})</small></h3>
-                    <ol class="breadcrumb" style="font-size:8pt">
+                    <ol class="breadcrumb" style="font-size:8pt; margin-bottom:0px">
                       <li><span class="glyphicon glyphicon-tint" aria-hidden="true" title="{% include 'partial_templates/name_color.html' %}" style="color:#{{item.winetype.color.value}}; text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;"></span> {{item.winetype.color.name}}</li>
                       {% if item.winetype.glass%}<li><span class="glyphicon glyphicon-glass" aria-hidden="true" title="{% include 'partial_templates/name_glass.html' %}"></span> {{item.winetype.glass.name}}</li>{%endif%}
                       {% if item.winetype.calorie%}<li><span class="glyphicon glyphicon-fire" aria-hidden="true" title="{% include 'partial_templates/name_calories.html' %}"></span> {{item.winetype.calorie.name}}</li>{%endif%}
                       {% if item.winetype.abv%}<li><span class="glyphicon glyphicon-dashboard" aria-hidden="true" title="{% include 'partial_templates/name_abv.html' %}"></span> {{item.winetype.abv.name}}</li>{%endif%}
                       {% if item.winetype.temperature%}<li><span class="glyphicon glyphicon-scale" aria-hidden="true" title="{% include 'partial_templates/name_temperature.html' %}"></span> {{item.winetype.temperature.name}} ({{item.winetype.temperature.temp}}&deg;F)</li>{%endif%}
                     </ol>
+                    <div class="progress" style="height:9px">
+                        {% for rating, percent in counter%}
+                            <div title="{{rating}} Star Rating: {{percent|round(2, 'floor')}}%" class="progress-bar progress-color-{{rating}}" role="progressbar" style="width: {{percent}}%;"></div>
+                        {%endfor%}
+                    </div>
+
                     <p class="text-muted no-bottom" style="font-size: 8pt">{% if item.user_id %}<small>Added by <a href="{{url_for('.list_user_reviews', user_id=item.user_id)}}">{{item.user.nickname or item.user.name}}</a> on {%if item.date_edited is none%}{{item.date_created.strftime('%Y-%m-%d')}}{%else%}{{item.date_edited.strftime('%Y-%m-%d')}}{%endif%}</small>{%endif%}</p>
                   </div>
                 </div>
@@ -136,4 +159,5 @@ label.star:before {
       </div>
     </div>
 {%endblock%}
+
 

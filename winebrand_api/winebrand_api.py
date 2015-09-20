@@ -70,9 +70,16 @@ def show_brand(winetype_id):
         .having(func.count(UserReview.rating) == maxer.c.maxcount)\
         .subquery()
 
+    only_one = session\
+        .query(UserReview.winebrand_id,
+               func.max(tops.c.rating).label('bestrating'))\
+        .outerjoin(tops, UserReview.winebrand_id == tops.c.winebrand_id)\
+        .group_by(UserReview.winebrand_id)\
+        .subquery()
+
     wines = session\
-        .query(WineBrand, tops.c.rating)\
-        .outerjoin(tops, WineBrand.id == tops.c.winebrand_id)\
+        .query(WineBrand, only_one.c.bestrating.label('rating'))\
+        .outerjoin(only_one, WineBrand.id == only_one.c.winebrand_id)\
         .filter(WineBrand.winetype_id == winetype_id)\
         .order_by(collate(WineBrand.brand_name, 'NOCASE'),
                   WineBrand.vintage.asc())
@@ -99,12 +106,26 @@ def show_branditem(stockitem_id):
         .query(UserReview)\
         .filter_by(winebrand_id=stockitem_id)\
         .order_by(UserReview.date_created.desc())
+
+    totalcount = session\
+        .query(func.count(UserReview.rating).label('totalcount'))\
+        .filter(UserReview.winebrand_id == stockitem_id)\
+        .subquery()
+
+    counter = session\
+        .query(UserReview.rating,
+               ((100.00*func.count(UserReview.rating).label('count')) / totalcount.c.totalcount).label('percent'))\
+        .filter(UserReview.winebrand_id == stockitem_id)\
+        .group_by(UserReview.rating)\
+        .order_by(UserReview.rating.desc())
+
     if is_json_request(request):
         return jsonify(items=[x.serialize for x in reviews])
     else:
         return render_template(template_prefix+"brandview.html",
                                item=item,
-                               reviews=reviews)
+                               reviews=reviews,
+                               counter=counter)
 
 
 @winebrand_api.route('/new', methods=["GET", "POST"])
@@ -290,9 +311,16 @@ def list_user_wines(user_id):
         .distinct()\
         .subquery()
 
+    only_one = session\
+        .query(UserReview.winebrand_id,
+               func.max(tops.c.rating).label('bestrating'))\
+        .outerjoin(tops, UserReview.winebrand_id == tops.c.winebrand_id)\
+        .group_by(UserReview.winebrand_id)\
+        .subquery()
+
     wines = session\
-        .query(WineBrand, tops.c.rating)\
-        .outerjoin(tops, WineBrand.id == tops.c.winebrand_id)\
+        .query(WineBrand, only_one.c.bestrating.label('rating'))\
+        .outerjoin(only_one, WineBrand.id == only_one.c.winebrand_id)\
         .filter(WineBrand.user_id == user_id)\
         .order_by(collate(WineBrand.brand_name, 'NOCASE'),
                   WineBrand.vintage.asc())
