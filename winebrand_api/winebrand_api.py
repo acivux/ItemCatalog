@@ -97,6 +97,8 @@ def show_brand(winetype_id):
 @winebrand_api.route('/branditem/<int:stockitem_id>/view.json', methods=["GET"])
 @winebrand_api.route('/branditem/<int:stockitem_id>/view', methods=["GET"])
 def show_branditem(stockitem_id):
+    from json_util import ReviewPercentage
+
     session = current_app.config['db']
     item = session\
         .query(WineBrand)\
@@ -114,13 +116,18 @@ def show_branditem(stockitem_id):
 
     counter = session\
         .query(UserReview.rating,
-               ((100.00*func.count(UserReview.rating).label('count')) / totalcount.c.totalcount).label('percent'))\
+               ((100.00 * func.count(UserReview.rating)
+                 .label('count')) / totalcount.c.totalcount).label('percent'))\
         .filter(UserReview.winebrand_id == stockitem_id)\
         .group_by(UserReview.rating)\
         .order_by(UserReview.rating.desc())
 
     if is_json_request(request):
-        return jsonify(items=[x.serialize for x in reviews])
+        schema = ReviewPercentage()
+        return jsonify(
+            {"items": [x.serialize for x in reviews],
+             "persentages": [schema.dump(x).data for x in counter]
+             })
     else:
         return render_template(template_prefix+"brandview.html",
                                item=item,

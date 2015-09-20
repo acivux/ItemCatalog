@@ -27,6 +27,11 @@ class WineBrandListSchema(Schema):
     rating = fields.Int()
 
 
+class ReviewPercentage(Schema):
+    rating = fields.Int()
+    percent = fields.Float()
+
+
 def is_json_request(request_obj):
     """
     Returns true if the url ends in .json
