@@ -21,6 +21,11 @@ brandphotos = UploadSet('brandphotos', IMAGES)
 @winebrand_api.route('/view.json', methods=["GET"])
 @winebrand_api.route('/view', methods=["GET"])
 def show():
+    """
+    Shows the wine types and number of each available.
+
+    :return: JSON or HTML page
+    """
     from json_util import WineCaveHomeListSchema
 
     session = current_app.config['db']
@@ -39,12 +44,19 @@ def show():
 @winebrand_api.route('/<int:winetype_id>/view.json', methods=["GET"])
 @winebrand_api.route('/<int:winetype_id>/view', methods=["GET"])
 def show_brand(winetype_id):
+    """
+    For a wine type, show the brands available. Also returns the most assigned
+    rating for each brand.
+
+    :param winetype_id: WineType id
+    :return: JSON or HTML page
+    """
     from json_util import WineBrandListSchema
 
     session = current_app.config['db']
     winetype = session.query(WineType).filter_by(id=winetype_id).one()
 
-    # Get the rating most assigned to a wine brand
+    # Counts the number of each rating
     counter = session\
         .query(UserReview.winebrand_id,
                UserReview.rating,
@@ -56,12 +68,14 @@ def show_brand(winetype_id):
         .order_by(UserReview.winebrand_id, desc('count'))\
         .subquery()
 
+    # Gets the max of the count
     maxer = session\
         .query(counter.c.winebrand_id,
                func.max(counter.c.count).label('maxcount'))\
         .group_by(counter.c.winebrand_id)\
         .subquery()
 
+    # Gets the rating that matches max
     tops = session\
         .query(UserReview.winebrand_id,
                UserReview.rating,
@@ -71,6 +85,7 @@ def show_brand(winetype_id):
         .having(func.count(UserReview.rating) == maxer.c.maxcount)\
         .subquery()
 
+    # In case multiple winners exists, choose the highest rating
     only_one = session\
         .query(UserReview.winebrand_id,
                func.max(tops.c.rating).label('bestrating'))\
@@ -98,6 +113,13 @@ def show_brand(winetype_id):
 @winebrand_api.route('/branditem/<int:stockitem_id>/view.json', methods=["GET"])
 @winebrand_api.route('/branditem/<int:stockitem_id>/view', methods=["GET"])
 def show_branditem(stockitem_id):
+    """
+    Shows a specific brand item and all the user reviews.
+    Includes a  percentage breakdown of the ratings given.
+
+    :param stockitem_id: WineBrand id
+    :return: JSON or HTML page
+    """
     from json_util import ReviewPercentage
 
     session = current_app.config['db']
@@ -110,12 +132,13 @@ def show_branditem(stockitem_id):
         .filter_by(winebrand_id=stockitem_id)\
         .order_by(UserReview.date_created.desc())
 
-    # Calculate percentages for each rating
+    # Counts and groups the ratings
     totalcount = session\
         .query(func.count(UserReview.rating).label('totalcount'))\
         .filter(UserReview.winebrand_id == stockitem_id)\
         .subquery()
 
+    # Calculate percentages for each rating
     counter = session\
         .query(UserReview.rating,
                ((100.00 * func.count(UserReview.rating)
@@ -140,6 +163,11 @@ def show_branditem(stockitem_id):
 @winebrand_api.route('/new', methods=["GET", "POST"])
 @login_required
 def new():
+    """
+    Creates a new brand for reviewing
+
+    :return: HTML page
+    """
     session = current_app.config['db']
     item = WineBrand(brand_name="", vintage=1980)
     maxyear = datetime.date.today().year
@@ -177,6 +205,13 @@ def new():
                      methods=["GET", "POST"])
 @login_required
 def delete_branditem(stockitem_id):
+    """
+    Deletes a brand item. To simply the project, all the reviews
+    are deleted too.
+
+    :param stockitem_id: WineBrand id
+    :return: HTML page
+    """
     session = current_app.config['db']
     item = session.query(WineBrand)\
         .filter_by(id=stockitem_id)\
@@ -191,7 +226,7 @@ def delete_branditem(stockitem_id):
         try:
             os.remove(brandphotos.path(item.filename))
         except:
-            # unable to remove old file, leave it be.
+            # Unable to remove old file, leave it be.
             pass
         c_name = item.brand_name
         session.delete(item)
@@ -206,6 +241,12 @@ def delete_branditem(stockitem_id):
                      methods=["GET", "POST"])
 @login_required
 def edit_branditem(stockitem_id):
+    """
+    Edits a brand item.
+
+    :param stockitem_id: WineBrand id
+    :return: HTML page
+    """
     session = current_app.config['db']
     maxyear = datetime.date.today().year
     item = session.query(WineBrand)\
@@ -231,7 +272,7 @@ def edit_branditem(stockitem_id):
             try:
                 os.remove(brandphotos.path(oldfilename))
             except:
-                # unable to remove old file, leave it be.
+                # Unable to remove old file, leave it be.
                 pass
         session.add(item)
         session.commit()
@@ -256,6 +297,12 @@ def edit_branditem(stockitem_id):
                      methods=["POST"])
 @login_required
 def new_review(stockitem_id):
+    """
+    Creates a new review.
+
+    :param stockitem_id: WineBrand id to attache the review to.
+    :return: HTML page
+    """
     session = current_app.config['db']
     if request.method == "POST":
         reviewitem = UserReview(
@@ -275,6 +322,12 @@ def new_review(stockitem_id):
 @winebrand_api.route('/reviews/<int:user_id>/view.json', methods=["GET"])
 @winebrand_api.route('/reviews/<int:user_id>/view', methods=["GET"])
 def list_user_reviews(user_id):
+    """
+    Returns the current logged in user reviews.
+
+    :param user_id: User id to return reviews for.
+    :return: JSON or HTML page
+    """
     session = current_app.config['db']
     reviews = session.query(UserReview)\
         .filter_by(user_id=user_id)\
@@ -289,11 +342,17 @@ def list_user_reviews(user_id):
 @winebrand_api.route('/wines/<int:user_id>/view.json', methods=["GET"])
 @winebrand_api.route('/wines/<int:user_id>/view', methods=["GET"])
 def list_user_wines(user_id):
+    """
+    Returns the current logged in user created wines
+
+    :param user_id: User id to return wines for
+    :return: JSON or HMTL page
+    """
     from json_util import WineBrandListSchema
 
     session = current_app.config['db']
 
-    # Get the rating most assigned to a wine brand
+    # Counts the number of each rating
     counter = session\
         .query(UserReview.winebrand_id,
                UserReview.rating,
@@ -305,12 +364,14 @@ def list_user_wines(user_id):
         .order_by(UserReview.winebrand_id, desc('count'))\
         .subquery()
 
+    # Gets max for each rating
     maxer = session\
         .query(counter.c.winebrand_id,
                func.max(counter.c.count).label('maxcount'))\
         .group_by(counter.c.winebrand_id)\
         .subquery()
 
+    # Select the top rating
     tops = session\
         .query(UserReview.winebrand_id,
                UserReview.rating,
@@ -321,6 +382,7 @@ def list_user_wines(user_id):
         .distinct()\
         .subquery()
 
+    # In case multiple top ratings exist, choose the highest rating
     only_one = session\
         .query(UserReview.winebrand_id,
                func.max(tops.c.rating).label('bestrating'))\
@@ -347,6 +409,12 @@ def list_user_wines(user_id):
                      methods=["GET", "POST"])
 @login_required
 def delete_review(review_id):
+    """
+    Deletes a review.
+
+    :param review_id: UserReview id
+    :return: HTML page
+    """
     session = current_app.config['db']
     review = session\
         .query(UserReview)\
@@ -372,6 +440,12 @@ def delete_review(review_id):
                      methods=["GET", "POST"])
 @login_required
 def edit_review(review_id):
+    """
+    Edit a review
+
+    :param review_id: UserReview id
+    :return: HTML page
+    """
     session = current_app.config['db']
     review = session\
         .query(UserReview)\

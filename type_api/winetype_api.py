@@ -15,37 +15,49 @@ template_prefix = "winetype/"
 
 
 def get_form_values(request_obj, item=None):
-        new_name = request_obj.form['itemname']
-        new_color = request_obj.form.get('colorvalue', None)
-        new_glass = request_obj.form.get('glassvalue', None)
-        new_calorie = request_obj.form.get('calorievalue', None)
-        new_abv = request_obj.form.get('abvvalue', None)
-        new_temperature = request_obj.form.get('temperaturevalue', None)
-        if item:
-            item.name = new_name
-            item.color_id = new_color
-            item.glass_type_id = new_glass
-            item.calorie_id = new_calorie
-            item.abv_id = new_abv
-            item.temperature_id = new_temperature
-            item.user_id = login_session['user_id']
-            item.date_edited = datetime.datetime.today()
-        else:
-            item = WineType(name=new_name,
-                            color_id=new_color,
-                            glass_type_id=new_glass,
-                            calorie_id=new_calorie,
-                            abv_id=new_abv,
-                            temperature_id=new_temperature,
-                            user_id=login_session['user_id'],
-                            date_created=datetime.datetime.today())
-        return item
+    """
+    Extract values from the wine type html form.
+
+    :param request_obj: Request object containing values
+    :param item: An existing item that requires items updates
+    :return: WineType
+    """
+    new_name = request_obj.form['itemname']
+    new_color = request_obj.form.get('colorvalue', None)
+    new_glass = request_obj.form.get('glassvalue', None)
+    new_calorie = request_obj.form.get('calorievalue', None)
+    new_abv = request_obj.form.get('abvvalue', None)
+    new_temperature = request_obj.form.get('temperaturevalue', None)
+    if item:
+        item.name = new_name
+        item.color_id = new_color
+        item.glass_type_id = new_glass
+        item.calorie_id = new_calorie
+        item.abv_id = new_abv
+        item.temperature_id = new_temperature
+        item.user_id = login_session['user_id']
+        item.date_edited = datetime.datetime.today()
+    else:
+        item = WineType(name=new_name,
+                        color_id=new_color,
+                        glass_type_id=new_glass,
+                        calorie_id=new_calorie,
+                        abv_id=new_abv,
+                        temperature_id=new_temperature,
+                        user_id=login_session['user_id'],
+                        date_created=datetime.datetime.today())
+    return item
 
 
 @winetype_api.route('/view.json', methods=["GET"])
 @winetype_api.route('/view', methods=["GET"])
 @login_required
 def show():
+    """
+    Show wine types
+
+    :return: JSON or HTML template
+    """
     session = current_app.config['db']
     winetypes = session\
         .query(WineType.id, WineType.name)\
@@ -62,6 +74,11 @@ def show():
 @winetype_api.route('/new', methods=["GET", "POST"])
 @login_required
 def new():
+    """
+    Creates a new wine type
+
+    :return: HTML template
+    """
     session = current_app.config['db']
     if request.method == "POST":
         item = get_form_values(request)
@@ -125,6 +142,12 @@ def new():
 @winetype_api.route('/<int:item_id>/edit', methods=["GET", "POST"])
 @login_required
 def edit(item_id):
+    """
+    Edit a wine type
+
+    :param item_id: WineType id
+    :return: HTML template
+    """
     session = current_app.config['db']
     item = session.query(WineType).filter_by(id=item_id).one()
 
@@ -167,8 +190,11 @@ def edit(item_id):
 @login_required
 def delete(item_id):
     """
-    Deletion of wine type is allowed. Caution thought that all the reviews
+    Deletion of wine type is allowed. Caution though that all the reviews
     will be deleted too
+
+    :param item_id: WineType id
+    :return: HTML page
     """
     session = current_app.config['db']
     item = session.query(WineType).filter_by(id=item_id).one()

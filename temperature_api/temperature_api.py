@@ -15,6 +15,11 @@ template_prefix = "temperature/"
 @login_required
 @admin_required
 def show():
+    """
+    Shows the serving temperatures
+
+    :return: JSON or HTML templates
+    """
     session = current_app.config['db']
     items = session\
         .query(Temperature)\
@@ -29,6 +34,11 @@ def show():
 @login_required
 @admin_required
 def new():
+    """
+    Creates a new serving temperature. Duplicates not allowed
+
+    :return: HTML template
+    """
     session = current_app.config['db']
     if request.method == "POST":
         new_name = request.form['itemname']
@@ -54,6 +64,12 @@ def new():
 @login_required
 @admin_required
 def edit(item_id):
+    """
+    Edits a serving temperature. Duplicates not allowed
+
+    :param item_id: Temperature id
+    :return: HTML template
+    """
     session = current_app.config['db']
     item = session.query(Temperature).filter_by(id=item_id).one()
     if request.method == "POST":
@@ -71,16 +87,19 @@ def edit(item_id):
         flash("Successfully Edited '%s'" % (new_name,), 'success')
         return redirect(url_for('.show'))
     else:
-        if is_json_request(request):
-            return jsonify(item.serialize)
-        else:
-            return render_template(template_prefix+'edit_form.html', item=item)
+        return render_template(template_prefix+'edit_form.html', item=item)
 
 
 @temperature_api.route('/<int:item_id>/delete', methods=["GET", "POST"])
 @login_required
 @admin_required
 def delete(item_id):
+    """
+    Deletes a temperature if not in use.
+
+    :param item_id: temperature id
+    :return: HTML template
+    """
     session = current_app.config['db']
     if request.method == "POST":
         used = session.query(func.count(WineType.id).label('count'))\

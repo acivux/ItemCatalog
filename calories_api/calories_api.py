@@ -15,6 +15,11 @@ template_prefix = "calories/"
 @login_required
 @admin_required
 def show():
+    """
+    Show calories
+
+    :return: JSON or HTML template
+    """
     session = current_app.config['db']
     items = session\
         .query(WineCalories)\
@@ -29,6 +34,11 @@ def show():
 @login_required
 @admin_required
 def new():
+    """
+    Creates a new calorie
+
+    :return: HTML template
+    """
     session = current_app.config['db']
     if request.method == "POST":
         new_name = request.form['itemname']
@@ -53,6 +63,12 @@ def new():
 @login_required
 @admin_required
 def edit(item_id):
+    """
+    Edit the calorie value. Cannot save if its duplicate.
+
+    :param item_id: Calorie id
+    :return: HTML template
+    """
     session = current_app.config['db']
     item = session.query(WineCalories).filter_by(id=item_id).one()
     if request.method == "POST":
@@ -68,16 +84,19 @@ def edit(item_id):
         flash("Successfully Edited '%s'" % (new_name,), 'success')
         return redirect(url_for('.show'))
     else:
-        if is_json_request(request):
-            return jsonify(item.serialize)
-        else:
-            return render_template(template_prefix+'edit_form.html', item=item)
+        return render_template(template_prefix+'edit_form.html', item=item)
 
 
 @calories_api.route('/<int:item_id>/delete', methods=["GET", "POST"])
 @login_required
 @admin_required
 def delete(item_id):
+    """
+    Delete a calorie value if not in use
+
+    :param item_id: Calorie id
+    :return: HTML template
+    """
     session = current_app.config['db']
     if request.method == "POST":
         used = session.query(func.count(WineType.id).label('count'))\

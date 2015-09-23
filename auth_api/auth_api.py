@@ -21,6 +21,11 @@ template_prefix = "auth/"
 
 @auth_api.route('/login', methods=["GET"])
 def show_login():
+    """
+    Entry point for loggin into the app
+
+    :return: HTML template
+    """
     state = ''.join(
         random.choice(string.ascii_uppercase + string.digits) for x in
         xrange(32))
@@ -30,6 +35,12 @@ def show_login():
 
 @auth_api.route('/user', methods=["GET", "POST"])
 def user_edit():
+    """
+    Edit an existing user.
+    Existing user data found in the current session
+
+    :return: HTML template
+    """
     if login_session.get('user_id', None):
         if request.method == "POST":
             session = current_app.config['db']
@@ -271,6 +282,12 @@ def fbdisconnect():
 
 
 def get_user_id(email):
+    """
+    Retrieves a user ID for the specific email
+
+    :param email: Email address to look up
+    :return: user ID
+    """
     try:
         user = current_app.config['db'].query(User).filter_by(email=email).one()
         return user.id
@@ -279,6 +296,11 @@ def get_user_id(email):
 
 
 def create_user(login_session_obj):
+    """
+    Create a new user given the session object
+    :param login_session_obj: Session object
+    :return: user id
+    """
     try:
         newuser = User(name=login_session_obj['username'],
                        email=login_session_obj['email'],
@@ -291,6 +313,11 @@ def create_user(login_session_obj):
 
 
 def get_user_info(user_id):
+    """
+    Retrieves the user data from the database given the user id
+    :param user_id: User's ID
+    :return: User object
+    """
     try:
         user = current_app.config['db'].query(User).filter_by(id=user_id).one()
         return user
@@ -299,6 +326,13 @@ def get_user_info(user_id):
 
 
 def update_user_profile(user_id, login_session_obj):
+    """
+    Updates a users profile data in the database.
+
+    :param user_id: User's ID
+    :param login_session_obj: Sesssion Object
+    :return: None
+    """
     try:
         user = current_app.config['db'].query(User).filter_by(id=user_id).one()
         user.name = login_session_obj['username']
@@ -311,6 +345,7 @@ def update_user_profile(user_id, login_session_obj):
 def login_required(f):
     """
     Function decorator to prevent public access
+
     :param f: function to protect
     """
     @wraps(f)
@@ -325,6 +360,7 @@ def login_required(f):
 def admin_required(f):
     """
     Function decorator to prevent non-administrator access
+
     :param f: function to protect
     """
     @wraps(f)
@@ -351,6 +387,7 @@ def authenticate_api(*args, **kwargs):
 def generate_csrf_token():
     """
     Generates a random string for use as CSRF token
+
     :return: a token
     """
     if '_csrf_token' not in login_session:
