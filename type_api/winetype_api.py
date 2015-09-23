@@ -77,7 +77,7 @@ def new():
     """
     Creates a new wine type
 
-    :return: HTML template
+    :return: HTML page
     """
     session = current_app.config['db']
     if request.method == "POST":
@@ -146,7 +146,7 @@ def edit(item_id):
     Edit a wine type
 
     :param item_id: WineType id
-    :return: HTML template
+    :return: HTML page
     """
     session = current_app.config['db']
     item = session.query(WineType).filter_by(id=item_id).one()

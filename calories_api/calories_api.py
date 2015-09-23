@@ -37,7 +37,7 @@ def new():
     """
     Creates a new calorie
 
-    :return: HTML template
+    :return: HTML page
     """
     session = current_app.config['db']
     if request.method == "POST":
@@ -67,7 +67,7 @@ def edit(item_id):
     Edit the calorie value. Cannot save if its duplicate.
 
     :param item_id: Calorie id
-    :return: HTML template
+    :return: HTML page
     """
     session = current_app.config['db']
     item = session.query(WineCalories).filter_by(id=item_id).one()
@@ -95,7 +95,7 @@ def delete(item_id):
     Delete a calorie value if not in use
 
     :param item_id: Calorie id
-    :return: HTML template
+    :return: HTML page
     """
     session = current_app.config['db']
     if request.method == "POST":

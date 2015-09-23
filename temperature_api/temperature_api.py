@@ -37,7 +37,7 @@ def new():
     """
     Creates a new serving temperature. Duplicates not allowed
 
-    :return: HTML template
+    :return: HTML page
     """
     session = current_app.config['db']
     if request.method == "POST":
@@ -68,7 +68,7 @@ def edit(item_id):
     Edits a serving temperature. Duplicates not allowed
 
     :param item_id: Temperature id
-    :return: HTML template
+    :return: HTML page
     """
     session = current_app.config['db']
     item = session.query(Temperature).filter_by(id=item_id).one()
@@ -98,7 +98,7 @@ def delete(item_id):
     Deletes a temperature if not in use.
 
     :param item_id: temperature id
-    :return: HTML template
+    :return: HTML page
     """
     session = current_app.config['db']
     if request.method == "POST":

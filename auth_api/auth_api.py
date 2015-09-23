@@ -24,7 +24,7 @@ def show_login():
     """
     Entry point for loggin into the app
 
-    :return: HTML template
+    :return: HTML page
     """
     state = ''.join(
         random.choice(string.ascii_uppercase + string.digits) for x in
@@ -39,7 +39,7 @@ def user_edit():
     Edit an existing user.
     Existing user data found in the current session
 
-    :return: HTML template
+    :return: HTML page
     """
     if login_session.get('user_id', None):
         if request.method == "POST":

@@ -36,7 +36,7 @@ def new():
     """
     Creates a new color. No duplicates Allowed
 
-    :return: HTML template
+    :return: HTML page
     """
     session = current_app.config['db']
     if request.method == "POST":
@@ -64,7 +64,7 @@ def edit(color_id):
     Edit a color.
 
     :param color_id: Color id
-    :return: HTML template
+    :return: HTML page
     """
     session = current_app.config['db']
     color = session.query(WineColor).filter_by(id=color_id).one()
@@ -95,7 +95,7 @@ def delete(color_id):
     Deletes a color if not in use.
 
     :param color_id: Color id
-    :return: HTML template
+    :return: HTML page
     """
     session = current_app.config['db']
     if request.method == "POST":

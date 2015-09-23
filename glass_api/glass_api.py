@@ -37,7 +37,7 @@ def new():
     """
     Creates a new glass type
 
-    :return: HTML template
+    :return: HTML page
     """
     session = current_app.config['db']
     if request.method == "POST":
@@ -67,7 +67,7 @@ def edit(item_id):
     Edits a glass type. Duplicates not allowed
 
     :param item_id: Glass id
-    :return: HTML template
+    :return: HTML page
     """
     session = current_app.config['db']
     item = session.query(GlassType).filter_by(id=item_id).one()
@@ -95,7 +95,7 @@ def delete(item_id):
     Deletes a glass when not in use.
 
     :param item_id: Glass id
-    :return: HTML template
+    :return: HTML page
     """
     session = current_app.config['db']
     if request.method == "POST":

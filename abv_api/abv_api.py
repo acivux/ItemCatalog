@@ -37,7 +37,7 @@ def new():
     """
     Create a new ABV item
 
-    :return: HTML template
+    :return: HTML page
     """
     session = current_app.config['db']
     if request.method == "POST":
@@ -67,7 +67,7 @@ def edit(item_id):
     Edit an ABV item
 
     :param item_id: ABV id to edit
-    :return: HTML template
+    :return: HTML page
     """
     session = current_app.config['db']
     item = session.query(WineABV).filter_by(id=item_id).one()
@@ -95,7 +95,7 @@ def delete(item_id):
     Delete an ABV item
 
     :param item_id: ABV id to edit
-    :return: HTML template
+    :return: HTML page
     """
     session = current_app.config['db']
     if request.method == "POST":
