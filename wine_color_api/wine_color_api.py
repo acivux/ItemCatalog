@@ -18,7 +18,7 @@ def show():
     """
     Shows list of color available
 
-    :return: JSON or HTML template
+    :return: JSON or HTML page
     """
     session = current_app.config['db']
     colors = session.query(WineColor).order_by(

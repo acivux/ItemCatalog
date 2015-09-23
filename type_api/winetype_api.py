@@ -56,7 +56,7 @@ def show():
     """
     Show wine types
 
-    :return: JSON or HTML template
+    :return: JSON or HTML page
     """
     session = current_app.config['db']
     winetypes = session\

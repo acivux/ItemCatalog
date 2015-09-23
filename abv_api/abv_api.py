@@ -18,7 +18,7 @@ def show():
     """
     Entry point for ABV
 
-    :return: JSON or HTML template
+    :return: JSON or HTML page
     """
     session = current_app.config['db']
     items = session\

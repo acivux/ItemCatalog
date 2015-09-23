@@ -18,7 +18,7 @@ def show():
     """
     Shows the serving temperatures
 
-    :return: JSON or HTML templates
+    :return: JSON or HTML page
     """
     session = current_app.config['db']
     items = session\
