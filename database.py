@@ -2,7 +2,7 @@ from sqlalchemy import Column, ForeignKey, Integer, Float, String, DateTime
 from sqlalchemy import Text, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, Sequence
 
 engine = create_engine('postgresql://grader:@localhost/catalog')
 Base = declarative_base()
@@ -174,7 +174,7 @@ class UserReview(Base):
     """
     __tablename__ = 'user_review'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, Sequence('user_review_id_seq'), primary_key=True)
     winebrand_id = Column(Integer, ForeignKey('wine_brand.id'), nullable=False)
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     user = relationship(User)

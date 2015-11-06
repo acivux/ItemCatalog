@@ -84,7 +84,7 @@ def show_brand(winetype_id):
                UserReview.rating,
                func.count(UserReview.rating).label('topcount'))\
         .join(maxer, maxer.c.winebrand_id == UserReview.winebrand_id)\
-        .group_by(UserReview.winebrand_id, UserReview.rating)\
+        .group_by(UserReview.winebrand_id, UserReview.rating, maxer.c.maxcount)\
         .having(func.count(UserReview.rating) == maxer.c.maxcount)\
         .subquery()
 
