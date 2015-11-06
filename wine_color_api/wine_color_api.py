@@ -22,7 +22,7 @@ def show():
     """
     session = current_app.config['db']
     colors = session.query(WineColor).order_by(
-        asc(collate(WineColor.name, 'NOCASE')))
+        asc(func.lower(WineColor.name)))
     if is_json_request(request):
         return jsonify(items=[x.serialize for x in colors])
     else:
