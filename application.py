@@ -22,7 +22,7 @@ from utils import get_single_postprocessor
 
 
 # Database setup
-engine = create_engine('sqlite:///catalog.db')
+engine = create_engine('postgresql://grader:@localhost/catalog')
 Base.metadata.bind = engine
 Session = sessionmaker(bind=engine)
 api_endpoint_session = scoped_session(Session)
@@ -30,6 +30,7 @@ api_endpoint_session = scoped_session(Session)
 # App setup
 app = Flask(__name__)
 app.config['db'] = Session()
+app.config['SECRET_KEY'] = 'FhjGHTaqY323!@*&GHvbTkqYoyU'
 app.config['UPLOADS_DEFAULT_DEST'] = os.path.join(app.root_path,
                                                   'image_uploads')
 app.register_blueprint(temperature_api, url_prefix='/temperature')
@@ -139,6 +140,6 @@ def show_help():
 
 
 if __name__ == '__main__':
-    app.secret_key = 'super_secret_key'
+    #app.secret_key = 'super_secret_key'
     app.debug = True
     app.run(host='127.0.0.1', port=5000)

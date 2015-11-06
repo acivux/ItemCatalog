@@ -10,7 +10,7 @@ from database import GlassType, WineCalories, WineColor, WineABV, WineBrand
 from database import UserReview
 from testing_user import TESTING_USER
 
-engine = create_engine('sqlite:///catalog.db')
+engine = create_engine('postgresql://grader:@localhost/catalog')
 # Bind the engine to the metadata of the Base class so that the
 # declaratives can be accessed through a DBSession instance
 Base.metadata.bind = engine

@@ -23,7 +23,7 @@ def show():
     session = current_app.config['db']
     items = session\
         .query(GlassType)\
-        .order_by(asc(collate(GlassType.name, 'NOCASE')))
+        .order_by(asc(func.lower(GlassType.name)))
     if is_json_request(request):
         return jsonify(items=[x.serialize for x in items])
     else:
