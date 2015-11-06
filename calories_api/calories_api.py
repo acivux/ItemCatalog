@@ -23,7 +23,7 @@ def show():
     session = current_app.config['db']
     items = session\
         .query(WineCalories)\
-        .order_by(asc(collate(WineCalories.name, 'NOCASE')))
+        .order_by(asc(func.lower(WineCalories.name)))
     if is_json_request(request):
         return jsonify(items=[x.serialize for x in items])
     else:

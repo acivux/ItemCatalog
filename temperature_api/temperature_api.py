@@ -23,7 +23,7 @@ def show():
     session = current_app.config['db']
     items = session\
         .query(Temperature)\
-        .order_by(asc(collate(Temperature.temp, 'NOCASE')))
+        .order_by(asc(func.lower(Temperature.temp)))
     if is_json_request(request):
         return jsonify(items=[x.serialize for x in items])
     else:
