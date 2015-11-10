@@ -4,18 +4,19 @@ import random
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
 
 from database import Base, User, WineType, Temperature
 from database import GlassType, WineCalories, WineColor, WineABV, WineBrand
 from database import UserReview
 from testing_user import TESTING_USER
+from application import app
 
-engine = create_engine('postgresql://grader:@localhost/catalog')
-# Bind the engine to the metadata of the Base class so that the
-# declaratives can be accessed through a DBSession instance
-Base.metadata.bind = engine
+#engine = create_engine('postgresql+psycopg2://catalog:horlosie@localhost/catalog')
+#Base = declarative_base()
+#Base.metadata.bind = engine
 
-DBSession = sessionmaker(bind=engine)
+#DBSession = sessionmaker(bind=engine)
 # A DBSession() instance establishes all conversations with the database
 # and represents a "staging zone" for all the objects loaded into the
 # database session object. Any change made against the objects in the
@@ -23,7 +24,8 @@ DBSession = sessionmaker(bind=engine)
 # session.commit(). If you're not happy about the changes, you can
 # revert all of them back to the last commit by calling
 # session.rollback()
-session = DBSession()
+#session = DBSession()
+session = app.config['db']
 
 ratings = [1, 2, 3, 4, 5, 3, 2]
 fake_person_names = ["Joetta Janas", "Richelle Riles", "Marvin Malcom",
@@ -155,120 +157,128 @@ def random_review():
 # The testing user that match valid Google or Facebook email address
 # Create your own User object in testing_user.py
 session.add(TESTING_USER)
+session.commit()
 counter = 2
 for name in fake_person_names:
-    session.add(User(id=counter,
+    session.add(User(#id=counter,
                      name=name,
                      email="abc"+str(counter)+"@myurl.com",
                      nickname=make_nickname(name),
                      admin=False))
+    session.commit()
     counter += 1
 
-glasses = [GlassType(id=1, name="Sparkling Wine Flute"),
-           GlassType(id=2, name="White Wine Glass"),
-           GlassType(id=3, name="Standard Wine Glass"),
-           GlassType(id=4, name="Light Red Wine Glass"),
-           GlassType(id=5, name="Bold Red Wine Glass"),
-           GlassType(id=6, name="Dessert Wine Glass")]
+
+glasses = [GlassType(name="Sparkling Wine Flute"),
+           GlassType(name="White Wine Glass"),
+           GlassType(name="Standard Wine Glass"),
+           GlassType(name="Light Red Wine Glass"),
+           GlassType(name="Bold Red Wine Glass"),
+           GlassType(name="Dessert Wine Glass")]
 for glass in glasses:
     session.add(glass)
+    session.commit()
 
-temps = [Temperature(id=1, name="Ice Cold", temp=43),
-         Temperature(id=2, name="Cold", temp=48),
-         Temperature(id=3, name="Cool", temp=54),
-         Temperature(id=4, name="Cellar", temp=62),
-         Temperature(id=5, name="Cool Room", temp=68)]
+temps = [Temperature(name="Ice Cold", temp=43),
+         Temperature(name="Cold", temp=48),
+         Temperature(name="Cool", temp=54),
+         Temperature(name="Cellar", temp=62),
+         Temperature(name="Cool Room", temp=68)]
 for temp in temps:
     session.add(temp)
 
-cals = [WineCalories(id=1, name="120-160"), WineCalories(id=2, name="110-170"),
-        WineCalories(id=3, name="120-180"), WineCalories(id=4, name="150-200"),
-        WineCalories(id=5, name="190-290")]
+cals = [WineCalories(name="120-160"),
+        WineCalories(name="110-170"),
+        WineCalories(name="120-180"),
+        WineCalories(name="150-200"),
+        WineCalories(name="190-290")]
 for cal in cals:
     session.add(cal)
 
-colors = [WineColor(id=1, name="Almost Clear", value="F2F5A9"),
-          WineColor(id=2, name="Green Yellow", value="D8F781"),
-          WineColor(id=3, name="Pale Gold", value="E4DE8A"),
-          WineColor(id=4, name="Pale Yellow", value="ECE8A8"),
-          WineColor(id=5, name="Pale Gold (Dark)", value="E9D775"),
-          WineColor(id=6, name="Deep Gold", value="EDBD3B"),
-          WineColor(id=7, name="Pale Salmon", value="F8E0F7"),
-          WineColor(id=8, name="Deep Pink", value="F475B7"),
-          WineColor(id=9, name="Deep Salmon", value="F78181"),
-          WineColor(id=10, name="Pale Ruby", value="D53C65"),
-          WineColor(id=11, name="Deep Violet", value="A93252"),
-          WineColor(id=12, name="Deep Purple", value="5B0055"),
-          WineColor(id=13, name="Tawny", value="CC6600")]
+colors = [WineColor(name="Almost Clear", value="F2F5A9"),
+          WineColor(name="Green Yellow", value="D8F781"),
+          WineColor(name="Pale Gold", value="E4DE8A"),
+          WineColor(name="Pale Yellow", value="ECE8A8"),
+          WineColor(name="Pale Gold (Dark)", value="E9D775"),
+          WineColor(name="Deep Gold", value="EDBD3B"),
+          WineColor(name="Pale Salmon", value="F8E0F7"),
+          WineColor(name="Deep Pink", value="F475B7"),
+          WineColor(name="Deep Salmon", value="F78181"),
+          WineColor(name="Pale Ruby", value="D53C65"),
+          WineColor(name="Deep Violet", value="A93252"),
+          WineColor(name="Deep Purple", value="5B0055"),
+          WineColor(name="Tawny", value="CC6600")]
 for color in colors:
     session.add(color)
 
-abvs = [WineABV(id=1, name="9-14%"),
-        WineABV(id=2, name="10-15%"),
-        WineABV(id=3, name="12-17%"),
-        WineABV(id=4, name="14-20%")]
+abvs = [WineABV(name="9-14%"),
+        WineABV(name="10-15%"),
+        WineABV(name="12-17%"),
+        WineABV(name="14-20%")]
 for abv in abvs:
     session.add(abv)
 
-winetypes = [WineType(id=1, name=u"Sparkling Wine", color_id=1, glass_type_id=1,
+winetypes = [WineType(name=u"Sparkling Wine", color_id=1, glass_type_id=1,
                       calorie_id=1, abv_id=1, temperature_id=2,
                       date_created=random_creation_date(),
                       user_id=random_user()),
-             WineType(id=2, name=u"Sauvignon Blanc", color_id=2,
+             WineType(name=u"Sauvignon Blanc", color_id=2,
                       glass_type_id=2, calorie_id=2, abv_id=1, temperature_id=3,
                       date_created=random_creation_date(),
                       user_id=random_user()),
-             WineType(id=3, name=u"Albariño", color_id=3, glass_type_id=2,
+             WineType(name=u"Albariño", color_id=3, glass_type_id=2,
                       calorie_id=2, abv_id=1, temperature_id=3,
                       date_created=random_creation_date(),
                       user_id=random_user()),
-             WineType(id=4, name=u"Chenin Blanc", color_id=4, glass_type_id=2,
+             WineType(name=u"Chenin Blanc", color_id=4, glass_type_id=2,
                       calorie_id=2, abv_id=1, temperature_id=3,
                       date_created=random_creation_date(),
                       user_id=random_user()),
-             WineType(id=5, name=u"Chardonnay", color_id=5, glass_type_id=2,
+             WineType(name=u"Chardonnay", color_id=5, glass_type_id=2,
                       calorie_id=2, abv_id=1, temperature_id=3,
                       date_created=random_creation_date(),
                       user_id=random_user()),
-             WineType(id=6, name=u"Noble Rot", color_id=6, glass_type_id=2,
+             WineType(name=u"Noble Rot", color_id=6, glass_type_id=2,
                       calorie_id=2, abv_id=1, temperature_id=3,
                       date_created=random_creation_date(),
                       user_id=random_user()),
-             WineType(id=7, name=u"Rosé of Pinot Noir", color_id=7,
+             WineType(name=u"Rosé of Pinot Noir", color_id=7,
                       glass_type_id=3, calorie_id=2, abv_id=1, temperature_id=2,
                       date_created=random_creation_date(),
                       user_id=random_user()),
-             WineType(id=8, name=u"Rosé of Merlot", color_id=8, glass_type_id=3,
+             WineType(name=u"Rosé of Merlot", color_id=8, glass_type_id=3,
                       calorie_id=2, abv_id=1, temperature_id=2,
                       date_created=random_creation_date(),
                       user_id=random_user()),
-             WineType(id=9, name=u"Rosé of Tempranillo", color_id=9,
+             WineType(name=u"Rosé of Tempranillo", color_id=9,
                       glass_type_id=3, calorie_id=2, abv_id=1, temperature_id=2,
                       date_created=random_creation_date(),
                       user_id=random_user()),
-             WineType(id=10, name=u"Pinot Noir", color_id=10, glass_type_id=4,
+             WineType(name=u"Pinot Noir", color_id=10, glass_type_id=4,
                       calorie_id=3, abv_id=2, temperature_id=3,
                       date_created=random_creation_date(),
                       user_id=random_user()),
-             WineType(id=11, name=u"Sangiovese", color_id=11, glass_type_id=5,
+             WineType(name=u"Sangiovese", color_id=11, glass_type_id=5,
                       calorie_id=4, abv_id=3, temperature_id=4,
                       date_created=random_creation_date(),
                       user_id=random_user()),
-             WineType(id=12, name=u"Cabernet Sauvignon", color_id=12,
+             WineType(name=u"Cabernet Sauvignon", color_id=12,
                       glass_type_id=5, calorie_id=4, abv_id=3, temperature_id=4,
                       date_created=random_creation_date(),
                       user_id=random_user()),
-             WineType(id=13, name=u"Sherry", color_id=13, glass_type_id=6,
+             WineType(name=u"Sherry", color_id=13, glass_type_id=6,
                       calorie_id=5, abv_id=4, temperature_id=5,
                       date_created=random_creation_date(),
                       user_id=random_user())]
 for wtype in winetypes:
     session.add(wtype)
 
+session.commit()
+
 counter = 1
 winebrands = []
 for fake_wine_name in fake_wine_names:
-    abrand = WineBrand(id=counter, brand_name=fake_wine_name,
+    abrand = WineBrand(brand_name=fake_wine_name,
                        vintage=random_vintage(),
                        winetype_id=random.choice(winetypes).id,
                        date_created=random_creation_date(),
@@ -277,9 +287,10 @@ for fake_wine_name in fake_wine_names:
     session.add(abrand)
     counter += 1
 
+session.commit()
+
 for review_id in xrange(1, 4000):
-    areview = UserReview(id=review_id,
-                         winebrand_id=random.choice(winebrands).id,
+    areview = UserReview(winebrand_id=random.choice(winebrands).id,
                          user_id=random_user(),
                          summary=random_summary(),
                          comment=random_review(),
@@ -287,7 +298,4 @@ for review_id in xrange(1, 4000):
                          date_created=random_creation_date())
     session.add(areview)
 
-
 session.commit()
-
-

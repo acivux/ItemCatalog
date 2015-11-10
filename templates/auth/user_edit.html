@@ -14,6 +14,7 @@
           <div class="col-md-4 col-sm-4 col-sx-4"></div>
           <div class="col-md-4 col-sm-4 col-sx-4">
             <form class="form-horizontal" method='POST' enctype='multipart/form-data' action='{{url_for('.user_edit')}}'>
+              <input name=_csrf_token type=hidden value="{{ csrf_token() }}">
                 <p class="text-center"><img src="{{session.picture}}" alt="{{url_for('static', filename='generic_person.png')}}" class="img-thumbnail" style="max-width:100px;"></p>
                 <div class="form-group">
                     <label for="username" class="col-sm-2 control-label">Name</label>

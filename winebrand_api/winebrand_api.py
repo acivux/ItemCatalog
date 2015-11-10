@@ -196,7 +196,7 @@ def new():
     else:
         winetypes = session\
             .query(WineType)\
-            .order_by(asc(collate(WineType.name, 'NOCASE')))\
+            .order_by(asc(func.lower(WineType.name)))\
             .all()
         return render_template(template_prefix+'new_form.html',
                                item=item,
@@ -288,7 +288,7 @@ def edit_branditem(stockitem_id):
         return redirect(url_for('.show_branditem', stockitem_id=item.id))
     else:
         winetypes = session.query(WineType)\
-            .order_by(asc(collate(WineType.name, 'NOCASE')))\
+            .order_by(asc(func.lower(WineType.name)))\
             .all()
         return render_template(template_prefix+'edit_form.html',
                                item=item,
@@ -316,10 +316,16 @@ def new_review(stockitem_id):
             date_created=datetime.datetime.today(),
             user_id=login_session.get('user_id', None)
         )
+        #try:
         session.add(reviewitem)
         session.commit()
         flash("Successfully added a review", 'success')
         return redirect(url_for('.show_branditem', stockitem_id=stockitem_id))
+        #except:
+        #    session.rollback()
+        #    flash("Failed to add a review", 'danger')
+        #    return redirect(url_for('.show_branditem', stockitem_id=stockitem_id))
+
 
 
 @winebrand_api.route('/reviews/<int:user_id>/view.json', methods=["GET"])

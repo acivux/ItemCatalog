@@ -102,7 +102,7 @@ def new():
                 .order_by(asc(func.lower(WineABV.name)))
             temps = session\
                 .query(Temperature)\
-                .order_by(asc(func.lower(Temperature.temp)))
+                .order_by(asc(Temperature.temp))
             return render_template(template_prefix+'/new_form.html',
                                    winetype=item,
                                    winecolors=winecolors,
@@ -129,7 +129,7 @@ def new():
             .order_by(asc(func.lower(WineABV.name)))
         temps = session\
             .query(Temperature)\
-            .order_by(asc(func.lower(Temperature.temp)))
+            .order_by(asc(Temperature.temp))
         return render_template(template_prefix+'new_form.html',
                                winetype=winetype,
                                winecolors=winecolors,
@@ -176,7 +176,7 @@ def edit(item_id):
         abvs = session.query(WineABV).order_by(
             asc(func.lower(WineABV.name)))
         temps = session.query(Temperature).order_by(
-            asc(func.lower(Temperature.temp)))
+            asc(Temperature.temp))
         return render_template(template_prefix+'edit_form.html',
                                winetype=item,
                                winecolors=winecolors,

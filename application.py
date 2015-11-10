@@ -22,11 +22,10 @@ from utils import get_single_postprocessor
 
 
 # Database setup
-engine = create_engine('postgresql://grader:@localhost/catalog')
+engine = create_engine('postgresql+psycopg2://catalog:horlosie@localhost/catalog')
 Base.metadata.bind = engine
 Session = sessionmaker(bind=engine)
 api_endpoint_session = scoped_session(Session)
-
 # App setup
 app = Flask(__name__)
 app.config['db'] = Session()
